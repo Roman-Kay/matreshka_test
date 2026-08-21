@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   static const ink = Color(0xFF180B0B);
+  static const transperent = Color(0x00000000);
+  static const navBg = Color(0xFF151727);
   static const panel = Color(0xCC530202);
   static const panelSoft = Color(0x227C1404);
   static const white = Color(0xFFE9E9F3);
   static const white70 = Color(0xB3E9E9F3);
   static const white40 = Color(0x66E9E9F3);
+  static const white30 = Color(0x4CE9E9F3);
   static const white60 = Color(0x99E9E9F3);
   static const green = Color(0xFF56B877);
   static const orange = Color(0xFFFF6435);

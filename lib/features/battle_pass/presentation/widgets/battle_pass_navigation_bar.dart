@@ -1,25 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class BattlePassNavigationBar extends StatelessWidget {
-  const BattlePassNavigationBar({super.key, required this.selectedLabel, required this.onSelected});
+  const BattlePassNavigationBar({
+    super.key,
+    required this.selectedLabel,
+    required this.onSelected,
+  });
 
   final String selectedLabel;
   final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final leftSafeArea =  MediaQuery.of(context).padding.left;
+    final leftPadding = leftSafeArea > 60 ? leftSafeArea : leftSafeArea + 20.w;
+    final rightPadding = 20.w;
+    final contentWidth = leftPadding + 120.w + rightPadding;
+
+    return ColoredBox(
+      color: AppColors.navBg,
+      child: Stack(
         children: [
-          _NavHitTarget(label: 'Ивент', selected: selectedLabel == 'Ивент', onTap: onSelected),
-          _NavHitTarget(label: 'Battle Pass', selected: selectedLabel == 'Battle Pass', onTap: onSelected),
-          _NavHitTarget(label: 'Календарь новичка', selected: selectedLabel == 'Календарь новичка', onTap: onSelected),
-          _NavHitTarget(label: 'После уроков', selected: selectedLabel == 'После уроков', onTap: onSelected),
-          _NavHitTarget(label: 'Пригласи друга', selected: selectedLabel == 'Пригласи друга', onTap: onSelected),
-          _NavHitTarget(label: 'Промокод', selected: selectedLabel == 'Промокод', onTap: onSelected),
+          Image.asset(
+            AppAssets.navBackground,
+            color: AppColors.red,
+            width: contentWidth,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: leftPadding, right: rightPadding),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 48.h,
+              children: [
+                _NavHitTarget(
+                  label: 'Ивент',
+                  selected: selectedLabel == 'Ивент',
+                  onTap: onSelected,
+                  spasing: 7.h,
+                ),
+                _NavHitTarget(
+                  label: 'Battle Pass',
+                  selected: selectedLabel == 'Battle Pass',
+                  onTap: onSelected,
+                  spasing: 11.h,
+                ),
+                _NavHitTarget(
+                  label: 'Календарь\nновичка',
+                  selected: selectedLabel == 'Календарь\nновичка',
+                  onTap: onSelected,
+                  spasing: 0.h,
+                ),
+                _NavHitTarget(
+                  label: 'После\nуроков',
+                  selected: selectedLabel == 'После\nуроков',
+                  onTap: onSelected,
+                  spasing: 0.h,
+                ),
+                _NavHitTarget(
+                  label: 'Пригласи\nдруга',
+                  selected: selectedLabel == 'Пригласи\nдруга',
+                  onTap: onSelected,
+                  spasing: 0.h,
+                ),
+                _NavHitTarget(
+                  label: 'Промокод',
+                  selected: selectedLabel == 'Промокод',
+                  onTap: onSelected,
+                  spasing: 4.h,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -27,33 +84,48 @@ class BattlePassNavigationBar extends StatelessWidget {
 }
 
 class _NavHitTarget extends StatelessWidget {
-  const _NavHitTarget({required this.label, required this.onTap, this.selected = false});
+  const _NavHitTarget({
+    required this.label,
+    required this.onTap,
+    this.selected = false,
+    required this.spasing,
+  });
 
   final String label;
   final ValueChanged<String> onTap;
   final bool selected;
+  // для каждой иконки  svg разный отсуп с текстом, поэтому вынес в отдельный параметр, чтобы не городить switch/case
+  final double spasing;
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.white : AppColors.white40;
+    final colorSvg = selected ? AppColors.white : AppColors.white40;
+    final colorText = selected ? AppColors.white60 : AppColors.white30;
+
     return SizedBox(
-      width: 120.w,
       height: 120.h,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12.r),
-        onTap: () => onTap(label),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _NavIcon(label: label, color: color),
-            SizedBox(height: 11.h),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: color, fontSize: 22.sp, height: 1.2, fontWeight: selected ? FontWeight.w700 : FontWeight.w400),
-            ),
-            SizedBox(height: 11.h),
-          ],
+      width: 120.w,
+      child: Material(
+        color: AppColors.transperent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12.r),
+          onTap: () => onTap(label),
+          child: Column(
+            children: [
+              _NavIcon(label: label, color: colorSvg),
+              SizedBox(height: spasing),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colorText,
+                  fontSize: 22.h,
+                  height: 1,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -68,14 +140,14 @@ class _NavIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = switch (label) {
-      'Ивент' => Icons.emoji_events,
-      'Календарь новичка' => Icons.event_available,
-      'После уроков' => Icons.calendar_month,
-      'Пригласи друга' => Icons.person_add_alt_1,
-      'Промокод' => Icons.confirmation_num,
-      _ => Icons.circle,
+    final svg = switch (label) {
+      'Ивент' => AppAssets.navEvent,
+      'Календарь\nновичка' => AppAssets.navCalendar,
+      'После\nуроков' => AppAssets.navAfter,
+      'Пригласи\nдруга' => AppAssets.navInvite,
+      'Промокод' => AppAssets.navPromo,
+      _ => AppAssets.navBattlePass,
     };
-    return Icon(icon, size: 54.r, color: color);
+    return SvgPicture.asset(svg, height: 72.h, color: color);
   }
 }
