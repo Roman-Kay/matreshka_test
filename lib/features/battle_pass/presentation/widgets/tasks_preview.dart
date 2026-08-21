@@ -20,14 +20,11 @@ class TasksPreview extends StatelessWidget {
           width: 400.w,
           height: 400.h,
           padding: EdgeInsets.all(42.r),
-          decoration: BoxDecoration(
-            color: const Color(0x88380A16),
-            borderRadius: BorderRadius.circular(42.r),
-          ),
+          decoration: BoxDecoration(color: const Color(0x88380A16), borderRadius: BorderRadius.circular(42.r)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.task_alt, size: 64.r, color: AppColors.white),
+              Icon(Icons.task_alt, size: 64.r, color: AppColors.white100),
               SizedBox(height: 24.h),
               Text(
                 'Задания',

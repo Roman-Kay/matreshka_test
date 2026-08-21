@@ -6,7 +6,9 @@ abstract final class AppColors {
   static const navBg = Color(0xFF151727);
   static const panel = Color(0xCC530202);
   static const panelSoft = Color(0x227C1404);
-  static const white = Color(0xFFE9E9F3);
+  static const white100 = Color(0xFFE9E9F3);
+  static const white5 = Color(0x0CE9E9F3);
+  static const white10 = Color(0x1AE9E9F3);
   static const white70 = Color(0xB3E9E9F3);
   static const white40 = Color(0x66E9E9F3);
   static const white30 = Color(0x4CE9E9F3);
@@ -16,4 +18,5 @@ abstract final class AppColors {
   static const gold = Color(0xFFFFD149);
   static const red = Color(0xFFE22929);
   static const purple = Color(0xFF9D22D8);
+  static const grey = Color(0xFFD9D9D9);
 }

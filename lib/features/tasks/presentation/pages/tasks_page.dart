@@ -12,33 +12,21 @@ class TasksPage extends StatelessWidget {
       body: SafeArea(
         child: DecoratedBox(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF530202), Color(0xFFFF5A13)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            gradient: LinearGradient(colors: [Color(0xFF530202), Color(0xFFFF5A13)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
           ),
           child: Stack(
             children: [
               Positioned(
                 left: 32.w,
                 top: 32.h,
-                child: IconButton.filledTonal(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back),
-                  tooltip: 'Назад',
-                ),
+                child: IconButton.filledTonal(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back), tooltip: 'Назад'),
               ),
               Positioned(
                 top: 46.h,
                 left: 120.w,
                 child: Text(
                   'Задания боевого пропуска',
-                  style: TextStyle(
-                    fontSize: 42.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.white,
-                  ),
+                  style: TextStyle(fontSize: 42.sp, fontWeight: FontWeight.w700, color: AppColors.white100),
                 ),
               ),
               Positioned.fill(
@@ -78,10 +66,7 @@ class _TaskCard extends StatelessWidget {
     return Container(
       width: 300.w,
       padding: EdgeInsets.all(24.r),
-      decoration: BoxDecoration(
-        color: AppColors.panel,
-        borderRadius: BorderRadius.circular(42.r),
-      ),
+      decoration: BoxDecoration(color: AppColors.panel, borderRadius: BorderRadius.circular(42.r)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -89,11 +74,7 @@ class _TaskCard extends StatelessWidget {
           SizedBox(height: 12.h),
           Text(
             done ? '10 / 10' : '1 / 3',
-            style: TextStyle(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w700,
-              color: AppColors.green,
-            ),
+            style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w700, color: AppColors.green),
           ),
           SizedBox(height: 12.h),
           Text(
@@ -104,10 +85,7 @@ class _TaskCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const Spacer(),
-          FilledButton(
-            onPressed: () {},
-            child: Text(done ? 'Готово' : 'Перейти'),
-          ),
+          FilledButton(onPressed: () {}, child: Text(done ? 'Готово' : 'Перейти')),
         ],
       ),
     );

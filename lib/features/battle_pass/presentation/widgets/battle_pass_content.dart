@@ -37,55 +37,57 @@ class _BattlePassContentState extends State<BattlePassContent> {
     return Row(
       children: [
         BattlePassNavigationBar(selectedLabel: _activePanel, onSelected: (label) => setState(() => _activePanel = label)),
-        // if (isBattlePass) ...[
-        //   BattlePassHeader(pass: pass),
-        //   Positioned(
-        //     left: 820.w,
-        //     top: 70.h,
-        //     width: 760.w,
-        //     height: 560.h,
-        //     child: Image.asset(
-        //       selected?.assetPath ?? AppAssets.hero,
-        //       fit: BoxFit.contain,
-        //     ),
-        //   ),
-        //   Positioned(
-        //     left: 850.w,
-        //     top: 580.h,
-        //     width: 780.w,
-        //     child: RewardTitle(
-        //       reward: selected,
-        //       premiumLocked: pass.premiumStatus == PremiumStatus.locked,
-        //     ),
-        //   ),
-        //   Positioned(
-        //     left: 346.w,
-        //     top: 220.h,
-        //     child: TasksPreview(
-        //       onTap: () => Navigator.pushNamed(context, AppRoutes.tasks),
-        //     ),
-        //   ),
-        //   Positioned(
-        //     right: 80.w,
-        //     top: 335.h,
-        //     child: PremiumPanel(pass: pass),
-        //   ),
-        //   Positioned(
-        //     left: 346.w,
-        //     right: 80.w,
-        //     bottom: 50.h,
-        //     height: 360.h,
-        //     child: RewardRail(state: widget.state),
-        //   ),
-        // ] else
-        //   BattlePassNavigationPanel(title: _activePanel),
-        // Positioned(
-        //   right: 80.w,
-        //   top: 20.h,
-        //   child: BattlePassCloseButton(
-        //     onTap: () => context.read<BattlePassCubit>().load(),
-        //   ),
-        // ),
+        Expanded(
+          child: Stack(
+            children: [
+              if (isBattlePass) ...[
+                Column(
+                  children: [
+                    SizedBox(height: 32.h),
+                    BattlePassHeader(pass: pass),
+                  ],
+                ),
+                // Positioned(
+                //   left: 820.w,
+                //   top: 70.h,
+                //   width: 760.w,
+                //   height: 560.h,
+                //   child: Image.asset(selected?.assetPath ?? AppAssets.hero, fit: BoxFit.contain),
+                // ),
+                // Positioned(
+                //   left: 850.w,
+                //   top: 580.h,
+                //   width: 780.w,
+                //   child: RewardTitle(reward: selected, premiumLocked: pass.premiumStatus == PremiumStatus.locked),
+                // ),
+                // Positioned(
+                //   left: 346.w,
+                //   top: 220.h,
+                //   child: TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
+                // ),
+                // Positioned(
+                //   right: 80.w,
+                //   top: 335.h,
+                //   child: PremiumPanel(pass: pass),
+                // ),
+                // Positioned(
+                //   left: 346.w,
+                //   right: 80.w,
+                //   bottom: 50.h,
+                //   height: 360.h,
+                //   child: RewardRail(state: widget.state),
+                // ),
+              ] else ...[
+                BattlePassNavigationPanel(title: _activePanel),
+              ],
+              // Positioned(
+              //   right: 80.w,
+              //   top: 20.h,
+              //   child: BattlePassCloseButton(onTap: () => context.read<BattlePassCubit>().load()),
+              // ),
+            ],
+          ),
+        ),
       ],
     );
   }
