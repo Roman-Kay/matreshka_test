@@ -15,4 +15,6 @@ abstract final class AppAssets {
   static const navPromo = 'assets/figma/nav/promo.svg';
   static const xp = 'assets/figma/xp.png';
   static const tasks = 'assets/figma/tasks.svg';
+  static const premium = 'assets/figma/icn_premium.svg';
+  static const info = 'assets/figma/icn_info_fill.svg';
 }

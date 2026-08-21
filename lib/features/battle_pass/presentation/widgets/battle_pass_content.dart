@@ -50,36 +50,38 @@ class _BattlePassContentState extends State<BattlePassContent> {
                     TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
                   ],
                 ),
-                // Positioned(
-                //   left: 820.w,
-                //   top: 70.h,
-                //   width: 760.w,
-                //   height: 560.h,
-                //   child: Image.asset(selected?.assetPath ?? AppAssets.hero, fit: BoxFit.contain),
-                // ),
+                Padding(
+                  // для центровки контейнера с выбранной наградой, чтобы он был по центру bg картинки, а не по центру экрана
+                  padding: EdgeInsets.only(top: 105.h, right: 105.w),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: [
+                        Image.asset(selected?.assetPath ?? AppAssets.hero, height: 521.h, width: 521.w),
+                        RewardTitle(reward: selected, premiumLocked: pass.premiumStatus == PremiumStatus.locked),
+                      ],
+                    ),
+                  ),
+                ),
                 // Positioned(
                 //   left: 850.w,
                 //   top: 580.h,
                 //   width: 780.w,
                 //   child: RewardTitle(reward: selected, premiumLocked: pass.premiumStatus == PremiumStatus.locked),
                 // ),
-                // Positioned(
-                //   left: 346.w,
-                //   top: 220.h,
-                //   child: TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
-                // ),
+
                 // Positioned(
                 //   right: 80.w,
                 //   top: 335.h,
                 //   child: PremiumPanel(pass: pass),
                 // ),
-                // Positioned(
-                //   left: 346.w,
-                //   right: 80.w,
-                //   bottom: 50.h,
-                //   height: 360.h,
-                //   child: RewardRail(state: widget.state),
-                // ),
+                Positioned(
+                  left: 346.w,
+                  right: 80.w,
+                  bottom: 50.h,
+                  height: 360.h,
+                  child: RewardRail(state: widget.state),
+                ),
               ] else ...[
                 BattlePassNavigationPanel(title: _activePanel),
               ],
