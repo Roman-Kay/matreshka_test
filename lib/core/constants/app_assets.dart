@@ -13,4 +13,6 @@ abstract final class AppAssets {
   static const navAfter = 'assets/figma/nav/after.svg';
   static const navInvite = 'assets/figma/nav/invite.svg';
   static const navPromo = 'assets/figma/nav/promo.svg';
+  static const xp = 'assets/figma/xp.png';
+  static const tasks = 'assets/figma/tasks.svg';
 }

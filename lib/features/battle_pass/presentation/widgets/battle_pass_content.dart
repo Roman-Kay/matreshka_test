@@ -42,9 +42,12 @@ class _BattlePassContentState extends State<BattlePassContent> {
             children: [
               if (isBattlePass) ...[
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 32.h),
                     BattlePassHeader(pass: pass),
+                    SizedBox(height: 59.h),
+                    TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
                   ],
                 ),
                 // Positioned(
