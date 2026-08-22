@@ -8,6 +8,8 @@ abstract final class AppColors {
   static const panelSoft = Color(0x227C1404);
   static const white100 = Color(0xFFE9E9F3);
   static const background5 = Color(0xFF232429);
+  static const background10 = Color(0xFF2D2E34);
+  static const dark = Color(0xFF18191F);
   static const white5 = Color(0x0CE9E9F3);
   static const white10 = Color(0x1AE9E9F3);
   static const white70 = Color(0xB3E9E9F3);

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../app/routes.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/battle_pass_models.dart';
-import '../cubit/battle_pass_cubit.dart';
 import '../cubit/battle_pass_state.dart';
 import 'battle_pass_header.dart';
 import 'battle_pass_navigation_bar.dart';
 import 'battle_pass_navigation_panel.dart';
-import 'close_button.dart';
 import 'premium_panel.dart';
 import 'reward_rail.dart';
 import 'reward_title.dart';
@@ -36,7 +33,10 @@ class _BattlePassContentState extends State<BattlePassContent> {
 
     return Row(
       children: [
-        BattlePassNavigationBar(selectedLabel: _activePanel, onSelected: (label) => setState(() => _activePanel = label)),
+        BattlePassNavigationBar(
+          selectedLabel: _activePanel,
+          onSelected: (label) => setState(() => _activePanel = label),
+        ),
         Expanded(
           child: Stack(
             children: [
@@ -47,7 +47,19 @@ class _BattlePassContentState extends State<BattlePassContent> {
                     SizedBox(height: 32.h),
                     BattlePassHeader(pass: pass),
                     SizedBox(height: 59.h),
-                    TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
+                    TasksPreview(
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.tasks),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                          height: 300.h,
+                          child: RewardRail(state: widget.state),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 Padding(
@@ -57,31 +69,33 @@ class _BattlePassContentState extends State<BattlePassContent> {
                     alignment: Alignment.topCenter,
                     child: Column(
                       children: [
-                        Image.asset(selected?.assetPath ?? AppAssets.hero, height: 521.h, width: 521.w),
-                        RewardTitle(reward: selected, premiumLocked: pass.premiumStatus == PremiumStatus.locked),
+                        Image.asset(
+                          selected?.assetPath ?? AppAssets.hero,
+                          height: 521.h,
+                          width: 521.w,
+                        ),
+                        RewardTitle(
+                          reward: selected,
+                          premiumLocked:
+                              pass.premiumStatus == PremiumStatus.locked,
+                        ),
                       ],
                     ),
                   ),
                 ),
-                // Positioned(
-                //   left: 850.w,
-                //   top: 580.h,
-                //   width: 780.w,
-                //   child: RewardTitle(reward: selected, premiumLocked: pass.premiumStatus == PremiumStatus.locked),
-                // ),
 
-                // Positioned(
-                //   right: 80.w,
-                //   top: 335.h,
-                //   child: PremiumPanel(pass: pass),
-                // ),
                 Positioned(
-                  left: 346.w,
                   right: 80.w,
-                  bottom: 50.h,
-                  height: 360.h,
-                  child: RewardRail(state: widget.state),
+                  top: 335.h,
+                  child: PremiumPanel(pass: pass),
                 ),
+                // Positioned(
+                //   left: 346.w,
+                //   right: 80.w,
+                //   bottom: 50.h,
+                //   height: 360.h,
+                //   child: RewardRail(state: widget.state),
+                // ),
               ] else ...[
                 BattlePassNavigationPanel(title: _activePanel),
               ],

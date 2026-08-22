@@ -17,4 +17,5 @@ abstract final class AppAssets {
   static const tasks = 'assets/figma/tasks.svg';
   static const premium = 'assets/figma/icn_premium.svg';
   static const info = 'assets/figma/icn_info_fill.svg';
+  static const arrowRoad = 'assets/figma/arrow_road.svg';
 }

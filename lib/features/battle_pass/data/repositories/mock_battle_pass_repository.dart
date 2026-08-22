@@ -29,7 +29,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.maxLevel => const BattlePassProgress(
-        currentLevel: 10,
+        currentLevel: 100,
         currentXp: 1600,
         nextLevelXp: 1600,
       ),
@@ -40,8 +40,8 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: 'Дай пять!',
         startsAt: DateTime.utc(2025, 7, 1),
         endsAt: DateTime.utc(2025, 7, 17, 12, 42),
-        maxLevel: 10,
-        levels: List<BattlePassLevel>.generate(10, (index) {
+        maxLevel: 100,
+        levels: List<BattlePassLevel>.generate(100, (index) {
           final level = index + 1;
           return BattlePassLevel(
             number: level,
