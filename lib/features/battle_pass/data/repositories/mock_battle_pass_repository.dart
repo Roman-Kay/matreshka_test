@@ -19,13 +19,13 @@ final class MockBattlePassRepository implements BattlePassRepository {
         : PremiumStatus.purchased;
     final progress = switch (mode) {
       BattlePassDemoMode.premiumLocked => const BattlePassProgress(
-        currentLevel: 2,
-        currentXp: 500,
+        currentLevel: 10,
+        currentXp: 900,
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.premiumUnlocked => const BattlePassProgress(
-        currentLevel: 5,
-        currentXp: 760,
+        currentLevel: 10,
+        currentXp: 900,
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.maxLevel => const BattlePassProgress(
@@ -56,6 +56,12 @@ final class MockBattlePassRepository implements BattlePassRepository {
                 assetPath: level.isEven
                     ? AppAssets.rewardOne
                     : AppAssets.rewardTwo,
+                rarity: _rarityForLevel(level),
+                status: _initialRewardStatus(
+                  level: level,
+                  track: BattlePassTrack.free,
+                  premium: premium,
+                ),
               ),
             ],
             premiumRewards: [
@@ -70,6 +76,12 @@ final class MockBattlePassRepository implements BattlePassRepository {
                 amount: level == 10 ? 1 : 16,
                 track: BattlePassTrack.premium,
                 assetPath: level == 10 ? AppAssets.hero : AppAssets.rewardOne,
+                rarity: _rarityForLevel(level + 1),
+                status: _initialRewardStatus(
+                  level: level,
+                  track: BattlePassTrack.premium,
+                  premium: premium,
+                ),
               ),
             ],
           );
@@ -78,5 +90,24 @@ final class MockBattlePassRepository implements BattlePassRepository {
       progress: progress,
       premiumStatus: premium,
     );
+  }
+
+  RewardRarity _rarityForLevel(int level) {
+    if (level % 10 == 0) return RewardRarity.legendary;
+    if (level % 5 == 0) return RewardRarity.epic;
+    if (level % 3 == 0) return RewardRarity.rare;
+    return RewardRarity.common;
+  }
+
+  RewardStatus _initialRewardStatus({
+    required int level,
+    required BattlePassTrack track,
+    required PremiumStatus premium,
+  }) {
+    if (level > 5) return RewardStatus.locked;
+    if (track == BattlePassTrack.free) return RewardStatus.received;
+    return premium == PremiumStatus.purchased
+        ? RewardStatus.received
+        : RewardStatus.locked;
   }
 }

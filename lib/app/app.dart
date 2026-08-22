@@ -11,8 +11,7 @@ import '../features/tasks/presentation/pages/tasks_page.dart';
 import 'routes.dart';
 
 class BattlePassApp extends StatelessWidget {
-  const BattlePassApp({super.key, BattlePassRepository? repository})
-    : _repository = repository;
+  const BattlePassApp({super.key, BattlePassRepository? repository}) : _repository = repository;
 
   final BattlePassRepository? _repository;
 
@@ -21,8 +20,7 @@ class BattlePassApp extends StatelessWidget {
     return RepositoryProvider<BattlePassRepository>(
       create: (_) => _repository ?? const MockBattlePassRepository(),
       child: BlocProvider(
-        create: (context) =>
-            BattlePassCubit(context.read<BattlePassRepository>())..load(),
+        create: (context) => BattlePassCubit(context.read<BattlePassRepository>())..load(),
         child: ScreenUtilPlusInit(
           designSize: const Size(2320, 1080),
           minTextAdapt: true,
@@ -31,10 +29,7 @@ class BattlePassApp extends StatelessWidget {
               title: 'Battle Pass',
               theme: AppTheme.dark,
               debugShowCheckedModeBanner: false,
-              routes: {
-                AppRoutes.battlePass: (_) => const BattlePassPage(),
-                AppRoutes.tasks: (_) => const TasksPage(),
-              },
+              routes: {AppRoutes.battlePass: (_) => const BattlePassPage(), AppRoutes.tasks: (_) => const TasksPage()},
             );
           },
         ),
