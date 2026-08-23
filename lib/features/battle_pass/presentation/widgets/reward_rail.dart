@@ -156,29 +156,12 @@ class _RewardRailState extends State<RewardRail> {
                 child: IgnorePointer(
                   ignoring: pinnedPrize == null,
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 280),
-                    reverseDuration: const Duration(milliseconds: 220),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
+                    duration: const Duration(milliseconds: 180),
+                    reverseDuration: const Duration(milliseconds: 140),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
                     transitionBuilder: (child, animation) {
-                      final direction = _scrollDirection.toDouble();
-                      final currentPrizeKey =
-                          pinnedPrize == null || pinnedPrizeReward == null
-                          ? const ValueKey('empty-big-prize')
-                          : ValueKey('big-prize-${pinnedPrize.level.number}');
-                      final isIncoming = child.key == currentPrizeKey;
-                      final exitOffset = direction < 0 ? 2.6 : -0.34;
-                      final slide = Tween<Offset>(
-                        begin: Offset(
-                          isIncoming ? direction * 0.34 : exitOffset,
-                          0,
-                        ),
-                        end: Offset.zero,
-                      ).animate(animation);
-                      return FadeTransition(
-                        opacity: animation,
-                        child: SlideTransition(position: slide, child: child),
-                      );
+                      return FadeTransition(opacity: animation, child: child);
                     },
                     child: pinnedPrize == null || pinnedPrizeReward == null
                         ? SizedBox(
@@ -248,7 +231,9 @@ class _RewardRailState extends State<RewardRail> {
     final passedPrizeLevel = (levelAtPin ~/ 10) * 10;
     final nextPrizeLevel = passedPrizeLevel + 10;
     final dockingEndLevel = passedPrizeLevel + 0.85;
-    if (passedPrizeLevel > 0 && levelAtPin < dockingEndLevel) {
+    if (_scrollDirection > 0 &&
+        passedPrizeLevel > 0 &&
+        levelAtPin < dockingEndLevel) {
       final level = _levelByNumber(levels, passedPrizeLevel);
       if (level == null) return null;
       return _PinnedPrize(
@@ -558,7 +543,7 @@ final class _PinnedPrize {
   final double dockingProgress;
 }
 
-class _PinnedBigPrizeCard extends StatefulWidget {
+class _PinnedBigPrizeCard extends StatelessWidget {
   const _PinnedBigPrizeCard({
     super.key,
     required this.level,
@@ -577,128 +562,84 @@ class _PinnedBigPrizeCard extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<_PinnedBigPrizeCard> createState() => _PinnedBigPrizeCardState();
-}
-
-class _PinnedBigPrizeCardState extends State<_PinnedBigPrizeCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scale;
-  late final Animation<double> _opacity;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 320),
-    );
-    _scale = TweenSequence<double>(
-      [
-        TweenSequenceItem(tween: Tween(begin: 0.84, end: 1.04), weight: 60),
-        TweenSequenceItem(tween: Tween(begin: 1.04, end: 1), weight: 40),
-      ],
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-    _opacity = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final dockingScale = 1 - widget.dockingProgress * 0.16;
-    final dockingOpacity = widget.dockingProgress < 0.55
+    final dockingScale = 1 - dockingProgress * 0.16;
+    final dockingOpacity = dockingProgress < 0.55
         ? 1.0
-        : (1 - (widget.dockingProgress - 0.55) / 0.45).clamp(0, 1).toDouble();
-    final detailsOpacity = (1 - widget.dockingProgress / 0.7)
-        .clamp(0, 1)
-        .toDouble();
+        : (1 - (dockingProgress - 0.55) / 0.45).clamp(0, 1).toDouble();
+    final detailsOpacity = (1 - dockingProgress / 0.7).clamp(0, 1).toDouble();
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: FadeTransition(
-        opacity: _opacity,
-        child: Opacity(
-          opacity: dockingOpacity,
-          child: ScaleTransition(
-            scale: _scale,
-            alignment: Alignment.center,
-            child: SizedBox(
-              width: 242.w,
-              height: 280.h,
-              child: Stack(
-                alignment: Alignment.topCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.scale(
-                    scale: dockingScale,
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 242.w,
-                      height: 220.h,
-                      child: CustomPaint(
-                        painter: _ParallelogramPainter(
-                          fillColors: widget.reward.rarity.gradientColors,
-                          borderColor: widget.selected
-                              ? AppColors.white100
-                              : AppColors.orange,
-                          borderWidth: 4.r,
-                          skew: 26.w,
-                          radius: 24.r,
-                          glowColor: widget.dockingProgress < 0.55
-                              ? AppColors.orange
-                              : null,
-                        ),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                  28.w,
-                                  22.h,
-                                  20.w,
-                                  18.h,
-                                ),
-                                child: Image.asset(
-                                  widget.reward.assetPath ?? AppAssets.hero,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
+      child: Opacity(
+        opacity: dockingOpacity,
+        child: SizedBox(
+          width: 242.w,
+          height: 280.h,
+          child: Stack(
+            alignment: Alignment.topCenter,
+            clipBehavior: Clip.none,
+            children: [
+              Transform.scale(
+                scale: dockingScale,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 242.w,
+                  height: 220.h,
+                  child: CustomPaint(
+                    painter: _ParallelogramPainter(
+                      fillColors: reward.rarity.gradientColors,
+                      borderColor: selected
+                          ? AppColors.white100
+                          : AppColors.orange,
+                      borderWidth: 4.r,
+                      skew: 26.w,
+                      radius: 24.r,
+                      glowColor: dockingProgress < 0.55
+                          ? AppColors.orange
+                          : null,
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              28.w,
+                              22.h,
+                              20.w,
+                              18.h,
                             ),
-                            Positioned(
-                              left: 22.w,
-                              top: 10.h,
-                              child: Opacity(
-                                opacity: detailsOpacity,
-                                child: RewardTrackIcon(
-                                  track: widget.reward.track,
-                                ),
-                              ),
+                            child: Image.asset(
+                              reward.assetPath ?? AppAssets.hero,
+                              fit: BoxFit.contain,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          left: 22.w,
+                          top: 10.h,
+                          child: Opacity(
+                            opacity: detailsOpacity,
+                            child: RewardTrackIcon(track: reward.track),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Transform.translate(
-                      offset: Offset(widget.fixedBadgeOffset, 0),
-                      child: Opacity(
-                        opacity: detailsOpacity,
-                        child: _BigPrizeLevelBadge(level: widget.level),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Transform.translate(
+                  offset: Offset(fixedBadgeOffset, 0),
+                  child: Opacity(
+                    opacity: detailsOpacity,
+                    child: _BigPrizeLevelBadge(level: level),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
