@@ -592,12 +592,12 @@ class _PinnedBigPrizeCard extends StatelessWidget {
                       fillColors: reward.rarity.gradientColors,
                       borderColor: selected
                           ? AppColors.white100
-                          : AppColors.orange,
+                          : reward.rarity.accentColor,
                       borderWidth: 4.r,
                       skew: 26.w,
                       radius: 24.r,
                       glowColor: dockingProgress < 0.55
-                          ? AppColors.orange
+                          ? reward.rarity.accentColor
                           : null,
                     ),
                     child: Stack(
