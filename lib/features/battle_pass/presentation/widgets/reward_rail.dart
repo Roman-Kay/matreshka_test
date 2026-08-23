@@ -48,6 +48,19 @@ class _RewardRailState extends State<RewardRail> {
     });
   }
 
+  void _scrollByCards(int direction) {
+    if (!_scrollController.hasClients) return;
+    final target = (_scrollController.offset + direction * 4 * 242.w).clamp(
+      0.0,
+      _scrollController.position.maxScrollExtent,
+    );
+    _scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 360),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pass = widget.state.battlePass!;
@@ -72,46 +85,64 @@ class _RewardRailState extends State<RewardRail> {
                   pinLeft,
                   pinnedPrize.dockingProgress,
                 );
+          final scrollButtonTop = 68.h;
+          final leftScrollButtonLeft = 51.w;
 
           return Stack(
             children: [
-              ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.fromLTRB(40.w, 0, 40.w, 0),
-                scrollDirection: Axis.horizontal,
-                itemCount: levels.length,
-                itemBuilder: (context, index) {
-                  final level = levels[index];
-                  final reward = _rewardForLevel(
-                    level,
-                    widget.state.selectedRewardId,
-                  );
-                  final isLastLevel = index == levels.length - 1;
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      RewardCard(
-                        level: level.number,
-                        reward: reward,
-                        selected: widget.state.selectedRewardId == reward.id,
-                        progress: pass.progress,
-                        premiumStatus: pass.premiumStatus,
-                        isFirstLevel: index == 0,
-                        isLastLevel: isLastLevel,
-                      ),
-                      if (!isLastLevel)
-                        Positioned(
-                          right: -5.w,
-                          top: 184.h / 2,
-                          child: SvgPicture.asset(
-                            AppAssets.arrowRoad,
-                            width: 12.w,
-                            height: 20.h,
-                          ),
-                        ),
+              ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (bounds) {
+                  return const LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color(0x00000000),
+                      Color(0xFF000000),
+                      Color(0xFF000000),
+                      Color(0x00000000),
                     ],
-                  );
+                    stops: [0, 0.08, 0.92, 1],
+                  ).createShader(bounds);
                 },
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.fromLTRB(40.w, 0, 40.w, 0),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: levels.length,
+                  itemBuilder: (context, index) {
+                    final level = levels[index];
+                    final reward = _rewardForLevel(
+                      level,
+                      widget.state.selectedRewardId,
+                    );
+                    final isLastLevel = index == levels.length - 1;
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        RewardCard(
+                          level: level.number,
+                          reward: reward,
+                          selected: widget.state.selectedRewardId == reward.id,
+                          progress: pass.progress,
+                          premiumStatus: pass.premiumStatus,
+                          isFirstLevel: index == 0,
+                          isLastLevel: isLastLevel,
+                        ),
+                        if (!isLastLevel)
+                          Positioned(
+                            right: -5.w,
+                            top: 184.h / 2,
+                            child: SvgPicture.asset(
+                              AppAssets.arrowRoad,
+                              width: 12.w,
+                              height: 20.h,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
               ),
               Positioned(
                 left: pinnedLeft,
@@ -125,8 +156,17 @@ class _RewardRailState extends State<RewardRail> {
                     switchOutCurve: Curves.easeInCubic,
                     transitionBuilder: (child, animation) {
                       final direction = _scrollDirection.toDouble();
+                      final currentPrizeKey =
+                          pinnedPrize == null || pinnedPrizeReward == null
+                          ? const ValueKey('empty-big-prize')
+                          : ValueKey('big-prize-${pinnedPrize.level.number}');
+                      final isIncoming = child.key == currentPrizeKey;
+                      final exitOffset = direction < 0 ? 2.6 : -0.34;
                       final slide = Tween<Offset>(
-                        begin: Offset(direction * 0.45, 0),
+                        begin: Offset(
+                          isIncoming ? direction * 0.34 : exitOffset,
+                          0,
+                        ),
                         end: Offset.zero,
                       ).animate(animation);
                       return FadeTransition(
@@ -155,6 +195,22 @@ class _RewardRailState extends State<RewardRail> {
                                 .selectReward(pinnedPrizeReward.id),
                           ),
                   ),
+                ),
+              ),
+              Positioned(
+                left: leftScrollButtonLeft,
+                top: scrollButtonTop,
+                child: _RailScrollButton(
+                  direction: AxisDirection.left,
+                  onTap: () => _scrollByCards(-1),
+                ),
+              ),
+              Positioned(
+                right: 334.w,
+                top: scrollButtonTop,
+                child: _RailScrollButton(
+                  direction: AxisDirection.right,
+                  onTap: () => _scrollByCards(1),
                 ),
               ),
             ],
@@ -190,8 +246,6 @@ class _RewardRailState extends State<RewardRail> {
             .toDouble(),
       );
     }
-
-    if (passedPrizeLevel > 0 && levelAtPin < passedPrizeLevel + 2) return null;
 
     for (final level in levels) {
       if (level.number == nextPrizeLevel &&
@@ -450,6 +504,41 @@ class _ClaimRewardButton extends StatelessWidget {
   }
 }
 
+class _RailScrollButton extends StatelessWidget {
+  const _RailScrollButton({required this.direction, required this.onTap});
+
+  final AxisDirection direction;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = SvgPicture.asset(
+      AppAssets.arrowLeft,
+      width: 36.r,
+      height: 36.r,
+    );
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 84.r,
+        height: 84.r,
+        padding: EdgeInsets.all(24.r),
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: AppColors.white10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100.r),
+          ),
+        ),
+        child: direction == AxisDirection.right
+            ? Transform.rotate(angle: pi, child: icon)
+            : icon,
+      ),
+    );
+  }
+}
+
 final class _PinnedPrize {
   const _PinnedPrize({required this.level, required this.dockingProgress});
 
@@ -582,8 +671,8 @@ class _PinnedBigPrizeCardState extends State<_PinnedBigPrizeCard>
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: 14.h,
+                    Align(
+                      alignment: Alignment.bottomCenter,
                       child: Opacity(
                         opacity: detailsOpacity,
                         child: _BigPrizeLevelBadge(level: widget.level),
