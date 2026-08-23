@@ -74,7 +74,8 @@ class _RewardRailState extends State<RewardRail> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final pinLeft = constraints.maxWidth - 56.w - 242.w;
-          final pinnedPrize = _pinnedPrize(levels, pinLeft);
+          final listDockLeft = constraints.maxWidth - 375.w - 242.w;
+          final pinnedPrize = _pinnedPrize(levels, listDockLeft);
           final pinnedPrizeReward = pinnedPrize == null
               ? null
               : _bigPrizeReward(pinnedPrize.level);
@@ -90,58 +91,63 @@ class _RewardRailState extends State<RewardRail> {
 
           return Stack(
             children: [
-              ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (bounds) {
-                  return const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Color(0x00000000),
-                      Color(0xFF000000),
-                      Color(0xFF000000),
-                      Color(0x00000000),
-                    ],
-                    stops: [0, 0.08, 0.92, 1],
-                  ).createShader(bounds);
-                },
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.fromLTRB(40.w, 0, 40.w, 0),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: levels.length,
-                  itemBuilder: (context, index) {
-                    final level = levels[index];
-                    final reward = _rewardForLevel(
-                      level,
-                      widget.state.selectedRewardId,
-                    );
-                    final isLastLevel = index == levels.length - 1;
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        RewardCard(
-                          level: level.number,
-                          reward: reward,
-                          selected: widget.state.selectedRewardId == reward.id,
-                          progress: pass.progress,
-                          premiumStatus: pass.premiumStatus,
-                          isFirstLevel: index == 0,
-                          isLastLevel: isLastLevel,
-                        ),
-                        if (!isLastLevel)
-                          Positioned(
-                            right: -5.w,
-                            top: 184.h / 2,
-                            child: SvgPicture.asset(
-                              AppAssets.arrowRoad,
-                              width: 12.w,
-                              height: 20.h,
-                            ),
-                          ),
+              Positioned.fill(
+                right: 375.w,
+                left: 51.w,
+                child: ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (bounds) {
+                    return const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Color(0x00000000),
+                        Color(0xFF000000),
+                        Color(0xFF000000),
+                        Color(0x00000000),
                       ],
-                    );
+                      stops: [0, 0.08, 0.92, 1],
+                    ).createShader(bounds);
                   },
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.fromLTRB(100.w, 0, 100.w, 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: levels.length,
+                    itemBuilder: (context, index) {
+                      final level = levels[index];
+                      final reward = _rewardForLevel(
+                        level,
+                        widget.state.selectedRewardId,
+                      );
+                      final isLastLevel = index == levels.length - 1;
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          RewardCard(
+                            level: level.number,
+                            reward: reward,
+                            selected:
+                                widget.state.selectedRewardId == reward.id,
+                            progress: pass.progress,
+                            premiumStatus: pass.premiumStatus,
+                            isFirstLevel: index == 0,
+                            isLastLevel: isLastLevel,
+                          ),
+                          if (!isLastLevel)
+                            Positioned(
+                              right: -5.w,
+                              top: 184.h / 2,
+                              child: SvgPicture.asset(
+                                AppAssets.arrowRoad,
+                                width: 12.w,
+                                height: 20.h,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
               Positioned(
@@ -190,6 +196,12 @@ class _RewardRailState extends State<RewardRail> {
                                 widget.state.selectedRewardId ==
                                 pinnedPrizeReward.id,
                             dockingProgress: pinnedPrize.dockingProgress,
+                            fixedBadgeOffset:
+                                (_bigPrizeLeftInViewport(
+                                      pinnedPrize.level.number,
+                                    ) -
+                                    pinnedLeft) *
+                                pinnedPrize.dockingProgress,
                             onTap: () => context
                                 .read<BattlePassCubit>()
                                 .selectReward(pinnedPrizeReward.id),
@@ -221,7 +233,7 @@ class _RewardRailState extends State<RewardRail> {
   }
 
   double _bigPrizeLeftInViewport(int level) {
-    return 40.w + (level - 1) * 242.w - _scrollOffset;
+    return 51.w + 100.w + (level - 1) * 242.w - _scrollOffset;
   }
 
   double _pinnedPrizeLeft(int level, double pinLeft, double dockingProgress) {
@@ -232,7 +244,7 @@ class _RewardRailState extends State<RewardRail> {
   }
 
   _PinnedPrize? _pinnedPrize(List<BattlePassLevel> levels, double pinLeft) {
-    final levelAtPin = (_scrollOffset + pinLeft - 40.w) / 242.w + 1;
+    final levelAtPin = (_scrollOffset + pinLeft - 51.w - 100.w) / 242.w + 1;
     final passedPrizeLevel = (levelAtPin ~/ 10) * 10;
     final nextPrizeLevel = passedPrizeLevel + 10;
     final dockingEndLevel = passedPrizeLevel + 0.85;
@@ -553,6 +565,7 @@ class _PinnedBigPrizeCard extends StatefulWidget {
     required this.reward,
     required this.selected,
     required this.dockingProgress,
+    required this.fixedBadgeOffset,
     required this.onTap,
   });
 
@@ -560,6 +573,7 @@ class _PinnedBigPrizeCard extends StatefulWidget {
   final BattlePassReward reward;
   final bool selected;
   final double dockingProgress;
+  final double fixedBadgeOffset;
   final VoidCallback onTap;
 
   @override
@@ -615,17 +629,17 @@ class _PinnedBigPrizeCardState extends State<_PinnedBigPrizeCard>
           child: ScaleTransition(
             scale: _scale,
             alignment: Alignment.center,
-            child: Transform.scale(
-              scale: dockingScale,
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 242.w,
-                height: 280.h,
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  clipBehavior: Clip.none,
-                  children: [
-                    SizedBox(
+            child: SizedBox(
+              width: 242.w,
+              height: 280.h,
+              child: Stack(
+                alignment: Alignment.topCenter,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.scale(
+                    scale: dockingScale,
+                    alignment: Alignment.center,
+                    child: SizedBox(
                       width: 242.w,
                       height: 220.h,
                       child: CustomPaint(
@@ -671,15 +685,18 @@ class _PinnedBigPrizeCardState extends State<_PinnedBigPrizeCard>
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Transform.translate(
+                      offset: Offset(widget.fixedBadgeOffset, 0),
                       child: Opacity(
                         opacity: detailsOpacity,
                         child: _BigPrizeLevelBadge(level: widget.level),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
