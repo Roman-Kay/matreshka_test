@@ -22,17 +22,30 @@ class RewardRail extends StatefulWidget {
 
 class _RewardRailState extends State<RewardRail> {
   late final ScrollController _scrollController;
+  double _scrollOffset = 0;
+  int _scrollDirection = 1;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _scrollController.addListener(_handleScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _handleScroll() {
+    final nextOffset = _scrollController.offset;
+    if (_scrollOffset == nextOffset) return;
+    setState(() {
+      _scrollDirection = nextOffset > _scrollOffset ? 1 : -1;
+      _scrollOffset = nextOffset;
+    });
   }
 
   @override
@@ -45,42 +58,138 @@ class _RewardRailState extends State<RewardRail> {
         color: const Color(0x553A0A0A),
         borderRadius: BorderRadius.circular(8.r),
       ),
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: EdgeInsets.fromLTRB(40.w, 0, 40.w, 0),
-        scrollDirection: Axis.horizontal,
-        itemCount: levels.length,
-        itemBuilder: (context, index) {
-          final level = levels[index];
-          final reward = _rewardForLevel(level, widget.state.selectedRewardId);
-          final isLastLevel = index == levels.length - 1;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final pinLeft = constraints.maxWidth - 56.w - 242.w;
+          final pinnedPrizeLevel = _pinnedPrizeLevel(levels, pinLeft);
+          final pinnedPrizeReward = pinnedPrizeLevel == null
+              ? null
+              : _bigPrizeReward(pinnedPrizeLevel);
+
           return Stack(
-            clipBehavior: Clip.none,
             children: [
-              RewardCard(
-                level: level.number,
-                reward: reward,
-                selected: widget.state.selectedRewardId == reward.id,
-                progress: pass.progress,
-                premiumStatus: pass.premiumStatus,
-                isFirstLevel: index == 0,
-                isLastLevel: isLastLevel,
+              ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.fromLTRB(40.w, 0, 40.w, 0),
+                scrollDirection: Axis.horizontal,
+                itemCount: levels.length,
+                itemBuilder: (context, index) {
+                  final level = levels[index];
+                  final reward = _rewardForLevel(
+                    level,
+                    widget.state.selectedRewardId,
+                  );
+                  final isLastLevel = index == levels.length - 1;
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      RewardCard(
+                        level: level.number,
+                        reward: reward,
+                        selected: widget.state.selectedRewardId == reward.id,
+                        progress: pass.progress,
+                        premiumStatus: pass.premiumStatus,
+                        isFirstLevel: index == 0,
+                        isLastLevel: isLastLevel,
+                      ),
+                      if (!isLastLevel)
+                        Positioned(
+                          right: -5.w,
+                          top: 184.h / 2,
+                          child: SvgPicture.asset(
+                            AppAssets.arrowRoad,
+                            width: 12.w,
+                            height: 20.h,
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
-              if (!isLastLevel)
-                Positioned(
-                  right: -5.w,
-                  top: 184.h / 2,
-                  child: SvgPicture.asset(
-                    AppAssets.arrowRoad,
-                    width: 12.w,
-                    height: 20.h,
+              Positioned(
+                right: 56.w,
+                top: 0,
+                child: IgnorePointer(
+                  ignoring: pinnedPrizeLevel == null,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 280),
+                    reverseDuration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      final direction = _scrollDirection.toDouble();
+                      final slide = Tween<Offset>(
+                        begin: Offset(direction * 0.45, 0),
+                        end: Offset.zero,
+                      ).animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(position: slide, child: child),
+                      );
+                    },
+                    child: pinnedPrizeLevel == null || pinnedPrizeReward == null
+                        ? SizedBox(
+                            key: const ValueKey('empty-big-prize'),
+                            width: 242.w,
+                            height: 280.h,
+                          )
+                        : _PinnedBigPrizeCard(
+                            key: ValueKey(
+                              'big-prize-${pinnedPrizeLevel.number}',
+                            ),
+                            level: pinnedPrizeLevel.number,
+                            reward: pinnedPrizeReward,
+                            selected:
+                                widget.state.selectedRewardId ==
+                                pinnedPrizeReward.id,
+                            onTap: () => context
+                                .read<BattlePassCubit>()
+                                .selectReward(pinnedPrizeReward.id),
+                          ),
                   ),
                 ),
+              ),
             ],
           );
         },
       ),
     );
+  }
+
+  double _bigPrizeLeftInViewport(int level) {
+    return 40.w + (level - 1) * 242.w - _scrollOffset;
+  }
+
+  BattlePassLevel? _pinnedPrizeLevel(
+    List<BattlePassLevel> levels,
+    double pinLeft,
+  ) {
+    final levelAtPin = (_scrollOffset + pinLeft - 40.w) / 242.w + 1;
+    final passedPrizeLevel = (levelAtPin ~/ 10) * 10;
+    final nextPrizeLevel = passedPrizeLevel + 10;
+    final canShowNextPrize =
+        passedPrizeLevel == 0 || levelAtPin >= passedPrizeLevel + 2;
+
+    if (!canShowNextPrize) return null;
+
+    for (final level in levels) {
+      if (level.number == nextPrizeLevel &&
+          _bigPrizeLeftInViewport(level.number) > pinLeft) {
+        return level;
+      }
+    }
+    return null;
+  }
+
+  BattlePassReward _bigPrizeReward(BattlePassLevel level) {
+    for (final reward in level.premiumRewards) {
+      if (reward.type == RewardType.vehicle ||
+          reward.rarity == RewardRarity.legendary) {
+        return reward;
+      }
+    }
+    if (level.premiumRewards.isNotEmpty) return level.premiumRewards.first;
+    return level.freeRewards.first;
   }
 
   BattlePassReward _rewardForLevel(BattlePassLevel level, int? selectedId) {
@@ -313,6 +422,108 @@ class _ClaimRewardButton extends StatelessWidget {
   }
 }
 
+class _PinnedBigPrizeCard extends StatelessWidget {
+  const _PinnedBigPrizeCard({
+    super.key,
+    required this.level,
+    required this.reward,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final int level;
+  final BattlePassReward reward;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 242.w,
+        height: 280.h,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: 242.w,
+              height: 220.h,
+              child: CustomPaint(
+                painter: _ParallelogramPainter(
+                  fillColors: reward.rarity.gradientColors,
+                  borderColor: selected ? AppColors.white100 : AppColors.orange,
+                  borderWidth: 4.r,
+                  skew: 26.w,
+                  radius: 24.r,
+                  glowColor: AppColors.orange,
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(28.w, 22.h, 20.w, 18.h),
+                        child: Image.asset(
+                          reward.assetPath ?? AppAssets.hero,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 22.w,
+                      top: 10.h,
+                      child: RewardTrackIcon(track: reward.track),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 14.h,
+              child: _BigPrizeLevelBadge(level: level),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BigPrizeLevelBadge extends StatelessWidget {
+  const _BigPrizeLevelBadge({required this.level});
+
+  final int level;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: pi / 4,
+      child: Container(
+        width: 48.r,
+        height: 48.r,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.background10,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Transform.rotate(
+          angle: -pi / 4,
+          child: Text(
+            '$level',
+            style: TextStyle(
+              color: AppColors.white100,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _RewardDetailsSheet extends StatelessWidget {
   const _RewardDetailsSheet({
     required this.reward,
@@ -392,6 +603,14 @@ class _RewardDetailsSheet extends StatelessWidget {
                           : AppColors.green,
                       textColor: AppColors.ink,
                     ),
+                    if (level % 10 == 0) ...[
+                      SizedBox(width: 10.w),
+                      const _SheetPill(
+                        text: 'Большой приз',
+                        color: AppColors.orange,
+                        textColor: AppColors.ink,
+                      ),
+                    ],
                   ],
                 ),
                 SizedBox(height: 14.h),
