@@ -94,14 +94,38 @@ final class BattlePassProgress {
   }
 }
 
+final class BattlePassTask {
+  const BattlePassTask({
+    required this.id,
+    required this.title,
+    required this.rewardTitle,
+    required this.rewardAmount,
+    required this.currentProgress,
+    required this.requiredProgress,
+    required this.rewardAssetPath,
+  });
+
+  final int id;
+  final String title;
+  final String rewardTitle;
+  final int rewardAmount;
+  final int currentProgress;
+  final int requiredProgress;
+  final String rewardAssetPath;
+
+  bool get completed => currentProgress >= requiredProgress;
+}
+
 final class BattlePass {
   const BattlePass({
     required this.season,
     required this.progress,
     required this.premiumStatus,
+    required this.tasks,
   });
 
   final BattlePassSeason season;
   final BattlePassProgress progress;
   final PremiumStatus premiumStatus;
+  final List<BattlePassTask> tasks;
 }

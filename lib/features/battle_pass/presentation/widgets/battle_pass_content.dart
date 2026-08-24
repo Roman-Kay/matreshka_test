@@ -3,6 +3,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../app/routes.dart';
 import '../../../../core/constants/app_assets.dart';
+import '../../../tasks/presentation/pages/tasks_page.dart';
 import '../../domain/models/battle_pass_models.dart';
 import '../cubit/battle_pass_state.dart';
 import 'battle_pass_header.dart';
@@ -24,74 +25,127 @@ class BattlePassContent extends StatefulWidget {
 
 class _BattlePassContentState extends State<BattlePassContent> {
   String _activePanel = 'Battle Pass';
+  final _contentNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     final pass = widget.state.battlePass!;
     final selected = _selectedReward(pass, widget.state.selectedRewardId);
-    final choiceRewards = _selectedChoiceRewards(pass, widget.state.selectedRewardId);
+    final choiceRewards = _selectedChoiceRewards(
+      pass,
+      widget.state.selectedRewardId,
+    );
     final isBattlePass = _activePanel == 'Battle Pass';
     final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
     final completed = widget.state.demoMode == BattlePassDemoMode.completed;
 
     return Row(
       children: [
-        BattlePassNavigationBar(selectedLabel: _activePanel, onSelected: (label) => setState(() => _activePanel = label)),
+        BattlePassNavigationBar(
+          selectedLabel: _activePanel,
+          onSelected: (label) => setState(() {
+            _activePanel = label;
+            _contentNavigatorKey.currentState?.popUntil(
+              (route) => route.isFirst,
+            );
+          }),
+        ),
         Expanded(
-          child: Stack(
-            children: [
-              if (isBattlePass) ...[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 32.h),
-                    BattlePassHeader(pass: pass),
-                    completed ? const BattlePassCompletedNotice() : TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          height: 300.h,
-                          child: RewardRail(state: widget.state),
-                        ),
-                      ),
-                    ),
-                  ],
+          child: Navigator(
+            key: _contentNavigatorKey,
+            initialRoute: AppRoutes.battlePass,
+            onGenerateRoute: (settings) {
+              final child = switch (settings.name) {
+                AppRoutes.tasks => TasksContent(
+                  tasks: pass.tasks,
+                  onBack: () => _contentNavigatorKey.currentState?.pop(),
                 ),
-                Padding(
-                  // для центровки контейнера с выбранной наградой, чтобы он был по центру bg картинки, а не по центру экрана
-                  padding: EdgeInsets.only(top: 105.h, right: 105.w),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Column(
-                      children: [
-                        Image.asset(selected?.assetPath ?? AppAssets.hero, height: 521.h, width: 521.w),
-                        RewardTitle(reward: selected, choiceRewards: choiceRewards, premiumLocked: premiumLocked),
-                      ],
-                    ),
-                  ),
-                ),
+                _ =>
+                  isBattlePass
+                      ? Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 32.h),
+                                BattlePassHeader(pass: pass),
+                                completed
+                                    ? const BattlePassCompletedNotice()
+                                    : TasksPreview(
+                                        tasks: pass.tasks,
+                                        onTap: () => _contentNavigatorKey
+                                            .currentState
+                                            ?.pushNamed(AppRoutes.tasks),
+                                      ),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: SizedBox(
+                                      height: 300.h,
+                                      child: RewardRail(state: widget.state),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              // для центровки контейнера с выбранной наградой, чтобы он был по центру bg картинки, а не по центру экрана
+                              padding: EdgeInsets.only(
+                                top: 105.h,
+                                right: 105.w,
+                              ),
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      selected?.assetPath ?? AppAssets.hero,
+                                      height: 521.h,
+                                      width: 521.w,
+                                    ),
+                                    RewardTitle(
+                                      reward: selected,
+                                      choiceRewards: choiceRewards,
+                                      premiumLocked: premiumLocked,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: PremiumPanel(pass: pass),
+                            ),
+                          ],
+                        )
+                      : BattlePassNavigationPanel(title: _activePanel),
+              };
 
-                Align(
-                  alignment: Alignment.topRight,
-                  child: PremiumPanel(pass: pass),
-                ),
-                // Positioned(
-                //   left: 346.w,
-                //   right: 80.w,
-                //   bottom: 50.h,
-                //   height: 360.h,
-                //   child: RewardRail(state: widget.state),
-                // ),
-              ] else ...[
-                BattlePassNavigationPanel(title: _activePanel),
-              ],
-              // Positioned(
-              //   right: 80.w,
-              //   top: 20.h,
-              //   child: BattlePassCloseButton(onTap: () => context.read<BattlePassCubit>().load()),
-              // ),
-            ],
+              return PageRouteBuilder<void>(
+                settings: settings,
+                pageBuilder: (context, animation, secondaryAnimation) => child,
+                transitionDuration: const Duration(milliseconds: 320),
+                reverseTransitionDuration: const Duration(milliseconds: 260),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                      final curvedAnimation = CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
+                        reverseCurve: Curves.easeInCubic,
+                      );
+                      final isTasksRoute = settings.name == AppRoutes.tasks;
+                      final offset = Tween<Offset>(
+                        begin: Offset(isTasksRoute ? 0.08 : -0.04, 0),
+                        end: Offset.zero,
+                      ).animate(curvedAnimation);
+
+                      return FadeTransition(
+                        opacity: curvedAnimation,
+                        child: SlideTransition(position: offset, child: child),
+                      );
+                    },
+              );
+            },
           ),
         ),
       ],

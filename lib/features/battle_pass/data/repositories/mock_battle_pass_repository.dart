@@ -75,6 +75,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
       ),
       progress: progress,
       premiumStatus: premium,
+      tasks: mockBattlePassTasks,
     );
   }
 
@@ -146,3 +147,51 @@ final class MockBattlePassRepository implements BattlePassRepository {
         : RewardStatus.locked;
   }
 }
+
+const mockBattlePassTasks = [
+  BattlePassTask(
+    id: 1,
+    title: 'Пробегите 100 метров по городу в классическом режиме.',
+    rewardTitle: 'Опыт БП',
+    rewardAmount: 25,
+    currentProgress: 40,
+    requiredProgress: 100,
+    rewardAssetPath: AppAssets.xp,
+  ),
+  BattlePassTask(
+    id: 2,
+    title: 'Проедьте 200 метров на любом транспорте.',
+    rewardTitle: 'Опыт БП',
+    rewardAmount: 25,
+    currentProgress: 90,
+    requiredProgress: 200,
+    rewardAssetPath: AppAssets.xp,
+  ),
+  BattlePassTask(
+    id: 3,
+    title: 'Оплатите 1 штраф ПДД в участке или через терминал.',
+    rewardTitle: 'Опыт БП',
+    rewardAmount: 1000,
+    currentProgress: 1,
+    requiredProgress: 1,
+    rewardAssetPath: AppAssets.xp,
+  ),
+  BattlePassTask(
+    id: 4,
+    title: 'Заработайте 500 рублей на любой легальной работе.',
+    rewardTitle: 'Опыт БП',
+    rewardAmount: 25,
+    currentProgress: 120,
+    requiredProgress: 500,
+    rewardAssetPath: AppAssets.xp,
+  ),
+  BattlePassTask(
+    id: 5,
+    title: 'Используйте энергетик 3 раза во время RP-сессии.',
+    rewardTitle: 'Опыт БП',
+    rewardAmount: 25,
+    currentProgress: 1,
+    requiredProgress: 3,
+    rewardAssetPath: AppAssets.xp,
+  ),
+];

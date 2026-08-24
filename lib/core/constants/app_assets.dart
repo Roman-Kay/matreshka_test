@@ -1,5 +1,6 @@
 abstract final class AppAssets {
   static const bg = 'assets/figma/bg.png';
+  static const bgTask = 'assets/figma/bg_task.png';
   static const hero = 'assets/figma/hero.png';
   static const woman = 'assets/figma/woman.png';
   static const levelUp = 'assets/figma/level_up.png';

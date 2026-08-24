@@ -5,10 +5,17 @@ import 'app.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeRight,
+  ]);
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false, systemStatusBarContrastEnforced: false),
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
+      systemStatusBarContrastEnforced: false,
+    ),
   );
-  runApp(const BattlePassApp());
+  runApp(BattlePassApp());
 }

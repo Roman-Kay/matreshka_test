@@ -46,6 +46,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
             season: pass.season,
             progress: pass.progress,
             premiumStatus: PremiumStatus.purchased,
+            tasks: pass.tasks,
           ),
         ),
         message: 'Прокачка активирована',
@@ -106,6 +107,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
           ),
           progress: pass.progress,
           premiumStatus: pass.premiumStatus,
+          tasks: pass.tasks,
         ),
         message: blockedReason ?? 'Награда получена',
       ),
@@ -157,6 +159,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
           ),
           progress: pass.progress,
           premiumStatus: pass.premiumStatus,
+          tasks: pass.tasks,
         ),
         message: claimedCount > 0
             ? 'Получено наград: $claimedCount'
@@ -205,6 +208,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
       ),
       progress: pass.progress,
       premiumStatus: pass.premiumStatus,
+      tasks: pass.tasks,
     );
   }
 
