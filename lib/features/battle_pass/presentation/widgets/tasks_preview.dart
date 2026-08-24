@@ -54,6 +54,7 @@ class _TasksPreviewState extends State<TasksPreview> {
   Widget build(BuildContext context) {
     final tasks = widget.tasks;
     if (tasks.isEmpty) return const SizedBox.shrink();
+    final activeTask = tasks[_activeIndex];
 
     return Padding(
       padding: EdgeInsets.only(left: 61.w, top: 59.h),
@@ -103,13 +104,16 @@ class _TasksPreviewState extends State<TasksPreview> {
                       onPageChanged: (index) =>
                           setState(() => _activeIndex = index),
                       itemBuilder: (context, index) {
+                        final task = tasks[index];
                         return Text(
-                          tasks[index].title,
+                          task.title,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: AppColors.white60,
+                            color: task.claimed
+                                ? AppColors.white60.withValues(alpha: 0.4)
+                                : AppColors.white60,
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w500,
                             height: 1.20,
@@ -125,38 +129,9 @@ class _TasksPreviewState extends State<TasksPreview> {
                     activeIndex: _activeIndex,
                   ),
                   SizedBox(height: 26.h),
-                  GestureDetector(
-                    onTap: widget.onTap,
-                    child: Container(
-                      width: 320.w,
-                      height: 74.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.white10,
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 16.w,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.tasks,
-                            width: 30.r,
-                            height: 30.r,
-                          ),
-                          Text(
-                            'Задания',
-                            style: TextStyle(
-                              color: AppColors.white100,
-                              fontSize: 26.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.20,
-                              letterSpacing: -0.26,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  _TaskPreviewActionButton(
+                    task: activeTask,
+                    onTap: activeTask.canClaim ? () {} : widget.onTap,
                   ),
                   SizedBox(height: 36.h),
                 ],
@@ -183,63 +158,159 @@ class _TaskPreviewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final opacity = task.claimed ? 0.4 : 1.0;
+
     return Center(
       child: SizedBox(
         width: 320.w,
         child: Row(
           children: [
-            Image.asset(task.rewardAssetPath, width: 96.r, height: 96.r),
-            SizedBox(width: 12.w),
-            Text(
-              'x ${task.rewardAmount}',
-              style: TextStyle(
-                color: AppColors.white100,
-                fontSize: 26.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26,
+            Opacity(
+              opacity: opacity,
+              child: Image.asset(
+                task.rewardAssetPath,
+                width: 96.r,
+                height: 96.r,
               ),
             ),
-            const Spacer(),
-            Container(
-              width: 112.w,
-              height: 56.h,
-              decoration: BoxDecoration(
-                color: AppColors.background5,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Center(
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${taskIndex + 1}',
-                        style: TextStyle(
-                          color: AppColors.secondary50,
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w500,
-                          height: 1.20,
-                          letterSpacing: -0.26,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' / $taskCount',
-                        style: TextStyle(
-                          color: AppColors.white40,
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w500,
-                          height: 1.20,
-                          letterSpacing: -0.26,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
+            SizedBox(width: 12.w),
+            Opacity(
+              opacity: opacity,
+              child: Text(
+                'x ${task.rewardAmount}',
+                style: TextStyle(
+                  color: AppColors.white100,
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.w500,
+                  height: 1.20,
+                  letterSpacing: -0.26,
                 ),
               ),
             ),
+            const Spacer(),
+            if (task.claimed)
+              Container(
+                width: 132.w,
+                height: 56.h,
+                decoration: BoxDecoration(
+                  color: AppColors.background5,
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.done_all_rounded,
+                    size: 42.r,
+                    color: const Color(0xFF2DDB72),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 112.w,
+                height: 56.h,
+                decoration: BoxDecoration(
+                  color: AppColors.background5,
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Center(
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${taskIndex + 1}',
+                          style: TextStyle(
+                            color: AppColors.secondary50,
+                            fontSize: 26.sp,
+                            fontWeight: FontWeight.w500,
+                            height: 1.20,
+                            letterSpacing: -0.26,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' / $taskCount',
+                          style: TextStyle(
+                            color: AppColors.white40,
+                            fontSize: 26.sp,
+                            fontWeight: FontWeight.w500,
+                            height: 1.20,
+                            letterSpacing: -0.26,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TaskPreviewActionButton extends StatelessWidget {
+  const _TaskPreviewActionButton({required this.task, required this.onTap});
+
+  final BattlePassTask task;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isClaim = task.canClaim;
+    final isClaimed = task.claimed;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 320.w,
+            height: isClaim ? null : 74.h,
+            padding: isClaim
+                ? EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h)
+                : null,
+            decoration: BoxDecoration(
+              color: isClaim ? null : AppColors.white10,
+              gradient: isClaim
+                  ? const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF55B675), Color(0xFF449761)],
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(30.r),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 16.w,
+              children: [
+                if (!isClaim)
+                  SvgPicture.asset(AppAssets.tasks, width: 30.r, height: 30.r),
+                Text(
+                  isClaim ? 'Забрать опыт' : 'Задания',
+                  style: TextStyle(
+                    color: isClaim
+                        ? const Color(0xFF68C286)
+                        : AppColors.white100,
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 1.20,
+                    letterSpacing: -0.26,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isClaimed)
+            Positioned(
+              right: -16.w,
+              top: -26.h,
+              child: Image.asset(AppAssets.danger, width: 58.r, height: 58.r),
+            ),
+        ],
       ),
     );
   }

@@ -294,7 +294,8 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final done = task.completed;
+    final canClaim = task.canClaim;
+    final claimed = task.claimed;
 
     return SizedBox(
       width: 394.w,
@@ -440,12 +441,17 @@ class _TaskCard extends StatelessWidget {
             top: 377.h,
             child: Container(
               width: 250.w,
-              height: 90.h,
+              height: canClaim ? null : 90.h,
+              padding: canClaim
+                  ? EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h)
+                  : null,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: done
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: canClaim
+                      ? const [Color(0xFF55B675), Color(0xFF449761)]
+                      : claimed
                       ? const [Color(0xFF9E431F), Color(0xFFB95835)]
                       : const [Color(0xFFE22929), Color(0xFFFF6435)],
                 ),
@@ -461,16 +467,22 @@ class _TaskCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 10.w,
                   children: [
-                    if (done)
+                    if (claimed)
                       Icon(
                         Icons.check_rounded,
                         size: 24.r,
                         color: AppColors.secondary50,
                       ),
                     Text(
-                      done ? 'Готово' : 'Перейти',
+                      canClaim
+                          ? 'Забрать опыт'
+                          : claimed
+                          ? 'Готово'
+                          : 'Перейти',
                       style: TextStyle(
-                        color: AppColors.white100,
+                        color: canClaim
+                            ? const Color(0xFF68C286)
+                            : AppColors.white100,
                         fontSize: 26.sp,
                         fontWeight: FontWeight.w500,
                         height: 1.20,

@@ -8,6 +8,8 @@ enum BattlePassTrack { free, premium }
 
 enum BattlePassDemoMode { premiumLocked, premiumUnlocked, maxLevel, completed }
 
+enum BattlePassTaskStatus { inProgress, readyToClaim, claimed }
+
 enum RewardRarity { common, rare, epic, legendary }
 
 final class BattlePassReward {
@@ -103,6 +105,7 @@ final class BattlePassTask {
     required this.currentProgress,
     required this.requiredProgress,
     required this.rewardAssetPath,
+    this.status = BattlePassTaskStatus.inProgress,
   });
 
   final int id;
@@ -112,8 +115,11 @@ final class BattlePassTask {
   final int currentProgress;
   final int requiredProgress;
   final String rewardAssetPath;
+  final BattlePassTaskStatus status;
 
   bool get completed => currentProgress >= requiredProgress;
+  bool get canClaim => status == BattlePassTaskStatus.readyToClaim;
+  bool get claimed => status == BattlePassTaskStatus.claimed;
 }
 
 final class BattlePass {
