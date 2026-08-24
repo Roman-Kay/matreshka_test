@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../tasks/domain/models/task.dart';
-import 'tasks_preview/task_preview_action_button.dart';
-import 'tasks_preview/task_preview_header.dart';
-import 'tasks_preview/task_preview_progress_segments.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../tasks/domain/models/task.dart';
+import 'task_preview_action_button.dart';
+import 'task_preview_header.dart';
+import 'task_preview_progress_segments.dart';
 
 class TasksPreview extends StatefulWidget {
   const TasksPreview({

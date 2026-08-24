@@ -38,6 +38,18 @@ class BattlePassPage extends StatelessWidget {
         return BattlePassContent(
           state: state,
           onExitToGame: () => context.router.replaceAll([const GameRoute()]),
+          onPurchasePremium: () =>
+              context.read<BattlePassCubit>().purchasePremium(),
+          onClaimAllRewards: () =>
+              context.read<BattlePassCubit>().claimAllAvailableRewards(),
+          onClaimTask: (taskId) =>
+              context.read<BattlePassCubit>().claimTask(taskId),
+          onSelectReward: (rewardId) =>
+              context.read<BattlePassCubit>().selectReward(rewardId),
+          onClaimReward: (rewardId) =>
+              context.read<BattlePassCubit>().claimReward(rewardId),
+          onDemoModeSelected: (mode) =>
+              context.read<BattlePassCubit>().switchDemoMode(mode),
         );
       },
     );

@@ -6,6 +6,7 @@ import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
 import '../../../domain/models/battle_pass_models.dart';
+import 'reward_amount_badge.dart';
 import 'reward_progress_marker.dart';
 import 'reward_rarity_style.dart';
 import 'reward_track_icon.dart';
@@ -121,7 +122,7 @@ class RewardCard extends StatelessWidget {
                                           Positioned(
                                             right: 28.w,
                                             bottom: available ? 70.h : 12.h,
-                                            child: _RewardAmountBadge(
+                                            child: RewardAmountBadge(
                                               amount: reward.amount,
                                             ),
                                           ),
@@ -206,41 +207,6 @@ class _ClaimRewardButton extends StatelessWidget {
                 height: 1.20,
                 letterSpacing: -0.26,
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RewardAmountBadge extends StatelessWidget {
-  const _RewardAmountBadge({required this.amount});
-
-  final int amount;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 69.w,
-      height: 36.h,
-      child: CustomPaint(
-        painter: ParallelogramPainter(
-          fillColors: const [AppColors.dark, AppColors.dark, AppColors.dark],
-          borderColor: AppColors.transparent,
-          borderWidth: 0,
-          skew: 8.w,
-          radius: 10.r,
-        ),
-        child: Center(
-          child: Text(
-            'x$amount',
-            style: TextStyle(
-              color: AppColors.white100,
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              height: 1.20,
-              letterSpacing: -0.26,
             ),
           ),
         ),

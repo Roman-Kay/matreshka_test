@@ -1,29 +1,39 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../app/app_router.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/battle_pass_models.dart';
-import '../cubit/battle_pass_cubit.dart';
 import '../cubit/battle_pass_state.dart';
 import 'battle_pass_header.dart';
 import 'premium_panel.dart';
-import 'reward_rail.dart';
-import 'reward_title.dart';
+import 'rewards/reward_rail.dart';
+import 'rewards/reward_title.dart';
 import 'tasks_preview/battle_pass_completed_notice.dart';
-import 'tasks_preview.dart';
+import 'tasks_preview/tasks_preview.dart';
 
 class BattlePassContent extends StatelessWidget {
   const BattlePassContent({
     super.key,
     required this.state,
     required this.onExitToGame,
+    required this.onPurchasePremium,
+    required this.onClaimAllRewards,
+    required this.onClaimTask,
+    required this.onSelectReward,
+    required this.onClaimReward,
+    required this.onDemoModeSelected,
   });
 
   final BattlePassState state;
   final VoidCallback onExitToGame;
+  final VoidCallback onPurchasePremium;
+  final VoidCallback onClaimAllRewards;
+  final ValueChanged<int> onClaimTask;
+  final ValueChanged<int> onSelectReward;
+  final ValueChanged<int> onClaimReward;
+  final ValueChanged<BattlePassDemoMode> onDemoModeSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -58,28 +68,39 @@ class BattlePassContent extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: PremiumPanel(pass: pass),
+          child: PremiumPanel(
+            pass: pass,
+            onPurchasePremium: onPurchasePremium,
+            onClaimAllRewards: onClaimAllRewards,
+          ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 32.h),
-            BattlePassHeader(pass: pass, onClose: onExitToGame),
+            BattlePassHeader(
+              pass: pass,
+              onDemoModeSelected: onDemoModeSelected,
+              onClose: onExitToGame,
+            ),
             completed
                 ? const BattlePassCompletedNotice()
                 : TasksPreview(
                     tasks: pass.tasks,
                     onTap: () =>
                         context.router.root.push(const BattlePassTasksRoute()),
-                    onClaim: (taskId) =>
-                        context.read<BattlePassCubit>().claimTask(taskId),
+                    onClaim: onClaimTask,
                   ),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
                   height: 300.h,
-                  child: RewardRail(state: state),
+                  child: RewardRail(
+                    state: state,
+                    onSelectReward: onSelectReward,
+                    onClaimReward: onClaimReward,
+                  ),
                 ),
               ),
             ),

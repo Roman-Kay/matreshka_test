@@ -3,7 +3,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
 import 'package:romankaygo_test_rp/core/theme/app_colors.dart';
-import '../../domain/models/battle_pass_models.dart';
+import '../../../domain/models/battle_pass_models.dart';
 
 class RewardTitle extends StatelessWidget {
   const RewardTitle({

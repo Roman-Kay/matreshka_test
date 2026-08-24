@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/ui/buttons/premium_action_button.dart';
 import '../../domain/models/battle_pass_models.dart';
-import '../cubit/battle_pass_cubit.dart';
 
 class PremiumPanel extends StatelessWidget {
-  const PremiumPanel({super.key, required this.pass});
+  const PremiumPanel({
+    super.key,
+    required this.pass,
+    required this.onPurchasePremium,
+    required this.onClaimAllRewards,
+  });
 
   final BattlePass pass;
+  final VoidCallback onPurchasePremium;
+  final VoidCallback onClaimAllRewards;
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +24,14 @@ class PremiumPanel extends StatelessWidget {
     final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
     final availableRewardsCount = _availableRewardsCount(pass);
     if (premiumLocked) {
-      return const _ElitePassPanel();
+      return _ElitePassPanel(onPurchasePremium: onPurchasePremium);
     }
 
     return _LevelUpPanel(
       maxed: maxed,
       canClaimAll: maxed && availableRewardsCount > 3,
-      onClaimAll: () =>
-          context.read<BattlePassCubit>().claimAllAvailableRewards(),
-      onLevelUp: () => context.read<BattlePassCubit>().purchasePremium(),
+      onClaimAll: onClaimAllRewards,
+      onLevelUp: onPurchasePremium,
     );
   }
 
@@ -115,7 +119,9 @@ class _LevelUpPanel extends StatelessWidget {
 }
 
 class _ElitePassPanel extends StatelessWidget {
-  const _ElitePassPanel();
+  const _ElitePassPanel({required this.onPurchasePremium});
+
+  final VoidCallback onPurchasePremium;
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +169,7 @@ class _ElitePassPanel extends StatelessWidget {
                 PremiumActionButton(
                   iconAsset: AppAssets.premium,
                   text: 'Прокачать',
-                  onPressed: () =>
-                      context.read<BattlePassCubit>().purchasePremium(),
+                  onPressed: onPurchasePremium,
                 ),
               ],
             ),

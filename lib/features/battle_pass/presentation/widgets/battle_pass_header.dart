@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/battle_pass_models.dart';
-import '../cubit/battle_pass_cubit.dart';
 import 'level_badge.dart';
 
 class BattlePassHeader extends StatelessWidget {
-  const BattlePassHeader({super.key, required this.pass, this.onClose});
+  const BattlePassHeader({
+    super.key,
+    required this.pass,
+    required this.onDemoModeSelected,
+    this.onClose,
+  });
 
   final BattlePass pass;
+  final ValueChanged<BattlePassDemoMode> onDemoModeSelected;
   final VoidCallback? onClose;
 
   @override
@@ -117,7 +121,7 @@ class BattlePassHeader extends StatelessWidget {
                       }),
                       onTap: () {
                         Navigator.pop(context);
-                        context.read<BattlePassCubit>().switchDemoMode(mode);
+                        onDemoModeSelected(mode);
                       },
                     );
                   })
