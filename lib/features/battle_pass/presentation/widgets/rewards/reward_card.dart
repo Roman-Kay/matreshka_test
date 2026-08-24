@@ -45,14 +45,6 @@ class RewardCard extends StatelessWidget {
     final received = reward.status == RewardStatus.received;
     final available = reward.status == RewardStatus.available;
     final largeSize = available || forceLargeSize;
-    final cardWidth = largeSize ? 242.w : 210.w;
-    final cardHeight = largeSize ? 220.h : 184.h;
-    final borderColor = selected
-        ? AppColors.white100
-        : available
-        ? AppColors.green
-        : AppColors.white40;
-    final borderWidth = selected || available ? 4.r : 1.r;
 
     return InkWell(
       onTap: onSelected,
@@ -67,94 +59,13 @@ class RewardCard extends StatelessWidget {
               height: 220.h,
               width: 242.w,
               child: Center(
-                child: SizedBox(
-                  width: cardWidth,
-                  height: cardHeight,
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        Opacity(
-                          opacity: received ? 0.5 : 1,
-                          child: TweenAnimationBuilder<Color?>(
-                            tween: ColorTween(end: borderColor),
-                            duration: const Duration(milliseconds: 180),
-                            builder: (context, animatedBorderColor, _) {
-                              return TweenAnimationBuilder<double>(
-                                tween: Tween<double>(end: borderWidth),
-                                duration: const Duration(milliseconds: 180),
-                                builder: (context, animatedBorderWidth, _) {
-                                  return CustomPaint(
-                                    painter: ParallelogramPainter(
-                                      fillColors: reward.rarity.gradientColors,
-                                      borderColor:
-                                          animatedBorderColor ?? borderColor,
-                                      borderWidth: animatedBorderWidth,
-                                      skew: 26.w,
-                                      radius: 24.r,
-                                      glowColor: available
-                                          ? AppColors.green
-                                          : null,
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        Center(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 18.h,
-                                              bottom: 10.h,
-                                            ),
-                                            child: Image.asset(
-                                              reward.assetPath ??
-                                                  AppAssets.rewardTwo,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                        ),
-                                        if (!available)
-                                          Positioned(
-                                            left: 26.w,
-                                            top: 10.h,
-                                            child: RewardTrackIcon(
-                                              track: reward.track,
-                                            ),
-                                          ),
-                                        if (reward.amount > 1)
-                                          Positioned(
-                                            right: 28.w,
-                                            bottom: available ? 70.h : 12.h,
-                                            child: RewardAmountBadge(
-                                              amount: reward.amount,
-                                            ),
-                                          ),
-                                        if (available)
-                                          Positioned(
-                                            left: 13.w,
-                                            bottom: 14.h,
-                                            child: _ClaimRewardButton(
-                                              onTap: onClaim,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        if (received)
-                          Positioned(
-                            right: 26.w,
-                            top: 24.h,
-                            child: SvgPicture.asset(
-                              AppAssets.done,
-                              width: 62.w,
-                              height: 42.h,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+                child: RewardCardVisual(
+                  reward: reward,
+                  selected: selected,
+                  available: available,
+                  received: received,
+                  largeSize: largeSize,
+                  onClaim: onClaim,
                 ),
               ),
             ),
@@ -165,6 +76,117 @@ class RewardCard extends StatelessWidget {
               drawLeftLine: showRoadLines && !isFirstLevel,
               drawRightLine: showRoadLines && !isLastLevel,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RewardCardVisual extends StatelessWidget {
+  const RewardCardVisual({
+    super.key,
+    required this.reward,
+    required this.selected,
+    required this.available,
+    required this.received,
+    required this.largeSize,
+    this.onClaim,
+  });
+
+  final BattlePassReward reward;
+  final bool selected;
+  final bool available;
+  final bool received;
+  final bool largeSize;
+  final VoidCallback? onClaim;
+
+  @override
+  Widget build(BuildContext context) {
+    final cardWidth = largeSize ? 242.w : 210.w;
+    final cardHeight = largeSize ? 220.h : 184.h;
+    final borderColor = selected
+        ? AppColors.white100
+        : available
+        ? AppColors.green
+        : AppColors.white40;
+    final borderWidth = selected || available ? 4.r : 1.r;
+
+    return SizedBox(
+      width: cardWidth,
+      height: cardHeight,
+      child: Center(
+        child: Stack(
+          children: [
+            Opacity(
+              opacity: received ? 0.5 : 1,
+              child: TweenAnimationBuilder<Color?>(
+                tween: ColorTween(end: borderColor),
+                duration: const Duration(milliseconds: 180),
+                builder: (context, animatedBorderColor, _) {
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween<double>(end: borderWidth),
+                    duration: const Duration(milliseconds: 180),
+                    builder: (context, animatedBorderWidth, _) {
+                      return CustomPaint(
+                        painter: ParallelogramPainter(
+                          fillColors: reward.rarity.gradientColors,
+                          borderColor: animatedBorderColor ?? borderColor,
+                          borderWidth: animatedBorderWidth,
+                          skew: 26.w,
+                          radius: 24.r,
+                          glowColor: available ? AppColors.green : null,
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  top: 18.h,
+                                  bottom: 10.h,
+                                ),
+                                child: Image.asset(
+                                  reward.assetPath ?? AppAssets.rewardTwo,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            if (!available)
+                              Positioned(
+                                left: 26.w,
+                                top: 10.h,
+                                child: RewardTrackIcon(track: reward.track),
+                              ),
+                            if (reward.amount > 1)
+                              Positioned(
+                                right: 28.w,
+                                bottom: available ? 70.h : 12.h,
+                                child: RewardAmountBadge(amount: reward.amount),
+                              ),
+                            if (available && onClaim != null)
+                              Positioned(
+                                left: 13.w,
+                                bottom: 14.h,
+                                child: _ClaimRewardButton(onTap: onClaim!),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            if (received)
+              Positioned(
+                right: 26.w,
+                top: 24.h,
+                child: SvgPicture.asset(
+                  AppAssets.done,
+                  width: 62.w,
+                  height: 42.h,
+                ),
+              ),
           ],
         ),
       ),

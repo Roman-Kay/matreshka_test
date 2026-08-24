@@ -75,6 +75,7 @@ BattlePass _pass() {
       startsAt: DateTime.utc(2026),
       endsAt: DateTime.utc(2026, 2),
       maxLevel: 1,
+      instantPremiumRewards: const [],
       levels: const [
         BattlePassLevel(
           number: 1,

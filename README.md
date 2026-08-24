@@ -109,6 +109,7 @@ rpc BattlePass {
     timestamp startsAt "Дата начала сезона";
     timestamp endsAt "Дата окончания сезона";
     int32 maxLevel "Максимальный уровень";
+    repeated Reward instantPremiumRewards max 3 "Награды, которые игрок получает сразу после покупки премиума";
     repeated Level levels max 200 "Уровни боевого пропуска";
   }
 

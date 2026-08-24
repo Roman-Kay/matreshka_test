@@ -10,7 +10,7 @@ import 'battle_pass_header.dart';
 import 'premium_panel.dart';
 import 'rewards/reward_rail.dart';
 import 'rewards/reward_title.dart';
-import 'tasks_preview/battle_pass_completed_notice.dart';
+import 'battle_pass_completed_notice.dart';
 import 'tasks_preview/tasks_preview.dart';
 
 class BattlePassContent extends StatelessWidget {
@@ -52,55 +52,28 @@ class BattlePassContent extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Column(
               children: [
-                Image.asset(
-                  selected?.assetPath ?? AppAssets.hero,
-                  height: 521.h,
-                  width: 521.w,
-                ),
-                RewardTitle(
-                  reward: selected,
-                  choiceRewards: choiceRewards,
-                  premiumLocked: premiumLocked,
-                ),
+                Image.asset(selected?.assetPath ?? AppAssets.hero, height: 521.h, width: 521.w),
+                RewardTitle(reward: selected, choiceRewards: choiceRewards, premiumLocked: premiumLocked),
               ],
             ),
           ),
         ),
         Align(
           alignment: Alignment.topRight,
-          child: PremiumPanel(
-            pass: pass,
-            onPurchasePremium: onPurchasePremium,
-            onClaimAllRewards: onClaimAllRewards,
-          ),
+          child: PremiumPanel(pass: pass, onPurchasePremium: onPurchasePremium, onClaimAllRewards: onClaimAllRewards),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 32.h),
-            BattlePassHeader(
-              pass: pass,
-              onDemoModeSelected: onDemoModeSelected,
-              onClose: onExitToGame,
-            ),
-            completed
-                ? const BattlePassCompletedNotice()
-                : TasksPreview(
-                    tasks: pass.tasks,
-                    onTap: () =>
-                        context.router.root.push(const BattlePassTasksRoute()),
-                    onClaim: onClaimTask,
-                  ),
+            BattlePassHeader(pass: pass, onDemoModeSelected: onDemoModeSelected, onClose: onExitToGame),
+            completed ? const BattlePassCompletedNotice() : TasksPreview(tasks: pass.tasks, onTap: () => context.router.root.push(const BattlePassTasksRoute()), onClaim: onClaimTask),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
-                  height: 300.h,
-                  child: RewardRail(
-                    state: state,
-                    onSelectReward: onSelectReward,
-                    onClaimReward: onClaimReward,
-                  ),
+                  height: 320.h,
+                  child: RewardRail(state: state, onSelectReward: onSelectReward, onClaimReward: onClaimReward),
                 ),
               ),
             ),

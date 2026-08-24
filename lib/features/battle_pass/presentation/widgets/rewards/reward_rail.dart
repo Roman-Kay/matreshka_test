@@ -9,11 +9,8 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import '../../cubit/battle_pass_state.dart';
-import 'reward_amount_badge.dart';
 import 'reward_card.dart';
 import 'reward_details_sheet.dart';
-import 'reward_rarity_style.dart';
-import 'reward_track_icon.dart';
 
 class RewardRail extends StatefulWidget {
   const RewardRail({
@@ -135,16 +132,12 @@ class _RewardRailState extends State<RewardRail> {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final pinLeft =
-                  constraints.maxWidth -
-                  _pinnedPrizeRightInset.w -
-                  _rewardItemExtent.w;
-              final listDockLeft =
-                  constraints.maxWidth -
-                  _premiumPanelReservedWidth.w -
-                  _rewardItemExtent.w;
-              final listViewportRight =
-                  constraints.maxWidth - _premiumPanelReservedWidth.w;
+              final layout = _RailLayoutMetrics.fromViewport(
+                viewportWidth: constraints.maxWidth,
+                pinnedPrizeRightInset: _pinnedPrizeRightInset.w,
+                rewardItemExtent: _rewardItemExtent.w,
+                premiumPanelReservedWidth: _premiumPanelReservedWidth.w,
+              );
               final isAtScrollEnd =
                   _isAtScrollEnd() ||
                   _isAtFinalRewardEnd(
@@ -154,20 +147,24 @@ class _RewardRailState extends State<RewardRail> {
                     constraints.maxWidth,
                   );
               final isAtLeadingEdge = _scrollOffset <= 0.5;
+
+              // Каждый 10-й уровень показывает большую награду у премиум-панели.
+              // Когда настоящая карточка доезжает до нее, закрепленная копия
+              // плавно встраивается в скрол
               final pinnedPrize = _pinnedPrize(
                 visibleLevels,
-                listDockLeft,
-                listViewportRight,
+                layout.listDockLeft,
+                layout.listViewportRight,
                 premiumLocked,
               );
               final pinnedPrizeReward = pinnedPrize == null
                   ? null
                   : _bigPrizeReward(pinnedPrize.level);
               final pinnedLeft = pinnedPrize == null
-                  ? pinLeft
+                  ? layout.pinLeft
                   : _pinnedPrizeLeft(
                       pinnedPrize.level.number,
-                      pinLeft,
+                      layout.pinLeft,
                       premiumLocked,
                       pinnedPrize.dockingProgress,
                     );
@@ -209,11 +206,9 @@ class _RewardRailState extends State<RewardRail> {
                         itemBuilder: (context, index) {
                           final item = railItems[index];
                           if (item.isPremiumPreview) {
+                            // При закрытом премиуме скрол начинается с превью:
                             return _PremiumPreview(
-                              rewards: levels
-                                  .take(3)
-                                  .map((level) => level.premiumRewards.first)
-                                  .toList(growable: false),
+                              rewards: pass.season.instantPremiumRewards,
                               selectedRewardId: widget.state.selectedRewardId,
                               onSelectReward: widget.onSelectReward,
                             );
@@ -221,6 +216,8 @@ class _RewardRailState extends State<RewardRail> {
 
                           final gate = item.gateAfterLevel;
                           if (gate != null) {
+                            // Уровни за пределами видимой зоны показываем одной карточкой-заглушкой
+                            // и коротким продолжением дороги.
                             return _LockedFutureLevelsPreview(
                               afterLevel: gate,
                               roadFromLevel: item.roadFromLevel!,
@@ -365,6 +362,10 @@ class _RewardRailState extends State<RewardRail> {
     );
   }
 
+  /// Последний уровень, который нужно отрисовать настоящей карточкой награды.
+  ///
+  /// Без премиума виден короткий участок и заглушка. С купленным премиумом
+  /// показываем больший диапазон вперед, а на максимальном уровне — всю рельсу.
   int _visibleEndLevel(
     BattlePassProgress progress,
     int maxLevel,
@@ -383,6 +384,8 @@ class _RewardRailState extends State<RewardRail> {
     return threshold < maxLevel ? threshold : null;
   }
 
+  /// Превращает видимые уровни в элементы ListView: превью премиума,
+  /// карточки наград и, если нужно, заглушку будущих уровней.
   List<_RailItem> _railItems(
     List<BattlePassLevel> levels,
     bool premiumLocked,
@@ -410,6 +413,7 @@ class _RewardRailState extends State<RewardRail> {
     return items;
   }
 
+  /// Считает, до какого уровня должна тянуться фейковая дорога после заглушки.
   int _futureRoadToLevel(int visibleEndLevel) {
     return visibleEndLevel % 20 == 0
         ? visibleEndLevel + 20
@@ -422,6 +426,7 @@ class _RewardRailState extends State<RewardRail> {
         (premiumLocked ? _premiumPreviewExtent.w : 0);
   }
 
+  /// Левая координата карточки уровня во viewport до логики закрепления.
   double _bigPrizeLeftInViewport(bool premiumLocked, int level) {
     return _levelTrackLeft(premiumLocked) +
         (level - 1) * _rewardItemExtent.w -
@@ -433,6 +438,8 @@ class _RewardRailState extends State<RewardRail> {
     return _scrollController.position.extentAfter <= 0.5;
   }
 
+  /// Последняя настоящая награда может закончиться раньше maxScrollExtent,
+  /// потому что справа зарезервировано место под премиум-панель.
   bool _isAtFinalRewardEnd(
     bool premiumLocked,
     int visibleEndLevel,
@@ -446,6 +453,7 @@ class _RewardRailState extends State<RewardRail> {
     return lastRewardRight <= viewportWidth - _railTrailingInset.w + 0.5;
   }
 
+  /// Плавно переводит большую закрепленную награду из боковой позиции в рельсу.
   double _pinnedPrizeLeft(
     int level,
     double pinLeft,
@@ -458,6 +466,7 @@ class _RewardRailState extends State<RewardRail> {
     return pinLeft + (targetLeft - pinLeft) * easedProgress;
   }
 
+  /// Возвращает следующий уровень с большой наградой для закрепления или въезда.
   _PinnedPrize? _pinnedPrize(
     List<BattlePassLevel> levels,
     double pinLeft,
@@ -549,85 +558,50 @@ class _PremiumPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 596.w,
       height: 300.h,
-
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          SizedBox(
-            height: 220.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                for (final reward in rewards)
-                  _PremiumPreviewCard(
-                    reward: reward,
-                    selected: selectedRewardId == reward.id,
-                    onTap: () => onSelectReward(reward.id),
-                  ),
-              ],
-            ),
-          ),
-          SizedBox(height: 8.h),
-
-          const _PremiumPreviewButton(),
-        ],
-      ),
-    );
-  }
-}
-
-class _PremiumPreviewCard extends StatelessWidget {
-  const _PremiumPreviewCard({
-    required this.reward,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final BattlePassReward reward;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        width: 190.w,
-        height: 184.h,
-        child: CustomPaint(
-          painter: ParallelogramPainter(
-            fillColors: reward.rarity.gradientColors,
-            borderColor: selected ? AppColors.white100 : AppColors.white40,
-            borderWidth: selected ? 4.r : 1.r,
-            skew: 24.w,
-            radius: 24.r,
-          ),
-          child: Stack(
+          Column(
             children: [
-              Positioned(
-                left: 14.w,
-                top: 10.h,
-                child: RewardTrackIcon(track: reward.track),
-              ),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(22.w, 28.h, 18.w, 20.h),
-                  child: Image.asset(
-                    reward.assetPath ?? AppAssets.rewardOne,
-                    fit: BoxFit.contain,
-                  ),
+              SizedBox(
+                height: 220.h,
+                child: Row(
+                  children: [
+                    for (final reward in rewards)
+                      InkWell(
+                        onTap: () => onSelectReward(reward.id),
+                        borderRadius: BorderRadius.circular(18.r),
+                        child: Center(
+                          child: RewardCardVisual(
+                            reward: reward,
+                            selected: selectedRewardId == reward.id,
+                            available: false,
+                            received: false,
+                            largeSize: false,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              if (reward.amount > 1)
-                Positioned(
-                  right: 14.w,
-                  bottom: 12.h,
-                  child: RewardAmountBadge(amount: reward.amount),
-                ),
+              SizedBox(height: 8.h),
+              Padding(
+                padding: EdgeInsets.only(right: 23.w),
+                child: const _PremiumPreviewButton(),
+              ),
             ],
           ),
-        ),
+          Positioned(
+            right: -12.w,
+            top: 184.h / 2,
+            child: SvgPicture.asset(
+              AppAssets.arrowRoad,
+              width: 12.w,
+              height: 20.h,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -641,26 +615,33 @@ class _PremiumPreviewButton extends StatelessWidget {
     return SizedBox(
       width: 596.w,
       height: 60.h,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0x996B3108),
-          borderRadius: BorderRadius.circular(14.r),
+      child: CustomPaint(
+        painter: ParallelogramPainter(
+          fillColors: const [
+            Color(0x996B3108),
+            Color(0x996B3108),
+            Color(0x996B3108),
+          ],
+          borderColor: AppColors.transparent,
+          borderWidth: 0,
+          skew: 12.w,
+          radius: 20.r,
         ),
         child: Center(
           child: Text(
             'Получи все сразу!',
-            textAlign: TextAlign.center,
             style: TextStyle(
               color: const Color(0xFFFFD149),
               fontSize: 30.sp,
+              fontFamily: 'Geologica Roman',
               fontWeight: FontWeight.w500,
               height: 1.20,
               letterSpacing: -0.30,
-              shadows: const [
+              shadows: [
                 Shadow(
-                  offset: Offset.zero,
+                  offset: Offset(0, 0),
                   blurRadius: 14,
-                  color: Color(0xFFFF5C00),
+                  color: Color(0xFFFF5C00).withValues(alpha: 1),
                 ),
               ],
             ),
@@ -929,6 +910,32 @@ final class _PinnedPrize {
 
   final BattlePassLevel level;
   final double dockingProgress;
+}
+
+final class _RailLayoutMetrics {
+  const _RailLayoutMetrics({
+    required this.pinLeft,
+    required this.listDockLeft,
+    required this.listViewportRight,
+  });
+
+  factory _RailLayoutMetrics.fromViewport({
+    required double viewportWidth,
+    required double pinnedPrizeRightInset,
+    required double rewardItemExtent,
+    required double premiumPanelReservedWidth,
+  }) {
+    return _RailLayoutMetrics(
+      pinLeft: viewportWidth - pinnedPrizeRightInset - rewardItemExtent,
+      listDockLeft:
+          viewportWidth - premiumPanelReservedWidth - rewardItemExtent,
+      listViewportRight: viewportWidth - premiumPanelReservedWidth,
+    );
+  }
+
+  final double pinLeft;
+  final double listDockLeft;
+  final double listViewportRight;
 }
 
 final class _RailItem {

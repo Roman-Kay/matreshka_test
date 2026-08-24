@@ -1,4 +1,5 @@
 import 'battle_pass_level.dart';
+import 'battle_pass_reward.dart';
 
 final class BattlePassSeason {
   const BattlePassSeason({
@@ -7,6 +8,7 @@ final class BattlePassSeason {
     required this.startsAt,
     required this.endsAt,
     required this.maxLevel,
+    required this.instantPremiumRewards,
     required this.levels,
   });
 
@@ -15,6 +17,7 @@ final class BattlePassSeason {
   final DateTime startsAt;
   final DateTime endsAt;
   final int maxLevel;
+  final List<BattlePassReward> instantPremiumRewards;
   final List<BattlePassLevel> levels;
 
   BattlePassSeason copyWith({
@@ -23,6 +26,7 @@ final class BattlePassSeason {
     DateTime? startsAt,
     DateTime? endsAt,
     int? maxLevel,
+    List<BattlePassReward>? instantPremiumRewards,
     List<BattlePassLevel>? levels,
   }) {
     return BattlePassSeason(
@@ -31,6 +35,8 @@ final class BattlePassSeason {
       startsAt: startsAt ?? this.startsAt,
       endsAt: endsAt ?? this.endsAt,
       maxLevel: maxLevel ?? this.maxLevel,
+      instantPremiumRewards:
+          instantPremiumRewards ?? this.instantPremiumRewards,
       levels: levels ?? this.levels,
     );
   }

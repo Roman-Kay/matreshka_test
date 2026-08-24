@@ -14,42 +14,28 @@ class BattlePassPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BattlePassCubit, BattlePassState>(
-      listenWhen: (previous, current) =>
-          previous.message != current.message && current.message != null,
+      listenWhen: (previous, current) => previous.message != current.message && current.message != null,
       listener: (context, state) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(state.message!)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
       },
       builder: (context, state) {
-        if (state.status == BattlePassViewStatus.loading ||
-            state.status == BattlePassViewStatus.initial) {
+        if (state.status == BattlePassViewStatus.loading || state.status == BattlePassViewStatus.initial) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state.status == BattlePassViewStatus.failure ||
-            state.battlePass == null) {
+        if (state.status == BattlePassViewStatus.failure || state.battlePass == null) {
           return Center(
-            child: FilledButton(
-              onPressed: () => context.read<BattlePassCubit>().load(),
-              child: const Text('Повторить загрузку'),
-            ),
+            child: FilledButton(onPressed: () => context.read<BattlePassCubit>().load(), child: const Text('Повторить загрузку')),
           );
         }
         return BattlePassContent(
           state: state,
           onExitToGame: () => context.router.replaceAll([const GameRoute()]),
-          onPurchasePremium: () =>
-              context.read<BattlePassCubit>().purchasePremium(),
-          onClaimAllRewards: () =>
-              context.read<BattlePassCubit>().claimAllAvailableRewards(),
-          onClaimTask: (taskId) =>
-              context.read<BattlePassCubit>().claimTask(taskId),
-          onSelectReward: (rewardId) =>
-              context.read<BattlePassCubit>().selectReward(rewardId),
-          onClaimReward: (rewardId) =>
-              context.read<BattlePassCubit>().claimReward(rewardId),
-          onDemoModeSelected: (mode) =>
-              context.read<BattlePassCubit>().switchDemoMode(mode),
+          onPurchasePremium: () => context.read<BattlePassCubit>().purchasePremium(),
+          onClaimAllRewards: () => context.read<BattlePassCubit>().claimAllAvailableRewards(),
+          onClaimTask: (taskId) => context.read<BattlePassCubit>().claimTask(taskId),
+          onSelectReward: (rewardId) => context.read<BattlePassCubit>().selectReward(rewardId),
+          onClaimReward: (rewardId) => context.read<BattlePassCubit>().claimReward(rewardId),
+          onDemoModeSelected: (mode) => context.read<BattlePassCubit>().switchDemoMode(mode),
         );
       },
     );

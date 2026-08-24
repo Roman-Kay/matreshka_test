@@ -7,12 +7,7 @@ import '../../../../core/ui/buttons/premium_action_button.dart';
 import '../../domain/models/battle_pass_models.dart';
 
 class PremiumPanel extends StatelessWidget {
-  const PremiumPanel({
-    super.key,
-    required this.pass,
-    required this.onPurchasePremium,
-    required this.onClaimAllRewards,
-  });
+  const PremiumPanel({super.key, required this.pass, required this.onPurchasePremium, required this.onClaimAllRewards});
 
   final BattlePass pass;
   final VoidCallback onPurchasePremium;
@@ -27,12 +22,7 @@ class PremiumPanel extends StatelessWidget {
       return _ElitePassPanel(onPurchasePremium: onPurchasePremium);
     }
 
-    return _LevelUpPanel(
-      maxed: maxed,
-      canClaimAll: maxed && availableRewardsCount > 3,
-      onClaimAll: onClaimAllRewards,
-      onLevelUp: onPurchasePremium,
-    );
+    return _LevelUpPanel(maxed: maxed, canClaimAll: maxed && availableRewardsCount > 3, onClaimAll: onClaimAllRewards, onLevelUp: onPurchasePremium);
   }
 
   int _availableRewardsCount(BattlePass pass) {
@@ -47,12 +37,7 @@ class PremiumPanel extends StatelessWidget {
 }
 
 class _LevelUpPanel extends StatelessWidget {
-  const _LevelUpPanel({
-    required this.maxed,
-    required this.canClaimAll,
-    required this.onClaimAll,
-    required this.onLevelUp,
-  });
+  const _LevelUpPanel({required this.maxed, required this.canClaimAll, required this.onClaimAll, required this.onLevelUp});
 
   final bool maxed;
   final bool canClaimAll;
@@ -72,13 +57,7 @@ class _LevelUpPanel extends StatelessWidget {
               Text(
                 'Повышение уровня',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFFFFD149),
-                  fontSize: 36.sp,
-                  fontWeight: FontWeight.w600,
-                  height: 1.30,
-                  letterSpacing: -0.36,
-                ),
+                style: TextStyle(color: const Color(0xFFFFD149), fontSize: 36.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36),
               ),
               SizedBox(height: 1.h),
               SizedBox(
@@ -86,30 +65,17 @@ class _LevelUpPanel extends StatelessWidget {
                 child: Text(
                   'Повышай уровень боевого пропуска и забирай новые награды!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.white70,
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.22,
-                  ),
+                  style: TextStyle(color: AppColors.white70, fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
                 ),
               ),
-              SizedBox(height: maxed ? 28.h : 53.h),
+              SizedBox(height: maxed ? 27.h : 53.h),
               if (maxed) ...[
                 const _MaxLevelButton(),
-                if (canClaimAll) ...[
-                  SizedBox(height: 24.h),
-                  _ClaimAllRewardsButton(onPressed: onClaimAll),
-                ],
+                if (canClaimAll) ...[SizedBox(height: 24.h), _ClaimAllRewardsButton(onPressed: onClaimAll)],
               ] else if (canClaimAll)
                 _ClaimAllRewardsButton(onPressed: onClaimAll)
               else
-                PremiumActionButton(
-                  iconAsset: AppAssets.arrowLevelUp,
-                  text: 'Повысить уровень',
-                  onPressed: onLevelUp,
-                ),
+                PremiumActionButton(iconAsset: AppAssets.arrowLevelUp, text: 'Повысить уровень', onPressed: onLevelUp),
             ],
           ),
         ),
@@ -130,11 +96,7 @@ class _ElitePassPanel extends StatelessWidget {
       height: 660.h,
       child: Stack(
         children: [
-          Image.asset(
-            AppAssets.woman,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
+          Image.asset(AppAssets.woman, fit: BoxFit.cover, alignment: Alignment.topCenter),
           Positioned(
             top: 370.h,
             right: 70.w,
@@ -142,13 +104,7 @@ class _ElitePassPanel extends StatelessWidget {
               children: [
                 Text(
                   'Элитный пропуск',
-                  style: TextStyle(
-                    color: const Color(0xFFFFD149),
-                    fontSize: 36.sp,
-                    fontWeight: FontWeight.w600,
-                    height: 1.30,
-                    letterSpacing: -0.36,
-                  ),
+                  style: TextStyle(color: const Color(0xFFFFD149), fontSize: 36.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36),
                 ),
                 SizedBox(height: 1.h),
                 SizedBox(
@@ -156,21 +112,11 @@ class _ElitePassPanel extends StatelessWidget {
                   child: Text(
                     'Прокачай боевой пропуск и забери четкие скины, аксессуары и многое другое!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.white70,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w500,
-                      height: 1.20,
-                      letterSpacing: -0.22,
-                    ),
+                    style: TextStyle(color: AppColors.white70, fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
                   ),
                 ),
                 SizedBox(height: 27.h),
-                PremiumActionButton(
-                  iconAsset: AppAssets.premium,
-                  text: 'Прокачать',
-                  onPressed: onPurchasePremium,
-                ),
+                PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: onPurchasePremium),
               ],
             ),
           ),
@@ -189,23 +135,14 @@ class _MaxLevelButton extends StatelessWidget {
       width: 400.w,
       height: 100.h,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0x19E9E9F3),
-          borderRadius: BorderRadius.circular(30.r),
-        ),
+        decoration: BoxDecoration(color: const Color(0x19E9E9F3), borderRadius: BorderRadius.circular(30.r)),
         child: Padding(
           padding: EdgeInsets.fromLTRB(48.w, 30.h, 48.w, 34.h),
           child: Center(
             child: Text(
               'Достигнут максимальный уровень',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: const Color(0x66E9E9F3),
-                fontSize: 22.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.22,
-              ),
+              style: TextStyle(color: const Color(0x66E9E9F3), fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
             ),
           ),
         ),
@@ -228,11 +165,7 @@ class _ClaimAllRewardsButton extends StatelessWidget {
         width: 400.w,
         padding: EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF56B876), Color(0xFF44955F)],
-          ),
+          gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF56B876), Color(0xFF44955F)]),
           borderRadius: BorderRadius.circular(30.r),
         ),
         child: Row(
@@ -241,13 +174,7 @@ class _ClaimAllRewardsButton extends StatelessWidget {
           children: [
             Text(
               'Забрать все награды',
-              style: TextStyle(
-                color: AppColors.white100,
-                fontSize: 26.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26,
-              ),
+              style: TextStyle(color: AppColors.white100, fontSize: 26.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26),
             ),
           ],
         ),

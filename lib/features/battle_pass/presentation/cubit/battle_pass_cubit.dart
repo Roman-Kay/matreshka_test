@@ -13,16 +13,11 @@ import 'battle_pass_state.dart';
 final class BattlePassCubit extends Cubit<BattlePassState> {
   BattlePassCubit(
     BattlePassRepository repository, {
-    ComputeRewardStatusesUseCase computeRewardStatuses =
-        const ComputeRewardStatusesUseCase(),
+    ComputeRewardStatusesUseCase computeRewardStatuses = const ComputeRewardStatusesUseCase(),
     ClaimRewardUseCase claimReward = const ClaimRewardUseCase(),
     ClaimAllRewardsUseCase claimAllRewards = const ClaimAllRewardsUseCase(),
-    ClaimBattlePassTaskUseCase claimBattlePassTask =
-        const ClaimBattlePassTaskUseCase(),
-  }) : _loadBattlePass = LoadBattlePassUseCase(
-         repository,
-         computeRewardStatuses,
-       ),
+    ClaimBattlePassTaskUseCase claimBattlePassTask = const ClaimBattlePassTaskUseCase(),
+  }) : _loadBattlePass = LoadBattlePassUseCase(repository, computeRewardStatuses),
        _purchasePremium = PurchasePremiumUseCase(computeRewardStatuses),
        _claimReward = claimReward,
        _claimAllRewards = claimAllRewards,
@@ -37,26 +32,12 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
 
   Future<void> load({BattlePassDemoMode? mode}) async {
     final nextMode = mode ?? state.demoMode;
-    emit(
-      state.copyWith(status: BattlePassViewStatus.loading, demoMode: nextMode),
-    );
+    emit(state.copyWith(status: BattlePassViewStatus.loading, demoMode: nextMode));
     try {
       final battlePass = await _loadBattlePass(nextMode);
-      emit(
-        BattlePassState(
-          status: BattlePassViewStatus.loaded,
-          demoMode: nextMode,
-          battlePass: battlePass,
-          selectedRewardId: _firstRewardId(battlePass),
-        ),
-      );
+      emit(BattlePassState(status: BattlePassViewStatus.loaded, demoMode: nextMode, battlePass: battlePass, selectedRewardId: _firstRewardId(battlePass)));
     } on Object {
-      emit(
-        state.copyWith(
-          status: BattlePassViewStatus.failure,
-          message: 'Не удалось загрузить Battle Pass',
-        ),
-      );
+      emit(state.copyWith(status: BattlePassViewStatus.failure, message: 'Не удалось загрузить Battle Pass'));
     }
   }
 
@@ -65,12 +46,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
   void purchasePremium() {
     final pass = state.battlePass;
     if (pass == null || pass.premiumStatus == PremiumStatus.purchased) return;
-    emit(
-      state.copyWith(
-        battlePass: _purchasePremium(pass),
-        message: 'Прокачка активирована',
-      ),
-    );
+    emit(state.copyWith(battlePass: _purchasePremium(pass), message: 'Прокачка активирована'));
   }
 
   void selectReward(int rewardId) {
@@ -103,13 +79,7 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
 
   int? _firstRewardId(BattlePass pass) {
     if (pass.season.levels.isEmpty) return null;
-    final level =
-        pass.season.levels[(pass.progress.currentLevel - 1).clamp(
-          0,
-          pass.season.levels.length - 1,
-        )];
-    return level.premiumRewards.isNotEmpty
-        ? level.premiumRewards.first.id
-        : level.freeRewards.firstOrNull?.id;
+    final level = pass.season.levels[(pass.progress.currentLevel - 1).clamp(0, pass.season.levels.length - 1)];
+    return level.premiumRewards.isNotEmpty ? level.premiumRewards.first.id : level.freeRewards.firstOrNull?.id;
   }
 }

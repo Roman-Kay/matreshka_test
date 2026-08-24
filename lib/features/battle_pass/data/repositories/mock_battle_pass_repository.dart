@@ -56,6 +56,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         startsAt: startedAt,
         endsAt: startedAt.add(const Duration(days: 16, hours: 12, minutes: 42)),
         maxLevel: 200,
+        instantPremiumRewards: _instantPremiumRewards(premium),
         levels: List<BattlePassLevel>.generate(200, (index) {
           final level = index + 1;
           return BattlePassLevel(
@@ -87,6 +88,45 @@ final class MockBattlePassRepository implements BattlePassRepository {
       premiumStatus: premium,
       tasks: await _tasksRepository.loadBattlePassTasks(),
     );
+  }
+
+  List<BattlePassReward> _instantPremiumRewards(PremiumStatus premium) {
+    final status = premium == PremiumStatus.purchased
+        ? RewardStatus.received
+        : RewardStatus.locked;
+
+    return [
+      BattlePassReward(
+        id: 9001,
+        type: RewardType.outfit,
+        title: 'Маска именинника',
+        amount: 16,
+        track: BattlePassTrack.premium,
+        assetPath: AppAssets.rewardOne,
+        rarity: RewardRarity.rare,
+        status: status,
+      ),
+      BattlePassReward(
+        id: 9002,
+        type: RewardType.currency,
+        title: 'Премиум XP-буст',
+        amount: 16,
+        track: BattlePassTrack.premium,
+        assetPath: AppAssets.rewardTwo,
+        rarity: RewardRarity.epic,
+        status: status,
+      ),
+      BattlePassReward(
+        id: 9003,
+        type: RewardType.outfit,
+        title: 'Праздничный сет',
+        amount: 16,
+        track: BattlePassTrack.premium,
+        assetPath: AppAssets.rewardOne,
+        rarity: RewardRarity.rare,
+        status: status,
+      ),
+    ];
   }
 
   RewardRarity _rarityForLevel(int level) {
