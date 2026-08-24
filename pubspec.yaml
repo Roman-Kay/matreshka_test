@@ -36,6 +36,7 @@ dependencies:
   flutter_screenutil_plus: ^1.5.0
   flutter_svg: ^2.3.0
   google_fonts: ^8.2.1
+  gradient_borders: ^1.0.4
 
 dev_dependencies:
   flutter_test:

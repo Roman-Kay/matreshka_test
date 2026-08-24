@@ -26,4 +26,5 @@ abstract final class AppAssets {
   static const arrowRoad = 'assets/figma/arrow_road.svg';
   static const arrowLevelUp = 'assets/figma/arrow_levelup.svg';
   static const dotedLine = 'assets/figma/doted_line.png';
+  static const danger = 'assets/figma/danger.png';
 }

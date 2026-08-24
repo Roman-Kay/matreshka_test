@@ -32,6 +32,7 @@ class _BattlePassContentState extends State<BattlePassContent> {
     final choiceRewards = _selectedChoiceRewards(pass, widget.state.selectedRewardId);
     final isBattlePass = _activePanel == 'Battle Pass';
     final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
+    final completed = widget.state.demoMode == BattlePassDemoMode.completed;
 
     return Row(
       children: [
@@ -45,8 +46,7 @@ class _BattlePassContentState extends State<BattlePassContent> {
                   children: [
                     SizedBox(height: 32.h),
                     BattlePassHeader(pass: pass),
-                    SizedBox(height: 59.h),
-                    TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
+                    completed ? const BattlePassCompletedNotice() : TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,

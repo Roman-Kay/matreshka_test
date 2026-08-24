@@ -10,7 +10,12 @@ abstract final class AppColors {
   static const background5 = Color(0xFF232429);
   static const background10 = Color(0xFF2D2E34);
   static const dark = Color(0xFF18191F);
+  static const dark100 = Color(0xFF17181E);
+
+  static const white = Color(0xFFFFFFFF);
+
   static const white5 = Color(0x0CE9E9F3);
+
   static const white10 = Color(0x1AE9E9F3);
   static const white70 = Color(0xB3E9E9F3);
   static const white40 = Color(0x66E9E9F3);

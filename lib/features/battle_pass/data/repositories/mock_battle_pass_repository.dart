@@ -33,6 +33,11 @@ final class MockBattlePassRepository implements BattlePassRepository {
         currentXp: 1600,
         nextLevelXp: 1600,
       ),
+      BattlePassDemoMode.completed => const BattlePassProgress(
+        currentLevel: 108,
+        currentXp: 900,
+        nextLevelXp: 1600,
+      ),
     };
     return BattlePass(
       season: BattlePassSeason(

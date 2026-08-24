@@ -25,8 +25,7 @@ class PremiumPanel extends StatelessWidget {
     return _LevelUpPanel(
       maxed: maxed,
       canClaimAll: maxed && availableRewardsCount > 3,
-      onClaimAll: () =>
-          context.read<BattlePassCubit>().claimAllAvailableRewards(),
+      onClaimAll: () => context.read<BattlePassCubit>().claimAllAvailableRewards(),
       onLevelUp: () => context.read<BattlePassCubit>().purchasePremium(),
     );
   }
@@ -43,12 +42,7 @@ class PremiumPanel extends StatelessWidget {
 }
 
 class _LevelUpPanel extends StatelessWidget {
-  const _LevelUpPanel({
-    required this.maxed,
-    required this.canClaimAll,
-    required this.onClaimAll,
-    required this.onLevelUp,
-  });
+  const _LevelUpPanel({required this.maxed, required this.canClaimAll, required this.onClaimAll, required this.onLevelUp});
 
   final bool maxed;
   final bool canClaimAll;
@@ -68,13 +62,7 @@ class _LevelUpPanel extends StatelessWidget {
               Text(
                 'Повышение уровня',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFFFFD149),
-                  fontSize: 36.sp,
-                  fontWeight: FontWeight.w600,
-                  height: 1.30,
-                  letterSpacing: -0.36,
-                ),
+                style: TextStyle(color: const Color(0xFFFFD149), fontSize: 36.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36),
               ),
               SizedBox(height: 1.h),
               SizedBox(
@@ -82,31 +70,17 @@ class _LevelUpPanel extends StatelessWidget {
                 child: Text(
                   'Повышай уровень боевого пропуска и забирай новые награды!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.white70,
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.22,
-                  ),
+                  style: TextStyle(color: AppColors.white70, fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
                 ),
               ),
               SizedBox(height: maxed ? 28.h : 53.h),
               if (maxed) ...[
                 const _MaxLevelButton(),
-                if (canClaimAll) ...[
-                  SizedBox(height: 24.h),
-                  _ClaimAllRewardsButton(onPressed: onClaimAll),
-                ],
+                if (canClaimAll) ...[SizedBox(height: 24.h), _ClaimAllRewardsButton(onPressed: onClaimAll)],
               ] else if (canClaimAll)
                 _ClaimAllRewardsButton(onPressed: onClaimAll)
               else
-                _PremiumActionButton(
-                  big: true,
-                  iconAsset: AppAssets.arrowLevelUp,
-                  text: 'Повысить уровень',
-                  onPressed: onLevelUp,
-                ),
+                _PremiumActionButton(iconAsset: AppAssets.arrowLevelUp, text: 'Повысить уровень', onPressed: onLevelUp),
             ],
           ),
         ),
@@ -125,11 +99,7 @@ class _ElitePassPanel extends StatelessWidget {
       height: 660.h,
       child: Stack(
         children: [
-          Image.asset(
-            AppAssets.woman,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
+          Image.asset(AppAssets.woman, fit: BoxFit.cover, alignment: Alignment.topCenter),
           Positioned(
             top: 370.h,
             right: 70.w,
@@ -137,13 +107,7 @@ class _ElitePassPanel extends StatelessWidget {
               children: [
                 Text(
                   'Элитный пропуск',
-                  style: TextStyle(
-                    color: const Color(0xFFFFD149),
-                    fontSize: 36.sp,
-                    fontWeight: FontWeight.w600,
-                    height: 1.30,
-                    letterSpacing: -0.36,
-                  ),
+                  style: TextStyle(color: const Color(0xFFFFD149), fontSize: 36.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36),
                 ),
                 SizedBox(height: 1.h),
                 SizedBox(
@@ -151,22 +115,11 @@ class _ElitePassPanel extends StatelessWidget {
                   child: Text(
                     'Прокачай боевой пропуск и забери четкие скины, аксессуары и многое другое!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.white70,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w500,
-                      height: 1.20,
-                      letterSpacing: -0.22,
-                    ),
+                    style: TextStyle(color: AppColors.white70, fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
                   ),
                 ),
                 SizedBox(height: 27.h),
-                _PremiumActionButton(
-                  iconAsset: AppAssets.premium,
-                  text: 'Прокачать',
-                  onPressed: () =>
-                      context.read<BattlePassCubit>().purchasePremium(),
-                ),
+                _PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: () => context.read<BattlePassCubit>().purchasePremium()),
               ],
             ),
           ),
@@ -185,23 +138,14 @@ class _MaxLevelButton extends StatelessWidget {
       width: 400.w,
       height: 100.h,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0x19E9E9F3),
-          borderRadius: BorderRadius.circular(30.r),
-        ),
+        decoration: BoxDecoration(color: const Color(0x19E9E9F3), borderRadius: BorderRadius.circular(30.r)),
         child: Padding(
           padding: EdgeInsets.fromLTRB(48.w, 30.h, 48.w, 34.h),
           child: Center(
             child: Text(
               'Достигнут максимальный уровень',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: const Color(0x66E9E9F3),
-                fontSize: 22.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.22,
-              ),
+              style: TextStyle(color: const Color(0x66E9E9F3), fontSize: 22.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22),
             ),
           ),
         ),
@@ -224,11 +168,7 @@ class _ClaimAllRewardsButton extends StatelessWidget {
         width: 400.w,
         padding: EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF56B876), Color(0xFF44955F)],
-          ),
+          gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF56B876), Color(0xFF44955F)]),
           borderRadius: BorderRadius.circular(30.r),
         ),
         child: Row(
@@ -237,13 +177,7 @@ class _ClaimAllRewardsButton extends StatelessWidget {
           children: [
             Text(
               'Забрать все награды',
-              style: TextStyle(
-                color: AppColors.white100,
-                fontSize: 26.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26,
-              ),
+              style: TextStyle(color: AppColors.white100, fontSize: 26.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26),
             ),
           ],
         ),
@@ -253,16 +187,10 @@ class _ClaimAllRewardsButton extends StatelessWidget {
 }
 
 class _PremiumActionButton extends StatefulWidget {
-  const _PremiumActionButton({
-    required this.iconAsset,
-    required this.text,
-    required this.onPressed,
-    this.big = false,
-  });
+  const _PremiumActionButton({required this.iconAsset, required this.text, required this.onPressed});
 
   final String iconAsset;
   final String text;
-  final bool big;
 
   final VoidCallback? onPressed;
 
@@ -270,22 +198,18 @@ class _PremiumActionButton extends StatefulWidget {
   State<_PremiumActionButton> createState() => _PremiumActionButtonState();
 }
 
-class _PremiumActionButtonState extends State<_PremiumActionButton>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+class _PremiumActionButtonState extends State<_PremiumActionButton> with SingleTickerProviderStateMixin {
+  late final AnimationController _shineController;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    )..repeat();
+    _shineController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1800))..repeat();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _shineController.dispose();
     super.dispose();
   }
 
@@ -296,7 +220,7 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: 400.w,
-        height: widget.big ? 100.h : 78.h,
+        height: 100.h,
         child: Stack(
           children: [
             Positioned.fill(
@@ -304,20 +228,14 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF8A00),
                   borderRadius: BorderRadius.circular(30.r),
-                  boxShadow: const [
-                    BoxShadow(color: Color(0xB2FF8900), blurRadius: 41.5),
-                  ],
+                  boxShadow: const [BoxShadow(color: Color(0xB2FF8900), blurRadius: 41.5)],
                 ),
               ),
             ),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFFEFCB4B), Color(0xFFDE7F28)],
-                  ),
+                  gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFEFCB4B), Color(0xFFDE7F28)]),
                   borderRadius: BorderRadius.circular(30.r),
                 ),
               ),
@@ -326,23 +244,16 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30.r),
                 child: AnimatedBuilder(
-                  animation: _controller,
+                  animation: _shineController,
                   builder: (context, child) {
-                    return FractionalTranslation(
-                      translation: Offset(_controller.value * 2 - 1, 0),
-                      child: child,
-                    );
+                    return FractionalTranslation(translation: Offset(_shineController.value * 2 - 1, 0), child: child);
                   },
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
-                        colors: [
-                          Colors.white.withValues(alpha: 0),
-                          Colors.white.withValues(alpha: 0.42),
-                          Colors.white.withValues(alpha: 0),
-                        ],
+                        colors: [Colors.white.withValues(alpha: 0), Colors.white.withValues(alpha: 0.42), Colors.white.withValues(alpha: 0)],
                       ),
                     ),
                   ),
@@ -353,15 +264,7 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset(
-                    widget.iconAsset,
-                    width: 36.r,
-                    height: 36.r,
-                    colorFilter: const ColorFilter.mode(
-                      Color(0xFF3B0B0B),
-                      BlendMode.srcIn,
-                    ),
-                  ),
+                  SvgPicture.asset(widget.iconAsset, width: 36.r, height: 36.r, colorFilter: const ColorFilter.mode(Color(0xFF3B0B0B), BlendMode.srcIn)),
                   SizedBox(width: 24.w),
                   Flexible(
                     child: Text(
@@ -369,13 +272,7 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: const Color(0xFF3B0B0B),
-                        fontSize: 30.sp,
-                        fontWeight: FontWeight.w500,
-                        height: 1.20,
-                        letterSpacing: -0.30,
-                      ),
+                      style: TextStyle(color: const Color(0xFF3B0B0B), fontSize: 30.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.30),
                     ),
                   ),
                 ],
