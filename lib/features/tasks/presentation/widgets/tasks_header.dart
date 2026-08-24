@@ -69,7 +69,7 @@ class TasksHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          if (onExit != null || onBack != null) HeaderIconButton(assetPath: AppAssets.close, onTap: onExit ?? onBack!),
+          HeaderIconButton(assetPath: AppAssets.close, onTap: onExit ?? onBack!),
         ],
       ),
     );

@@ -24,27 +24,32 @@ class TasksContent extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         Image.asset(AppAssets.bgTask, fit: BoxFit.cover),
-        TasksHeader(progress: progress, onBack: onBack, onExit: onExit),
-        Positioned.fill(
-          top: 300.h,
-          child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 52.w),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (_, index) => TaskCard(task: tasks[index]),
-            separatorBuilder: (context, index) => SizedBox(width: 40.w),
-            itemCount: tasks.length,
-          ),
-        ),
-        Positioned(
-          left: 52.w,
-          bottom: 46.h,
-          child: Row(
-            children: [
-              PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: onPurchasePremium),
-              SizedBox(width: 52.w),
-              const UpgradeHintText(),
-            ],
-          ),
+        Column(
+          children: [
+            TasksHeader(progress: progress, onBack: onBack, onExit: onExit),
+            SizedBox(height: 125.h),
+            SizedBox(
+              height: 502.h,
+              child: ListView.separated(
+                padding: EdgeInsets.symmetric(horizontal: 51.w),
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (_, index) => TaskCard(task: tasks[index]),
+                separatorBuilder: (context, index) => SizedBox(width: 26.25.w),
+                itemCount: tasks.length,
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: EdgeInsetsGeometry.only(left: 51.w, bottom: 49.h),
+              child: Row(
+                children: [
+                  PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: onPurchasePremium),
+                  SizedBox(width: 50.w),
+                  const UpgradeHintText(),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );

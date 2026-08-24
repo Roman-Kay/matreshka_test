@@ -7,12 +7,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../tasks/domain/models/task.dart';
 
 class TaskPreviewActionButton extends StatelessWidget {
-  const TaskPreviewActionButton({
-    super.key,
-    required this.task,
-    required this.onOpenTasks,
-    required this.onClaim,
-  });
+  const TaskPreviewActionButton({super.key, required this.task, required this.onOpenTasks, required this.onClaim});
 
   final Task task;
   final VoidCallback onOpenTasks;
@@ -31,18 +26,10 @@ class TaskPreviewActionButton extends StatelessWidget {
           Container(
             width: 320.w,
             height: isClaim ? null : 74.h,
-            padding: isClaim
-                ? EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h)
-                : null,
+            padding: isClaim ? EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h) : null,
             decoration: BoxDecoration(
               color: isClaim ? null : AppColors.white10,
-              gradient: isClaim
-                  ? const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF55B675), Color(0xFF449761)],
-                    )
-                  : null,
+              gradient: isClaim ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF55B675), Color(0xFF449761)]) : null,
               borderRadius: BorderRadius.circular(30.r),
             ),
             child: Row(
@@ -50,19 +37,10 @@ class TaskPreviewActionButton extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               spacing: 16.w,
               children: [
-                if (!isClaim)
-                  SvgPicture.asset(AppAssets.tasks, width: 30.r, height: 30.r),
+                if (!isClaim) SvgPicture.asset(AppAssets.tasks, width: 30.r, height: 30.r),
                 Text(
                   isClaim ? 'Забрать опыт' : 'Задания',
-                  style: TextStyle(
-                    color: isClaim
-                        ? const Color(0xFF68C286)
-                        : AppColors.white100,
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.26,
-                  ),
+                  style: TextStyle(color: isClaim ? AppColors.secondary100 : AppColors.white100, fontSize: 26.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26),
                 ),
               ],
             ),

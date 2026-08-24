@@ -18,14 +18,18 @@ abstract final class AppColors {
   static const white7 = Color(0x11E9E9F3);
 
   static const white10 = Color(0x1AE9E9F3);
-  static const white70 = Color(0xB3E9E9F3);
-  static const white40 = Color(0x66E9E9F3);
   static const white30 = Color(0x4CE9E9F3);
+  static const white40 = Color(0x66E9E9F3);
+  static const white50 = Color(0x7FE9E9F3);
   static const white60 = Color(0x99E9E9F3);
+  static const white70 = Color(0xB3E9E9F3);
+  static const white80 = Color(0xCCE9E9F3);
+
   static const green = Color(0xFF56B877);
 
   static const secondary10 = Color(0xFF398652);
   static const secondary50 = Color(0xFF56B876);
+  static const secondary100 = Color(0xFF68C286);
 
   static const orange = Color(0xFFFF6435);
   static const gold = Color(0xFFFFD149);
