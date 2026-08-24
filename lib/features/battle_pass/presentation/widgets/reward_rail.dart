@@ -27,6 +27,7 @@ class _RewardRailState extends State<RewardRail> {
   static const double _premiumPreviewExtent = 596;
   static const double _premiumPanelReservedWidth = 375;
   static const double _pinnedPrizeRightInset = 56;
+  static const double _heldScrollSpeed = 1450;
 
   late final ScrollController _scrollController;
   double _scrollOffset = 0;
@@ -69,6 +70,27 @@ class _RewardRailState extends State<RewardRail> {
     );
   }
 
+  void _startHeldScroll(int direction) {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    final target = direction > 0 ? position.maxScrollExtent : 0.0;
+    final distance = (target - position.pixels).abs();
+    if (distance <= 0.5) return;
+
+    _scrollController.animateTo(
+      target,
+      duration: Duration(
+        milliseconds: max(120, (distance / _heldScrollSpeed * 1000).round()),
+      ),
+      curve: Curves.linear,
+    );
+  }
+
+  void _stopHeldScroll() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.jumpTo(_scrollController.offset);
+  }
+
   @override
   Widget build(BuildContext context) {
     final pass = widget.state.battlePass!;
@@ -105,8 +127,9 @@ class _RewardRailState extends State<RewardRail> {
             visibleEndLevel,
             listViewportRight,
           );
+          final isAtLeadingEdge = _scrollOffset <= 0.5;
           final pinnedPrize = _pinnedPrize(
-            levels,
+            visibleLevels,
             listDockLeft,
             listViewportRight,
             premiumLocked,
@@ -163,7 +186,10 @@ class _RewardRailState extends State<RewardRail> {
 
                       final gate = item.gateAfterLevel;
                       if (gate != null) {
-                        return _LockedFutureLevelsPreview(afterLevel: gate);
+                        return _LockedFutureLevelsPreview(
+                          afterLevel: gate,
+                          premiumLocked: premiumLocked,
+                        );
                       }
 
                       final level = item.level!;
@@ -251,9 +277,19 @@ class _RewardRailState extends State<RewardRail> {
               Positioned(
                 left: leftScrollButtonLeft,
                 top: scrollButtonTop,
-                child: _RailScrollButton(
-                  direction: AxisDirection.left,
-                  onTap: () => _scrollByCards(-1),
+                child: IgnorePointer(
+                  ignoring: isAtLeadingEdge,
+                  child: AnimatedOpacity(
+                    opacity: isAtLeadingEdge ? 0 : 1,
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    child: _RailScrollButton(
+                      direction: AxisDirection.left,
+                      onTap: () => _scrollByCards(-1),
+                      onHoldStart: () => _startHeldScroll(-1),
+                      onHoldEnd: _stopHeldScroll,
+                    ),
+                  ),
                 ),
               ),
               Positioned(
@@ -268,6 +304,8 @@ class _RewardRailState extends State<RewardRail> {
                     child: _RailScrollButton(
                       direction: AxisDirection.right,
                       onTap: () => _scrollByCards(1),
+                      onHoldStart: () => _startHeldScroll(1),
+                      onHoldEnd: _stopHeldScroll,
                     ),
                   ),
                 ),
@@ -742,15 +780,16 @@ class _PremiumPreviewButton extends StatelessWidget {
 }
 
 class _LockedFutureLevelsPreview extends StatelessWidget {
-  const _LockedFutureLevelsPreview({required this.afterLevel});
+  const _LockedFutureLevelsPreview({
+    required this.afterLevel,
+    required this.premiumLocked,
+  });
 
   final int afterLevel;
+  final bool premiumLocked;
 
   @override
   Widget build(BuildContext context) {
-    final rewardFrom = afterLevel + 21;
-    final rewardTo = afterLevel + 40;
-
     return SizedBox(
       width: 760.w,
       height: 300.h,
@@ -777,44 +816,72 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
                 child: Center(
                   child: SizedBox(
                     width: 400.w,
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                'До достижения $afterLevel уровня, так отображаются награды от $rewardFrom по',
-                            style: TextStyle(
-                              color: AppColors.white60,
-                              fontSize: 26.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.20,
-                              letterSpacing: -0.26,
+                    child: premiumLocked
+                        ? Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text:
+                                      'Награды 100+ уровней доступны только\nс ',
+                                  style: TextStyle(
+                                    color: AppColors.white60,
+                                    fontSize: 26.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.20,
+                                    letterSpacing: -0.26,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'прокачкой',
+                                  style: TextStyle(
+                                    color: AppColors.white100,
+                                    fontSize: 26.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.20,
+                                    letterSpacing: -0.26,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          TextSpan(
-                            text: ' ',
-                            style: TextStyle(
-                              color: const Color(0xE5E9E9F3),
-                              fontSize: 26.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.20,
-                              letterSpacing: -0.26,
+                            textAlign: TextAlign.center,
+                          )
+                        : Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Награды откроются после прохождения',
+                                  style: TextStyle(
+                                    color: AppColors.white60,
+                                    fontSize: 26.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.20,
+                                    letterSpacing: -0.26,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' ',
+                                  style: TextStyle(
+                                    color: const Color(0xE5E9E9F3),
+                                    fontSize: 26.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.20,
+                                    letterSpacing: -0.26,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '$afterLevel уровня',
+                                  style: TextStyle(
+                                    color: AppColors.white100,
+                                    fontSize: 26.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.20,
+                                    letterSpacing: -0.26,
+                                  ),
+                                ),
+                              ],
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                          TextSpan(
-                            text: ' $rewardTo',
-                            style: TextStyle(
-                              color: AppColors.white100,
-                              fontSize: 26.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.20,
-                              letterSpacing: -0.26,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                   ),
                 ),
               ),
@@ -913,10 +980,17 @@ class _FutureLevelMarker extends StatelessWidget {
 }
 
 class _RailScrollButton extends StatelessWidget {
-  const _RailScrollButton({required this.direction, required this.onTap});
+  const _RailScrollButton({
+    required this.direction,
+    required this.onTap,
+    required this.onHoldStart,
+    required this.onHoldEnd,
+  });
 
   final AxisDirection direction;
   final VoidCallback onTap;
+  final VoidCallback onHoldStart;
+  final VoidCallback onHoldEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -927,6 +1001,9 @@ class _RailScrollButton extends StatelessWidget {
     );
     return GestureDetector(
       onTap: onTap,
+      onLongPressStart: (_) => onHoldStart(),
+      onLongPressEnd: (_) => onHoldEnd(),
+      onLongPressCancel: onHoldEnd,
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: 84.r,
