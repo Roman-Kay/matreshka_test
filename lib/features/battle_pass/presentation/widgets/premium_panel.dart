@@ -24,7 +24,7 @@ class PremiumPanel extends StatelessWidget {
 
     return _LevelUpPanel(
       maxed: maxed,
-      canClaimAll: availableRewardsCount > 3,
+      canClaimAll: maxed && availableRewardsCount > 3,
       onClaimAll: () =>
           context.read<BattlePassCubit>().claimAllAvailableRewards(),
       onLevelUp: () => context.read<BattlePassCubit>().purchasePremium(),

@@ -284,17 +284,9 @@ class _RewardRailState extends State<RewardRail> {
                               selected:
                                   widget.state.selectedRewardId ==
                                   pinnedPrizeReward.id,
+                              progress: pass.progress,
+                              premiumStatus: pass.premiumStatus,
                               dockingProgress: pinnedPrize.dockingProgress,
-                              fixedBadgeOffset:
-                                  (_bigPrizeLeftInViewport(
-                                        premiumLocked,
-                                        pinnedPrize.level.number,
-                                      ) -
-                                      pinnedLeft) *
-                                  pinnedPrize.dockingProgress,
-                              onTap: () => context
-                                  .read<BattlePassCubit>()
-                                  .selectReward(pinnedPrizeReward.id),
                             ),
                     ),
                   ),
@@ -504,6 +496,7 @@ class RewardCard extends StatelessWidget {
     required this.premiumStatus,
     required this.isFirstLevel,
     required this.isLastLevel,
+    this.showRoadLines = true,
   });
 
   final int level;
@@ -514,6 +507,7 @@ class RewardCard extends StatelessWidget {
   final PremiumStatus premiumStatus;
   final bool isFirstLevel;
   final bool isLastLevel;
+  final bool showRoadLines;
 
   @override
   Widget build(BuildContext context) {
@@ -641,8 +635,8 @@ class RewardCard extends StatelessWidget {
               level: level,
               unlocked: unlocked,
               current: level == progress.currentLevel,
-              drawLeftLine: !isFirstLevel,
-              drawRightLine: !isLastLevel,
+              drawLeftLine: showRoadLines && !isFirstLevel,
+              drawRightLine: showRoadLines && !isLastLevel,
               nextUnlocked: level + 1 <= progress.currentLevel,
               levelProgress: progress.ratio + 1,
             ),
@@ -1137,131 +1131,41 @@ class _PinnedBigPrizeCard extends StatelessWidget {
     required this.level,
     required this.reward,
     required this.selected,
+    required this.progress,
+    required this.premiumStatus,
     required this.dockingProgress,
-    required this.fixedBadgeOffset,
-    required this.onTap,
   });
 
   final int level;
   final BattlePassReward reward;
   final bool selected;
+  final BattlePassProgress progress;
+  final PremiumStatus premiumStatus;
   final double dockingProgress;
-  final double fixedBadgeOffset;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final dockingScale = 1 - dockingProgress * 0.16;
+    final sameSizeAsRailCard = reward.status == RewardStatus.available;
+    final dockingScale = sameSizeAsRailCard ? 1.0 : 1 - dockingProgress * 0.16;
     final dockingOpacity = dockingProgress < 0.55
         ? 1.0
         : (1 - (dockingProgress - 0.55) / 0.45).clamp(0, 1).toDouble();
-    final detailsOpacity = (1 - dockingProgress / 0.7).clamp(0, 1).toDouble();
 
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Opacity(
-        opacity: dockingOpacity,
-        child: SizedBox(
-          width: 242.w,
-          height: 280.h,
-          child: Stack(
-            alignment: Alignment.topCenter,
-            clipBehavior: Clip.none,
-            children: [
-              Transform.scale(
-                scale: dockingScale,
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 242.w,
-                  height: 220.h,
-                  child: CustomPaint(
-                    painter: _ParallelogramPainter(
-                      fillColors: reward.rarity.gradientColors,
-                      borderColor: selected
-                          ? AppColors.white100
-                          : reward.rarity.accentColor,
-                      borderWidth: 4.r,
-                      skew: 26.w,
-                      radius: 24.r,
-                      glowColor: dockingProgress < 0.55
-                          ? reward.rarity.accentColor
-                          : null,
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              28.w,
-                              22.h,
-                              20.w,
-                              18.h,
-                            ),
-                            child: Image.asset(
-                              reward.assetPath ?? AppAssets.hero,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 22.w,
-                          top: 10.h,
-                          child: Opacity(
-                            opacity: detailsOpacity,
-                            child: RewardTrackIcon(track: reward.track),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Transform.translate(
-                  offset: Offset(fixedBadgeOffset, 0),
-                  child: Opacity(
-                    opacity: detailsOpacity,
-                    child: _BigPrizeLevelBadge(level: level),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BigPrizeLevelBadge extends StatelessWidget {
-  const _BigPrizeLevelBadge({required this.level});
-
-  final int level;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: pi / 4,
-      child: Container(
-        width: 48.r,
-        height: 48.r,
+    return Opacity(
+      opacity: dockingOpacity,
+      child: Transform.scale(
+        scale: dockingScale,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.background10,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Transform.rotate(
-          angle: -pi / 4,
-          child: Text(
-            '$level',
-            style: TextStyle(
-              color: AppColors.white100,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+        child: RewardCard(
+          level: level,
+          reward: reward,
+          choiceRewards: const [],
+          selected: selected,
+          progress: progress,
+          premiumStatus: premiumStatus,
+          isFirstLevel: false,
+          isLastLevel: false,
+          showRoadLines: false,
         ),
       ),
     );
