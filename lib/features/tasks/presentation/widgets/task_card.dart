@@ -28,7 +28,7 @@ class TaskCard extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(width: 33.w),
-              Image.asset(task.rewardAssetPath, width: 131.r, height: 131.r),
+              _TaskRewardImage(task: task),
               SizedBox(width: 23.w),
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -47,7 +47,7 @@ class TaskCard extends StatelessWidget {
                   SizedBox(height: 10.h),
                   Text(
                     'x ${task.rewardAmount}',
-                    style: TextStyle(color: AppColors.white50, fontSize: 30.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.30),
+                    style: TextStyle(color: task.hasXpBonus ? const Color(0xFFFFD149) : AppColors.white50, fontSize: 30.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.30),
                   ),
                 ],
               ),
@@ -114,6 +114,57 @@ class TaskCard extends StatelessWidget {
   }
 }
 
+class _TaskRewardImage extends StatelessWidget {
+  const _TaskRewardImage({required this.task});
+
+  final Task task;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 131.r,
+      height: 131.r,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Image.asset(task.rewardAssetPath, width: 131.r, height: 131.r),
+          if (task.hasXpBonus)
+            Positioned(
+              bottom: 6.14.h,
+              child: _TaskXpBonusBadge(percent: task.xpBonusPercent),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaskXpBonusBadge extends StatelessWidget {
+  const _TaskXpBonusBadge({required this.percent});
+
+  final int percent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 94.w,
+      height: 35.h,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(begin: Alignment(0.50, 0), end: Alignment(0.50, 1), colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)]),
+        borderRadius: BorderRadius.circular(26.r),
+      ),
+      child: Center(
+        child: Text(
+          '+$percent%',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: const Color(0xFF3C0B0B), fontSize: 5.63.sp, fontWeight: FontWeight.w800, height: 1.20, letterSpacing: -0.06),
+        ),
+      ),
+    );
+  }
+}
+
 class _TaskActionButton extends StatelessWidget {
   const _TaskActionButton({required this.canClaim, required this.claimed});
 
@@ -130,7 +181,7 @@ class _TaskActionButton extends StatelessWidget {
           begin: Alignment(0.50, 1.00),
           end: Alignment(0.50, 0.00),
           colors: canClaim
-              ? const [Color(0xFF55B675), Color(0xFF449761)]
+              ? [Color(0xFF55B675).withValues(alpha: 0.4), Color(0xFF449761).withValues(alpha: 0.4)]
               : claimed
               ? const [Color(0xFF9F4327), Color(0xFF9F4327)]
               : const [Color(0xFFE22929), Color(0xFFFF6435)],

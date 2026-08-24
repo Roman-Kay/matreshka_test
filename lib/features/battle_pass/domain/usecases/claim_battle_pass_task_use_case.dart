@@ -21,7 +21,8 @@ final class ClaimBattlePassTaskUseCase {
     final tasks = [...pass.tasks];
     tasks[taskIndex] = task.copyWith(status: TaskStatus.claimed);
 
-    final nextXp = pass.progress.currentXp + task.rewardAmount;
+    final rewardAmount = task.totalRewardAmount;
+    final nextXp = pass.progress.currentXp + rewardAmount;
     final leveledUp = nextXp >= pass.progress.nextLevelXp;
     final progress = pass.progress.copyWith(
       currentLevel: leveledUp
@@ -32,7 +33,7 @@ final class ClaimBattlePassTaskUseCase {
 
     return ClaimBattlePassTaskResult(
       pass: pass.copyWith(progress: progress, tasks: tasks),
-      message: '+${task.rewardAmount} опыта Battle Pass',
+      message: '+$rewardAmount опыта Battle Pass',
     );
   }
 }

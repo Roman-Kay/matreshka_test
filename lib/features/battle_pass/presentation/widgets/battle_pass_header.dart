@@ -103,6 +103,8 @@ class BattlePassHeader extends StatelessWidget {
                           'Премиум не приобретен',
                         BattlePassDemoMode.premiumUnlocked =>
                           'Премиум приобретен',
+                        BattlePassDemoMode.premiumWithXpBonus =>
+                          'Премиум +100% опыта',
                         BattlePassDemoMode.maxLevel => 'Максимальный уровень',
                         BattlePassDemoMode.completed => 'Battle Pass завершен',
                       }),

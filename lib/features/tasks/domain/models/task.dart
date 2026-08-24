@@ -9,6 +9,7 @@ final class Task {
     required this.currentProgress,
     required this.requiredProgress,
     required this.rewardAssetPath,
+    this.xpBonusPercent = 0,
     this.status = TaskStatus.inProgress,
   });
 
@@ -19,11 +20,15 @@ final class Task {
   final int currentProgress;
   final int requiredProgress;
   final String rewardAssetPath;
+  final int xpBonusPercent;
   final TaskStatus status;
 
   bool get completed => currentProgress >= requiredProgress;
   bool get canClaim => status == TaskStatus.readyToClaim;
   bool get claimed => status == TaskStatus.claimed;
+  bool get hasXpBonus => xpBonusPercent > 0;
+  int get totalRewardAmount =>
+      rewardAmount + (rewardAmount * xpBonusPercent / 100).round();
 
   Task copyWith({
     int? id,
@@ -33,6 +38,7 @@ final class Task {
     int? currentProgress,
     int? requiredProgress,
     String? rewardAssetPath,
+    int? xpBonusPercent,
     TaskStatus? status,
   }) {
     return Task(
@@ -43,6 +49,7 @@ final class Task {
       currentProgress: currentProgress ?? this.currentProgress,
       requiredProgress: requiredProgress ?? this.requiredProgress,
       rewardAssetPath: rewardAssetPath ?? this.rewardAssetPath,
+      xpBonusPercent: xpBonusPercent ?? this.xpBonusPercent,
       status: status ?? this.status,
     );
   }

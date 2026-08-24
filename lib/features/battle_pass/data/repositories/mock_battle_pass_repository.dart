@@ -2,6 +2,7 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../battle_pass/domain/models/battle_pass_models.dart';
 import '../../../battle_pass/domain/repositories/battle_pass_repository.dart';
 import '../../../tasks/data/repositories/mock_tasks_repository.dart';
+import '../../../tasks/domain/models/task.dart';
 import '../../../tasks/domain/repositories/tasks_repository.dart';
 
 final class MockBattlePassRepository implements BattlePassRepository {
@@ -31,6 +32,11 @@ final class MockBattlePassRepository implements BattlePassRepository {
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.premiumUnlocked => const BattlePassProgress(
+        currentLevel: 108,
+        currentXp: 900,
+        nextLevelXp: 1600,
+      ),
+      BattlePassDemoMode.premiumWithXpBonus => const BattlePassProgress(
         currentLevel: 108,
         currentXp: 900,
         nextLevelXp: 1600,
@@ -86,8 +92,18 @@ final class MockBattlePassRepository implements BattlePassRepository {
       ),
       progress: progress,
       premiumStatus: premium,
-      tasks: await _tasksRepository.loadBattlePassTasks(),
+      tasks: _tasksWithPremiumBonus(
+        await _tasksRepository.loadBattlePassTasks(),
+        mode,
+      ),
     );
+  }
+
+  List<Task> _tasksWithPremiumBonus(List<Task> tasks, BattlePassDemoMode mode) {
+    if (mode != BattlePassDemoMode.premiumWithXpBonus) return tasks;
+    return tasks
+        .map((task) => task.copyWith(xpBonusPercent: 100))
+        .toList(growable: false);
   }
 
   List<BattlePassReward> _instantPremiumRewards(PremiumStatus premium) {

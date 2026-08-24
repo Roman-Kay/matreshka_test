@@ -29,7 +29,9 @@ class TaskPreviewActionButton extends StatelessWidget {
             padding: isClaim ? EdgeInsets.fromLTRB(36.w, 20.h, 36.w, 23.h) : null,
             decoration: BoxDecoration(
               color: isClaim ? null : AppColors.white10,
-              gradient: isClaim ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF55B675), Color(0xFF449761)]) : null,
+              gradient: isClaim
+                  ? LinearGradient(begin: Alignment(0.50, 0.00), end: Alignment(0.50, 1.00), colors: [Color(0xFF55B675).withValues(alpha: 0.4), Color(0xFF449761).withValues(alpha: 0.4)])
+                  : null,
               borderRadius: BorderRadius.circular(30.r),
             ),
             child: Row(

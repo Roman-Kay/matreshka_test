@@ -23,6 +23,7 @@
 
 - `premiumLocked` - премиум не приобретен;
 - `premiumUnlocked` - премиум приобретен;
+- `premiumWithXpBonus` - премиум приобретен, у заданий включен бонус `+100%` к опыту;
 - `maxLevel` - максимальный уровень;
 - `completed` - Battle Pass завершен.
 
@@ -133,6 +134,7 @@ rpc BattlePass {
     int32 currentProgress "Текущий прогресс выполнения";
     int32 requiredProgress "Цель выполнения";
     string rewardAssetPath = 256 "Иконка награды";
+    int32 xpBonusPercent "Процент бонуса к опыту при активном премиуме, 0 если бонуса нет";
     TaskStatus status "Состояние задания";
   }
 

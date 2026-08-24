@@ -124,6 +124,30 @@ void main() {
       expect(result.pass.progress.currentXp, 10);
     });
 
+    test('applies premium task xp bonus', () {
+      final pass = _pass(
+        tasks: const [
+          Task(
+            id: 1,
+            title: 'Task',
+            rewardTitle: 'XP',
+            rewardAmount: 25,
+            currentProgress: 1,
+            requiredProgress: 1,
+            rewardAssetPath: 'xp.png',
+            xpBonusPercent: 100,
+            status: TaskStatus.readyToClaim,
+          ),
+        ],
+      );
+
+      final result = const ClaimBattlePassTaskUseCase()(pass, 1);
+
+      expect(result, isNotNull);
+      expect(result!.pass.progress.currentXp, 70);
+      expect(result.message, '+50 опыта Battle Pass');
+    });
+
     test('ignores unavailable task', () {
       final pass = _pass(
         tasks: const [
