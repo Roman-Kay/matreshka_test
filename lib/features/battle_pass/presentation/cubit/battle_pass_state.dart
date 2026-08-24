@@ -3,9 +3,20 @@ import '../../domain/models/battle_pass_models.dart';
 enum BattlePassViewStatus { initial, loading, loaded, failure }
 
 final class BattlePassState {
-  const BattlePassState({required this.status, required this.demoMode, this.battlePass, this.selectedRewardId, this.message});
+  const BattlePassState({
+    required this.status,
+    required this.demoMode,
+    this.battlePass,
+    this.selectedRewardId,
+    this.message,
+  });
 
-  const BattlePassState.initial() : status = BattlePassViewStatus.initial, demoMode = BattlePassDemoMode.premiumLocked, battlePass = null, selectedRewardId = null, message = null;
+  const BattlePassState.initial()
+    : status = BattlePassViewStatus.initial,
+      demoMode = BattlePassDemoMode.premiumLocked,
+      battlePass = null,
+      selectedRewardId = null,
+      message = null;
 
   final BattlePassViewStatus status;
   final BattlePassDemoMode demoMode;
@@ -13,7 +24,14 @@ final class BattlePassState {
   final int? selectedRewardId;
   final String? message;
 
-  BattlePassState copyWith({BattlePassViewStatus? status, BattlePassDemoMode? demoMode, BattlePass? battlePass, int? selectedRewardId, String? message, bool clearMessage = false}) {
+  BattlePassState copyWith({
+    BattlePassViewStatus? status,
+    BattlePassDemoMode? demoMode,
+    BattlePass? battlePass,
+    int? selectedRewardId,
+    String? message,
+    bool clearMessage = false,
+  }) {
     return BattlePassState(
       status: status ?? this.status,
       demoMode: demoMode ?? this.demoMode,

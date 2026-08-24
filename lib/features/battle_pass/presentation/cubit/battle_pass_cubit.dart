@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/models/battle_pass_models.dart';
 import '../../domain/repositories/battle_pass_repository.dart';
 import '../../domain/usecases/claim_all_rewards_use_case.dart';
+import '../../domain/usecases/claim_battle_pass_task_use_case.dart';
 import '../../domain/usecases/claim_reward_use_case.dart';
 import '../../domain/usecases/compute_reward_statuses_use_case.dart';
 import '../../domain/usecases/load_battle_pass_use_case.dart';
@@ -16,6 +17,8 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
         const ComputeRewardStatusesUseCase(),
     ClaimRewardUseCase claimReward = const ClaimRewardUseCase(),
     ClaimAllRewardsUseCase claimAllRewards = const ClaimAllRewardsUseCase(),
+    ClaimBattlePassTaskUseCase claimBattlePassTask =
+        const ClaimBattlePassTaskUseCase(),
   }) : _loadBattlePass = LoadBattlePassUseCase(
          repository,
          computeRewardStatuses,
@@ -23,12 +26,14 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
        _purchasePremium = PurchasePremiumUseCase(computeRewardStatuses),
        _claimReward = claimReward,
        _claimAllRewards = claimAllRewards,
+       _claimBattlePassTask = claimBattlePassTask,
        super(const BattlePassState.initial());
 
   final LoadBattlePassUseCase _loadBattlePass;
   final PurchasePremiumUseCase _purchasePremium;
   final ClaimRewardUseCase _claimReward;
   final ClaimAllRewardsUseCase _claimAllRewards;
+  final ClaimBattlePassTaskUseCase _claimBattlePassTask;
 
   Future<void> load({BattlePassDemoMode? mode}) async {
     final nextMode = mode ?? state.demoMode;
@@ -90,30 +95,10 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
     final pass = state.battlePass;
     if (pass == null) return;
 
-    final taskIndex = pass.tasks.indexWhere((task) => task.id == taskId);
-    if (taskIndex == -1) return;
+    final result = _claimBattlePassTask(pass, taskId);
+    if (result == null) return;
 
-    final task = pass.tasks[taskIndex];
-    if (!task.canClaim) return;
-
-    final tasks = [...pass.tasks];
-    tasks[taskIndex] = task.copyWith(status: BattlePassTaskStatus.claimed);
-
-    final nextXp = pass.progress.currentXp + task.rewardAmount;
-    final leveledUp = nextXp >= pass.progress.nextLevelXp;
-    final progress = pass.progress.copyWith(
-      currentLevel: leveledUp
-          ? (pass.progress.currentLevel + 1).clamp(1, pass.season.maxLevel)
-          : pass.progress.currentLevel,
-      currentXp: leveledUp ? nextXp - pass.progress.nextLevelXp : nextXp,
-    );
-
-    emit(
-      state.copyWith(
-        battlePass: pass.copyWith(progress: progress, tasks: tasks),
-        message: '+${task.rewardAmount} опыта Battle Pass',
-      ),
-    );
+    emit(state.copyWith(battlePass: result.pass, message: result.message));
   }
 
   int? _firstRewardId(BattlePass pass) {

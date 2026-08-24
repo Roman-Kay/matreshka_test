@@ -1,13 +1,20 @@
+import '../../../../core/constants/app_assets.dart';
 import '../../../battle_pass/domain/models/battle_pass_models.dart';
 import '../../../battle_pass/domain/repositories/battle_pass_repository.dart';
-import '../../../../core/constants/app_assets.dart';
+import '../../../tasks/data/repositories/mock_tasks_repository.dart';
+import '../../../tasks/domain/repositories/tasks_repository.dart';
 
 final class MockBattlePassRepository implements BattlePassRepository {
-  const MockBattlePassRepository({
+  MockBattlePassRepository({
     this.delay = const Duration(milliseconds: 350),
-  });
+    TasksRepository? tasksRepository,
+    DateTime Function()? now,
+  }) : _tasksRepository = tasksRepository ?? const MockTasksRepository(),
+       _now = now ?? DateTime.now;
 
   final Duration delay;
+  final TasksRepository _tasksRepository;
+  final DateTime Function() _now;
 
   @override
   Future<BattlePass> load(BattlePassDemoMode mode) async {
@@ -39,12 +46,15 @@ final class MockBattlePassRepository implements BattlePassRepository {
         nextLevelXp: 1600,
       ),
     };
+    final now = _now();
+    final startedAt = DateTime.utc(now.year, now.month, now.day);
+
     return BattlePass(
       season: BattlePassSeason(
-        id: 'birthday-2025',
+        id: 'birthday-${startedAt.year}',
         title: 'Дай пять!',
-        startsAt: DateTime.utc(2025, 7, 1),
-        endsAt: DateTime.utc(2025, 7, 17, 12, 42),
+        startsAt: startedAt,
+        endsAt: startedAt.add(const Duration(days: 16, hours: 12, minutes: 42)),
         maxLevel: 200,
         levels: List<BattlePassLevel>.generate(200, (index) {
           final level = index + 1;
@@ -75,7 +85,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
       ),
       progress: progress,
       premiumStatus: premium,
-      tasks: mockBattlePassTasks,
+      tasks: await _tasksRepository.loadBattlePassTasks(),
     );
   }
 
@@ -147,53 +157,3 @@ final class MockBattlePassRepository implements BattlePassRepository {
         : RewardStatus.locked;
   }
 }
-
-const mockBattlePassTasks = [
-  BattlePassTask(
-    id: 1,
-    title: 'Пробегите 100 метров по городу в классическом режиме.',
-    rewardTitle: 'Опыт БП',
-    rewardAmount: 25,
-    currentProgress: 40,
-    requiredProgress: 100,
-    rewardAssetPath: AppAssets.xp,
-  ),
-  BattlePassTask(
-    id: 2,
-    title: 'Проедьте 200 метров на любом транспорте.',
-    rewardTitle: 'Опыт БП',
-    rewardAmount: 100,
-    currentProgress: 200,
-    requiredProgress: 200,
-    rewardAssetPath: AppAssets.xp,
-    status: BattlePassTaskStatus.claimed,
-  ),
-  BattlePassTask(
-    id: 3,
-    title: 'Оплатите 1 штраф ПДД в участке или через терминал.',
-    rewardTitle: 'Опыт БП',
-    rewardAmount: 250,
-    currentProgress: 1,
-    requiredProgress: 1,
-    rewardAssetPath: AppAssets.xp,
-    status: BattlePassTaskStatus.readyToClaim,
-  ),
-  BattlePassTask(
-    id: 4,
-    title: 'Заработайте 500 рублей на любой легальной работе.',
-    rewardTitle: 'Опыт БП',
-    rewardAmount: 25,
-    currentProgress: 120,
-    requiredProgress: 500,
-    rewardAssetPath: AppAssets.xp,
-  ),
-  BattlePassTask(
-    id: 5,
-    title: 'Используйте энергетик 3 раза во время RP-сессии.',
-    rewardTitle: 'Опыт БП',
-    rewardAmount: 25,
-    currentProgress: 1,
-    requiredProgress: 3,
-    rewardAssetPath: AppAssets.xp,
-  ),
-];

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../battle_pass/domain/models/battle_pass_models.dart';
+import '../../domain/models/task.dart';
 
 class TaskCard extends StatelessWidget {
   const TaskCard({super.key, required this.task});
 
-  final BattlePassTask task;
+  final Task task;
 
   @override
   Widget build(BuildContext context) {

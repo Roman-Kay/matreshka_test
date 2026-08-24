@@ -12,6 +12,7 @@ import 'battle_pass_header.dart';
 import 'premium_panel.dart';
 import 'reward_rail.dart';
 import 'reward_title.dart';
+import 'tasks_preview/battle_pass_completed_notice.dart';
 import 'tasks_preview.dart';
 
 class BattlePassContent extends StatelessWidget {

@@ -7,6 +7,7 @@ import '../../../battle_pass/presentation/cubit/battle_pass_cubit.dart';
 import '../../../pause/presentation/models/pause_menu_section.dart';
 import '../../../pause/presentation/widgets/pause_frame.dart';
 import '../../../pause/presentation/widgets/pause_navigation_bar.dart';
+import '../models/tasks_progress_summary.dart';
 import '../widgets/tasks_content.dart';
 
 class TasksPage extends StatelessWidget {
@@ -40,10 +41,18 @@ class BattlePassTasksPage extends StatelessWidget {
             ),
             Expanded(
               child: TasksContent(
-                pass: pass,
+                progress: pass == null
+                    ? null
+                    : TasksProgressSummary(
+                        currentLevel: pass.progress.currentLevel,
+                        currentXp: pass.progress.currentXp,
+                        nextLevelXp: pass.progress.nextLevelXp,
+                      ),
                 tasks: pass?.tasks ?? const [],
                 onBack: () => context.router.maybePop(),
                 onExit: () => context.router.replaceAll([const GameRoute()]),
+                onPurchasePremium: () =>
+                    context.read<BattlePassCubit>().purchasePremium(),
               ),
             ),
           ],

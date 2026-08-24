@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/models/battle_pass_models.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/claim_all_rewards_use_case.dart';
+import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/claim_battle_pass_task_use_case.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/claim_reward_use_case.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/compute_reward_statuses_use_case.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/purchase_premium_use_case.dart';
+import 'package:romankaygo_test_rp/features/tasks/domain/models/task.dart';
 
 void main() {
   group(ComputeRewardStatusesUseCase, () {
@@ -73,9 +75,78 @@ void main() {
       );
     });
   });
+
+  group(ClaimBattlePassTaskUseCase, () {
+    test('claims task and adds battle pass xp', () {
+      final pass = _pass(
+        tasks: const [
+          Task(
+            id: 1,
+            title: 'Task',
+            rewardTitle: 'XP',
+            rewardAmount: 25,
+            currentProgress: 1,
+            requiredProgress: 1,
+            rewardAssetPath: 'xp.png',
+            status: TaskStatus.readyToClaim,
+          ),
+        ],
+      );
+
+      final result = const ClaimBattlePassTaskUseCase()(pass, 1);
+
+      expect(result, isNotNull);
+      expect(result!.pass.tasks.first.status, TaskStatus.claimed);
+      expect(result.pass.progress.currentXp, 45);
+      expect(result.message, '+25 опыта Battle Pass');
+    });
+
+    test('levels up when task xp reaches threshold', () {
+      final pass = _pass(
+        tasks: const [
+          Task(
+            id: 1,
+            title: 'Task',
+            rewardTitle: 'XP',
+            rewardAmount: 90,
+            currentProgress: 1,
+            requiredProgress: 1,
+            rewardAssetPath: 'xp.png',
+            status: TaskStatus.readyToClaim,
+          ),
+        ],
+      );
+
+      final result = const ClaimBattlePassTaskUseCase()(pass, 1);
+
+      expect(result, isNotNull);
+      expect(result!.pass.progress.currentLevel, 2);
+      expect(result.pass.progress.currentXp, 10);
+    });
+
+    test('ignores unavailable task', () {
+      final pass = _pass(
+        tasks: const [
+          Task(
+            id: 1,
+            title: 'Task',
+            rewardTitle: 'XP',
+            rewardAmount: 25,
+            currentProgress: 0,
+            requiredProgress: 1,
+            rewardAssetPath: 'xp.png',
+          ),
+        ],
+      );
+
+      final result = const ClaimBattlePassTaskUseCase()(pass, 1);
+
+      expect(result, isNull);
+    });
+  });
 }
 
-BattlePass _pass() {
+BattlePass _pass({List<Task> tasks = const []}) {
   return BattlePass(
     season: BattlePassSeason(
       id: 'season',
@@ -131,6 +202,6 @@ BattlePass _pass() {
       nextLevelXp: 100,
     ),
     premiumStatus: PremiumStatus.locked,
-    tasks: const [],
+    tasks: tasks,
   );
 }

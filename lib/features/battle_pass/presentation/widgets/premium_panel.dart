@@ -4,9 +4,9 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/ui/buttons/premium_action_button.dart';
 import '../../domain/models/battle_pass_models.dart';
 import '../cubit/battle_pass_cubit.dart';
-import 'premium_action_button.dart';
 
 class PremiumPanel extends StatelessWidget {
   const PremiumPanel({super.key, required this.pass});

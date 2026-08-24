@@ -4,27 +4,26 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../battle_pass/domain/models/battle_pass_models.dart';
-import '../../../battle_pass/presentation/widgets/level_badge.dart';
+import '../models/tasks_progress_summary.dart';
 import 'tasks_header_icon_button.dart';
 
 class TasksHeader extends StatelessWidget {
   const TasksHeader({
     super.key,
-    required this.pass,
+    required this.progress,
     required this.onBack,
     required this.onExit,
   });
 
-  final BattlePass? pass;
+  final TasksProgressSummary? progress;
   final VoidCallback? onBack;
   final VoidCallback? onExit;
 
   @override
   Widget build(BuildContext context) {
     final progress =
-        pass?.progress ??
-        const BattlePassProgress(
+        this.progress ??
+        const TasksProgressSummary(
           currentLevel: 1,
           currentXp: 500,
           nextLevelXp: 1600,
@@ -37,7 +36,7 @@ class TasksHeader extends StatelessWidget {
           TasksHeaderIconButton(assetPath: AppAssets.arrowLeft, onTap: onBack!),
           SizedBox(width: 40.w),
         ],
-        BattlePassLevelBadge(progress: progress),
+        _TasksLevelBadge(progress: progress),
         SizedBox(width: 40.w),
         Padding(
           padding: EdgeInsets.only(top: 13.h),
@@ -114,6 +113,36 @@ class TasksHeader extends StatelessWidget {
             onTap: onExit ?? onBack!,
           ),
       ],
+    );
+  }
+}
+
+class _TasksLevelBadge extends StatelessWidget {
+  const _TasksLevelBadge({required this.progress});
+
+  final TasksProgressSummary progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 124.w,
+      height: 124.w,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.dark,
+        border: Border.all(color: AppColors.orange, width: 4.r),
+      ),
+      child: Center(
+        child: Text(
+          '${progress.currentLevel}',
+          style: TextStyle(
+            color: AppColors.white100,
+            fontSize: 42.sp,
+            fontWeight: FontWeight.w700,
+            height: 1,
+          ),
+        ),
+      ),
     );
   }
 }
