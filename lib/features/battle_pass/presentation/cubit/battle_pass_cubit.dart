@@ -112,6 +112,59 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
     );
   }
 
+  void claimAllAvailableRewards() {
+    final pass = state.battlePass;
+    if (pass == null) return;
+
+    var claimedCount = 0;
+    final levels = pass.season.levels
+        .map((level) {
+          List<BattlePassReward> update(List<BattlePassReward> rewards) {
+            return rewards
+                .map((reward) {
+                  final premiumLocked =
+                      reward.track == BattlePassTrack.premium &&
+                      pass.premiumStatus == PremiumStatus.locked;
+                  if (reward.status != RewardStatus.available ||
+                      premiumLocked) {
+                    return reward;
+                  }
+                  claimedCount += 1;
+                  return reward.copyWith(status: RewardStatus.received);
+                })
+                .toList(growable: false);
+          }
+
+          return BattlePassLevel(
+            number: level.number,
+            requiredXp: level.requiredXp,
+            freeRewards: update(level.freeRewards),
+            premiumRewards: update(level.premiumRewards),
+          );
+        })
+        .toList(growable: false);
+
+    emit(
+      state.copyWith(
+        battlePass: BattlePass(
+          season: BattlePassSeason(
+            id: pass.season.id,
+            title: pass.season.title,
+            startsAt: pass.season.startsAt,
+            endsAt: pass.season.endsAt,
+            maxLevel: pass.season.maxLevel,
+            levels: levels,
+          ),
+          progress: pass.progress,
+          premiumStatus: pass.premiumStatus,
+        ),
+        message: claimedCount > 0
+            ? 'Получено наград: $claimedCount'
+            : 'Нет доступных наград',
+      ),
+    );
+  }
+
   BattlePass _withComputedStatuses(BattlePass pass) {
     final levels = pass.season.levels
         .map((level) {

@@ -1,6 +1,8 @@
 abstract final class AppAssets {
   static const bg = 'assets/figma/bg.png';
   static const hero = 'assets/figma/hero.png';
+  static const woman = 'assets/figma/woman.png';
+  static const levelUp = 'assets/figma/level_up.png';
   static const rewardOne = 'assets/figma/reward_1.png';
   static const rewardTwo = 'assets/figma/reward_2.png';
   static const freeReward = 'assets/figma/free_reward.png';
@@ -22,5 +24,6 @@ abstract final class AppAssets {
   static const info = 'assets/figma/icn_info_fill.svg';
   static const arrowLeft = 'assets/figma/arrow_left.svg';
   static const arrowRoad = 'assets/figma/arrow_road.svg';
+  static const arrowLevelUp = 'assets/figma/arrow_levelup.svg';
   static const dotedLine = 'assets/figma/doted_line.png';
 }

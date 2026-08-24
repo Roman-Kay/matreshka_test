@@ -24,12 +24,12 @@ final class MockBattlePassRepository implements BattlePassRepository {
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.premiumUnlocked => const BattlePassProgress(
-        currentLevel: 10,
+        currentLevel: 108,
         currentXp: 900,
         nextLevelXp: 1600,
       ),
       BattlePassDemoMode.maxLevel => const BattlePassProgress(
-        currentLevel: 100,
+        currentLevel: 200,
         currentXp: 1600,
         nextLevelXp: 1600,
       ),
@@ -64,26 +64,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
                 ),
               ),
             ],
-            premiumRewards: [
-              BattlePassReward(
-                id: level * 10 + 1,
-                type: level == 10 ? RewardType.vehicle : RewardType.outfit,
-                title: level == 4
-                    ? '«Роковая женщина» или «Босс мафии»'
-                    : level == 10
-                    ? 'Мега пак'
-                    : 'Премиум награда $level',
-                amount: level == 10 ? 1 : 16,
-                track: BattlePassTrack.premium,
-                assetPath: level == 10 ? AppAssets.hero : AppAssets.rewardOne,
-                rarity: _rarityForLevel(level + 1),
-                status: _initialRewardStatus(
-                  level: level,
-                  track: BattlePassTrack.premium,
-                  premium: premium,
-                ),
-              ),
-            ],
+            premiumRewards: _premiumRewardsForLevel(level, premium),
           );
         }),
       ),
@@ -97,6 +78,55 @@ final class MockBattlePassRepository implements BattlePassRepository {
     if (level % 5 == 0) return RewardRarity.epic;
     if (level % 3 == 0) return RewardRarity.rare;
     return RewardRarity.common;
+  }
+
+  List<BattlePassReward> _premiumRewardsForLevel(
+    int level,
+    PremiumStatus premium,
+  ) {
+    final status = _initialRewardStatus(
+      level: level,
+      track: BattlePassTrack.premium,
+      premium: premium,
+    );
+
+    if (level == 4) {
+      return [
+        BattlePassReward(
+          id: level * 10 + 1,
+          type: RewardType.outfit,
+          title: '«Роковая женщина»',
+          amount: 1,
+          track: BattlePassTrack.premium,
+          assetPath: AppAssets.rewardOne,
+          rarity: RewardRarity.rare,
+          status: status,
+        ),
+        BattlePassReward(
+          id: level * 10 + 2,
+          type: RewardType.outfit,
+          title: '«Босс мафии»',
+          amount: 1,
+          track: BattlePassTrack.premium,
+          assetPath: AppAssets.rewardTwo,
+          rarity: RewardRarity.rare,
+          status: status,
+        ),
+      ];
+    }
+
+    return [
+      BattlePassReward(
+        id: level * 10 + 1,
+        type: level == 10 ? RewardType.vehicle : RewardType.outfit,
+        title: level == 10 ? 'Мега пак' : 'Премиум награда $level',
+        amount: level == 10 ? 1 : 16,
+        track: BattlePassTrack.premium,
+        assetPath: level == 10 ? AppAssets.hero : AppAssets.rewardOne,
+        rarity: _rarityForLevel(level + 1),
+        status: status,
+      ),
+    ];
   }
 
   RewardStatus _initialRewardStatus({

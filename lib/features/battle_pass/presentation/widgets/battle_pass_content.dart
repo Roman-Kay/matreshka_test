@@ -29,14 +29,13 @@ class _BattlePassContentState extends State<BattlePassContent> {
   Widget build(BuildContext context) {
     final pass = widget.state.battlePass!;
     final selected = _selectedReward(pass, widget.state.selectedRewardId);
+    final choiceRewards = _selectedChoiceRewards(pass, widget.state.selectedRewardId);
     final isBattlePass = _activePanel == 'Battle Pass';
+    final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
 
     return Row(
       children: [
-        BattlePassNavigationBar(
-          selectedLabel: _activePanel,
-          onSelected: (label) => setState(() => _activePanel = label),
-        ),
+        BattlePassNavigationBar(selectedLabel: _activePanel, onSelected: (label) => setState(() => _activePanel = label)),
         Expanded(
           child: Stack(
             children: [
@@ -47,10 +46,7 @@ class _BattlePassContentState extends State<BattlePassContent> {
                     SizedBox(height: 32.h),
                     BattlePassHeader(pass: pass),
                     SizedBox(height: 59.h),
-                    TasksPreview(
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.tasks),
-                    ),
+                    TasksPreview(onTap: () => Navigator.pushNamed(context, AppRoutes.tasks)),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
@@ -69,24 +65,15 @@ class _BattlePassContentState extends State<BattlePassContent> {
                     alignment: Alignment.topCenter,
                     child: Column(
                       children: [
-                        Image.asset(
-                          selected?.assetPath ?? AppAssets.hero,
-                          height: 521.h,
-                          width: 521.w,
-                        ),
-                        RewardTitle(
-                          reward: selected,
-                          premiumLocked:
-                              pass.premiumStatus == PremiumStatus.locked,
-                        ),
+                        Image.asset(selected?.assetPath ?? AppAssets.hero, height: 521.h, width: 521.w),
+                        RewardTitle(reward: selected, choiceRewards: choiceRewards, premiumLocked: premiumLocked),
                       ],
                     ),
                   ),
                 ),
 
-                Positioned(
-                  right: 80.w,
-                  top: 335.h,
+                Align(
+                  alignment: Alignment.topRight,
                   child: PremiumPanel(pass: pass),
                 ),
                 // Positioned(
@@ -118,5 +105,17 @@ class _BattlePassContentState extends State<BattlePassContent> {
       }
     }
     return null;
+  }
+
+  List<BattlePassReward> _selectedChoiceRewards(BattlePass pass, int? id) {
+    if (id == null) return const [];
+
+    for (final level in pass.season.levels) {
+      final rewards = [...level.freeRewards, ...level.premiumRewards];
+      if (!rewards.any((reward) => reward.id == id)) continue;
+      return level.premiumRewards.length > 1 ? level.premiumRewards : const [];
+    }
+
+    return const [];
   }
 }
