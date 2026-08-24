@@ -18,6 +18,7 @@ class PauseShellPage extends StatelessWidget {
           routes: const [
             EventRoute(),
             BattlePassRoute(),
+            BattlePassTasksRoute(),
             NewcomerCalendarRoute(),
             AfterLessonsRoute(),
             InviteFriendRoute(),
@@ -28,10 +29,9 @@ class PauseShellPage extends StatelessWidget {
             return Row(
               children: [
                 PauseNavigationBar(
-                  selectedSection:
-                      PauseMenuSection.values[tabsRouter.activeIndex],
+                  selectedSection: _sectionForIndex(tabsRouter.activeIndex),
                   onSelected: (section) {
-                    tabsRouter.setActiveIndex(section.index);
+                    tabsRouter.setActiveIndex(_indexForSection(section));
                   },
                 ),
                 Expanded(child: child),
@@ -41,5 +41,27 @@ class PauseShellPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  PauseMenuSection _sectionForIndex(int index) {
+    return switch (index) {
+      0 => PauseMenuSection.event,
+      1 || 2 => PauseMenuSection.battlePass,
+      3 => PauseMenuSection.calendar,
+      4 => PauseMenuSection.afterLessons,
+      5 => PauseMenuSection.inviteFriend,
+      _ => PauseMenuSection.promo,
+    };
+  }
+
+  int _indexForSection(PauseMenuSection section) {
+    return switch (section) {
+      PauseMenuSection.event => 0,
+      PauseMenuSection.battlePass => 1,
+      PauseMenuSection.calendar => 3,
+      PauseMenuSection.afterLessons => 4,
+      PauseMenuSection.inviteFriend => 5,
+      PauseMenuSection.promo => 6,
+    };
   }
 }

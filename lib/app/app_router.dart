@@ -30,18 +30,18 @@ class AppRouter extends RootStackRouter {
           path: 'battle-pass',
           initial: true,
         ),
+        CustomRoute(
+          page: BattlePassTasksRoute.page,
+          path: 'battle-pass/tasks',
+          transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
+          duration: const Duration(milliseconds: 320),
+          reverseDuration: const Duration(milliseconds: 260),
+        ),
         AutoRoute(page: NewcomerCalendarRoute.page, path: 'calendar'),
         AutoRoute(page: AfterLessonsRoute.page, path: 'after-lessons'),
         AutoRoute(page: InviteFriendRoute.page, path: 'invite-friend'),
         AutoRoute(page: PromoRoute.page, path: 'promo'),
       ],
-    ),
-    CustomRoute(
-      page: BattlePassTasksRoute.page,
-      path: '/pause/battle-pass/tasks',
-      transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
-      duration: const Duration(milliseconds: 320),
-      reverseDuration: const Duration(milliseconds: 260),
     ),
   ];
 }

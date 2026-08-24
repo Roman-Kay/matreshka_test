@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../theme/app_colors.dart';
 
-class TasksHeaderIconButton extends StatelessWidget {
-  const TasksHeaderIconButton({
+class HeaderIconButton extends StatelessWidget {
+  const HeaderIconButton({
     super.key,
     required this.assetPath,
     required this.onTap,

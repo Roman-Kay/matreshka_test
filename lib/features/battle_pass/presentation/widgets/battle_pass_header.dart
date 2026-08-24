@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
+import 'package:romankaygo_test_rp/core/ui/buttons/header_icon_button.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/battle_pass_models.dart';
@@ -77,21 +78,7 @@ class BattlePassHeader extends StatelessWidget {
             ),
             const Spacer(),
             if (onClose != null)
-              GestureDetector(
-                onTap: onClose,
-                child: Container(
-                  padding: EdgeInsets.all(32.r),
-                  decoration: BoxDecoration(
-                    color: AppColors.white5,
-                    borderRadius: BorderRadius.circular(100.h),
-                  ),
-                  child: SvgPicture.asset(
-                    AppAssets.close,
-                    width: 36.r,
-                    height: 36.r,
-                  ),
-                ),
-              ),
+              HeaderIconButton(assetPath: AppAssets.close, onTap: onClose!),
           ],
         ),
       ),
