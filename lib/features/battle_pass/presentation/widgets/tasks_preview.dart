@@ -10,10 +10,16 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/battle_pass_models.dart';
 
 class TasksPreview extends StatefulWidget {
-  const TasksPreview({super.key, required this.tasks, required this.onTap});
+  const TasksPreview({
+    super.key,
+    required this.tasks,
+    required this.onTap,
+    required this.onClaim,
+  });
 
   final List<BattlePassTask> tasks;
   final VoidCallback onTap;
+  final ValueChanged<int> onClaim;
 
   @override
   State<TasksPreview> createState() => _TasksPreviewState();
@@ -51,6 +57,15 @@ class _TasksPreviewState extends State<TasksPreview> {
   }
 
   @override
+  void didUpdateWidget(covariant TasksPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.tasks.isEmpty) return;
+    if (_activeIndex >= widget.tasks.length) {
+      _activeIndex = widget.tasks.length - 1;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tasks = widget.tasks;
     if (tasks.isEmpty) return const SizedBox.shrink();
@@ -58,88 +73,112 @@ class _TasksPreviewState extends State<TasksPreview> {
 
     return Padding(
       padding: EdgeInsets.only(left: 61.w, top: 59.h),
-      child: SizedBox(
-        width: 400.w,
-        child: Column(
-          children: [
-            Container(
-              height: 110.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF353747).withValues(alpha: 0.6),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30.r),
-                  topRight: Radius.circular(30.r),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: widget.onTap,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (velocity < -120) _goToTask(_activeIndex + 1);
+          if (velocity > 120) _goToTask(_activeIndex - 1);
+        },
+        child: SizedBox(
+          width: 400.w,
+          child: Column(
+            children: [
+              Container(
+                height: 110.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF353747).withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.r),
+                    topRight: Radius.circular(30.r),
+                  ),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 320),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  child: _TaskPreviewHeader(
+                    key: ValueKey('header-${tasks[_activeIndex].id}'),
+                    task: tasks[_activeIndex],
+                    taskIndex: _activeIndex,
+                    taskCount: tasks.length,
+                  ),
                 ),
               ),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 320),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                child: _TaskPreviewHeader(
-                  key: ValueKey('header-${tasks[_activeIndex].id}'),
-                  task: tasks[_activeIndex],
-                  taskIndex: _activeIndex,
-                  taskCount: tasks.length,
+              Container(
+                height: 290.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF202231).withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30.r),
+                    bottomRight: Radius.circular(30.r),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              height: 290.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF202231).withValues(alpha: 0.6),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30.r),
-                  bottomRight: Radius.circular(30.r),
-                ),
-              ),
-              child: Column(
-                children: [
-                  const Spacer(flex: 44),
-                  SizedBox(
-                    width: 320.w,
-                    height: 54.h,
-                    child: PageView.builder(
-                      controller: _textPageController,
-                      itemCount: tasks.length,
-                      onPageChanged: (index) =>
-                          setState(() => _activeIndex = index),
-                      itemBuilder: (context, index) {
-                        final task = tasks[index];
-                        return Text(
-                          task.title,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: task.claimed
-                                ? AppColors.white60.withValues(alpha: 0.4)
-                                : AppColors.white60,
-                            fontSize: 22.sp,
-                            fontWeight: FontWeight.w500,
-                            height: 1.20,
-                            letterSpacing: -0.22,
-                          ),
-                        );
-                      },
+                child: Column(
+                  children: [
+                    const Spacer(flex: 44),
+                    SizedBox(
+                      width: 320.w,
+                      height: 54.h,
+                      child: PageView.builder(
+                        controller: _textPageController,
+                        itemCount: tasks.length,
+                        onPageChanged: (index) =>
+                            setState(() => _activeIndex = index),
+                        itemBuilder: (context, index) {
+                          final task = tasks[index];
+                          return Text(
+                            task.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: task.claimed
+                                  ? AppColors.white60.withValues(alpha: 0.4)
+                                  : AppColors.white60,
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.w500,
+                              height: 1.20,
+                              letterSpacing: -0.22,
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const Spacer(flex: 50),
-                  _ProgressSegments(
-                    count: tasks.length,
-                    activeIndex: _activeIndex,
-                  ),
-                  SizedBox(height: 26.h),
-                  _TaskPreviewActionButton(
-                    task: activeTask,
-                    onTap: activeTask.canClaim ? () {} : widget.onTap,
-                  ),
-                  SizedBox(height: 36.h),
-                ],
+                    const Spacer(flex: 50),
+                    _ProgressSegments(
+                      count: tasks.length,
+                      activeIndex: _activeIndex,
+                    ),
+                    SizedBox(height: 26.h),
+                    _TaskPreviewActionButton(
+                      task: activeTask,
+                      onOpenTasks: widget.onTap,
+                      onClaim: () => widget.onClaim(activeTask.id),
+                    ),
+                    SizedBox(height: 36.h),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void _goToTask(int index) {
+    if (widget.tasks.isEmpty) return;
+    final nextIndex = index.clamp(0, widget.tasks.length - 1);
+    if (nextIndex == _activeIndex) return;
+
+    setState(() => _activeIndex = nextIndex);
+    if (!_textPageController.hasClients) return;
+    _textPageController.animateToPage(
+      nextIndex,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
     );
   }
 }
@@ -250,10 +289,15 @@ class _TaskPreviewHeader extends StatelessWidget {
 }
 
 class _TaskPreviewActionButton extends StatelessWidget {
-  const _TaskPreviewActionButton({required this.task, required this.onTap});
+  const _TaskPreviewActionButton({
+    required this.task,
+    required this.onOpenTasks,
+    required this.onClaim,
+  });
 
   final BattlePassTask task;
-  final VoidCallback onTap;
+  final VoidCallback onOpenTasks;
+  final VoidCallback onClaim;
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +305,7 @@ class _TaskPreviewActionButton extends StatelessWidget {
     final isClaimed = task.claimed;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: isClaim ? onClaim : onOpenTasks,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

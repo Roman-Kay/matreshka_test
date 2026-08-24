@@ -6,8 +6,8 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../models/pause_menu_section.dart';
 
-class BattlePassNavigationBar extends StatelessWidget {
-  const BattlePassNavigationBar({
+class PauseNavigationBar extends StatelessWidget {
+  const PauseNavigationBar({
     super.key,
     required this.selectedSection,
     required this.onSelected,

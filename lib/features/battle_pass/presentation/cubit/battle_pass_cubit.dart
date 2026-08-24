@@ -86,6 +86,36 @@ final class BattlePassCubit extends Cubit<BattlePassState> {
     emit(state.copyWith(battlePass: result.pass, message: result.message));
   }
 
+  void claimTask(int taskId) {
+    final pass = state.battlePass;
+    if (pass == null) return;
+
+    final taskIndex = pass.tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex == -1) return;
+
+    final task = pass.tasks[taskIndex];
+    if (!task.canClaim) return;
+
+    final tasks = [...pass.tasks];
+    tasks[taskIndex] = task.copyWith(status: BattlePassTaskStatus.claimed);
+
+    final nextXp = pass.progress.currentXp + task.rewardAmount;
+    final leveledUp = nextXp >= pass.progress.nextLevelXp;
+    final progress = pass.progress.copyWith(
+      currentLevel: leveledUp
+          ? (pass.progress.currentLevel + 1).clamp(1, pass.season.maxLevel)
+          : pass.progress.currentLevel,
+      currentXp: leveledUp ? nextXp - pass.progress.nextLevelXp : nextXp,
+    );
+
+    emit(
+      state.copyWith(
+        battlePass: pass.copyWith(progress: progress, tasks: tasks),
+        message: '+${task.rewardAmount} опыта Battle Pass',
+      ),
+    );
+  }
+
   int? _firstRewardId(BattlePass pass) {
     if (pass.season.levels.isEmpty) return null;
     final level =

@@ -29,7 +29,7 @@ class GamePage extends StatelessWidget {
             top: MediaQuery.paddingOf(context).top + 24.h,
             right: 36.w,
             child: _PauseButton(
-              onPressed: () => context.router.push(const PauseMenuRoute()),
+              onPressed: () => context.router.push(const PauseShellRoute()),
             ),
           ),
           Center(

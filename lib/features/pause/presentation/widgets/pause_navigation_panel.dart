@@ -4,8 +4,8 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../models/pause_menu_section.dart';
 
-class BattlePassNavigationPanel extends StatelessWidget {
-  const BattlePassNavigationPanel({super.key, required this.section});
+class PauseNavigationPanel extends StatelessWidget {
+  const PauseNavigationPanel({super.key, required this.section});
 
   final PauseMenuSection section;
 

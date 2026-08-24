@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_assets.dart';
 
-class BattlePassFrame extends StatelessWidget {
-  const BattlePassFrame({super.key, required this.child});
+class PauseFrame extends StatelessWidget {
+  const PauseFrame({super.key, required this.child});
 
   final Widget child;
 
