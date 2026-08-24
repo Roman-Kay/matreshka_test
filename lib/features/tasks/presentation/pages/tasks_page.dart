@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
@@ -6,30 +5,22 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../battle_pass/data/repositories/mock_battle_pass_repository.dart';
 import '../../../battle_pass/domain/models/battle_pass_models.dart';
 import '../../../battle_pass/presentation/cubit/battle_pass_cubit.dart';
 import '../../../battle_pass/presentation/widgets/level_badge.dart';
 import '../../../battle_pass/presentation/widgets/premium_action_button.dart';
 
-@RoutePage()
 class TasksPage extends StatelessWidget {
   const TasksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: TasksContent(
-          tasks: mockBattlePassTasks,
-          onBack: () => Navigator.pop(context),
-        ),
-      ),
+      body: SafeArea(child: TasksContent(tasks: const [])),
     );
   }
 }
 
-@RoutePage()
 class BattlePassTasksPage extends StatelessWidget {
   const BattlePassTasksPage({super.key});
 
@@ -39,20 +30,23 @@ class BattlePassTasksPage extends StatelessWidget {
       (BattlePassCubit cubit) => cubit.state.battlePass,
     );
 
-    return TasksContent(
-      pass: pass,
-      tasks: pass?.tasks ?? mockBattlePassTasks,
-      onBack: () => context.maybePop(),
-    );
+    return TasksContent(pass: pass, tasks: pass?.tasks ?? const []);
   }
 }
 
 class TasksContent extends StatelessWidget {
-  const TasksContent({super.key, this.pass, required this.tasks, this.onBack});
+  const TasksContent({
+    super.key,
+    this.pass,
+    required this.tasks,
+    this.onBack,
+    this.onExit,
+  });
 
   final BattlePass? pass;
   final List<BattlePassTask> tasks;
   final VoidCallback? onBack;
+  final VoidCallback? onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +58,7 @@ class TasksContent extends StatelessWidget {
           left: 52.w,
           top: 24.h,
           right: 52.w,
-          child: _TasksHeader(pass: pass, onClose: onBack),
+          child: _TasksHeader(pass: pass, onBack: onBack, onExit: onExit),
         ),
         Positioned.fill(
           top: 148.h,
@@ -98,10 +92,15 @@ class TasksContent extends StatelessWidget {
 }
 
 class _TasksHeader extends StatelessWidget {
-  const _TasksHeader({required this.pass, required this.onClose});
+  const _TasksHeader({
+    required this.pass,
+    required this.onBack,
+    required this.onExit,
+  });
 
   final BattlePass? pass;
-  final VoidCallback? onClose;
+  final VoidCallback? onBack;
+  final VoidCallback? onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +115,10 @@ class _TasksHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (onClose != null) ...[
+        if (onBack != null) ...[
           _TasksHeaderIconButton(
             assetPath: AppAssets.arrowLeft,
-            onTap: onClose!,
+            onTap: onBack!,
           ),
           SizedBox(width: 40.w),
         ],
@@ -194,8 +193,11 @@ class _TasksHeader extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        if (onClose != null)
-          _TasksHeaderIconButton(assetPath: AppAssets.close, onTap: onClose!),
+        if (onExit != null || onBack != null)
+          _TasksHeaderIconButton(
+            assetPath: AppAssets.close,
+            onTap: onExit ?? onBack!,
+          ),
       ],
     );
   }

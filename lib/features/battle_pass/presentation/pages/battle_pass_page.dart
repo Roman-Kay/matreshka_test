@@ -2,22 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../app/app_router.dart';
 import '../cubit/battle_pass_cubit.dart';
 import '../cubit/battle_pass_state.dart';
+import '../widgets/battle_pass_content.dart';
 import '../widgets/battle_pass_frame.dart';
-import '../widgets/battle_pass_navigation_bar.dart';
-import '../widgets/battle_pass_navigation_panel.dart';
 
-@RoutePage()
-class BattlePassPage extends StatefulWidget {
+@RoutePage(name: 'PauseMenuRoute')
+class BattlePassPage extends StatelessWidget {
   const BattlePassPage({super.key});
-
-  @override
-  State<BattlePassPage> createState() => _BattlePassPageState();
-}
-
-class _BattlePassPageState extends State<BattlePassPage> {
-  String _activePanel = 'Battle Pass';
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +42,10 @@ class _BattlePassPageState extends State<BattlePassPage> {
             );
           }
           return BattlePassFrame(
-            child: Row(
-              children: [
-                BattlePassNavigationBar(
-                  selectedLabel: _activePanel,
-                  onSelected: (label) => setState(() => _activePanel = label),
-                ),
-                Expanded(
-                  child: _activePanel == 'Battle Pass'
-                      ? const AutoRouter()
-                      : BattlePassNavigationPanel(title: _activePanel),
-                ),
-              ],
+            child: BattlePassContent(
+              state: state,
+              onExitToGame: () =>
+                  context.router.replaceAll([const GameRoute()]),
             ),
           );
         },

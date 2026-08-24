@@ -11,28 +11,12 @@
 part of 'app_router.dart';
 
 /// generated route for
-/// [BattlePassHomePage]
-class BattlePassHomeRoute extends PageRouteInfo<void> {
-  const BattlePassHomeRoute({List<PageRouteInfo>? children})
-    : super(BattlePassHomeRoute.name, initialChildren: children);
-
-  static const String name = 'BattlePassHomeRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const BattlePassHomePage();
-    },
-  );
-}
-
-/// generated route for
 /// [BattlePassPage]
-class BattlePassRoute extends PageRouteInfo<void> {
-  const BattlePassRoute({List<PageRouteInfo>? children})
-    : super(BattlePassRoute.name, initialChildren: children);
+class PauseMenuRoute extends PageRouteInfo<void> {
+  const PauseMenuRoute({List<PageRouteInfo>? children})
+    : super(PauseMenuRoute.name, initialChildren: children);
 
-  static const String name = 'BattlePassRoute';
+  static const String name = 'PauseMenuRoute';
 
   static PageInfo page = PageInfo(
     name,
@@ -43,33 +27,17 @@ class BattlePassRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [BattlePassTasksPage]
-class BattlePassTasksRoute extends PageRouteInfo<void> {
-  const BattlePassTasksRoute({List<PageRouteInfo>? children})
-    : super(BattlePassTasksRoute.name, initialChildren: children);
+/// [GamePage]
+class GameRoute extends PageRouteInfo<void> {
+  const GameRoute({List<PageRouteInfo>? children})
+    : super(GameRoute.name, initialChildren: children);
 
-  static const String name = 'BattlePassTasksRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const BattlePassTasksPage();
-    },
-  );
-}
-
-/// generated route for
-/// [TasksPage]
-class TasksRoute extends PageRouteInfo<void> {
-  const TasksRoute({List<PageRouteInfo>? children})
-    : super(TasksRoute.name, initialChildren: children);
-
-  static const String name = 'TasksRoute';
+  static const String name = 'GameRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const TasksPage();
+      return const GamePage();
     },
   );
 }

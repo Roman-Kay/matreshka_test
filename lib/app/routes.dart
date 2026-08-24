@@ -1,4 +1,6 @@
 abstract final class AppRoutes {
-  static const battlePass = '/';
+  static const game = '/';
+  static const pauseMenu = '/pause';
+  static const battlePass = '/battle-pass';
   static const tasks = '/tasks';
 }

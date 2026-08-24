@@ -1,9 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-import '../../../../app/app_router.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/battle_pass_models.dart';
 import '../cubit/battle_pass_cubit.dart';
@@ -14,22 +12,25 @@ import '../widgets/reward_rail.dart';
 import '../widgets/reward_title.dart';
 import '../widgets/tasks_preview.dart';
 
-@RoutePage()
 class BattlePassHomePage extends StatelessWidget {
-  const BattlePassHomePage({super.key});
+  const BattlePassHomePage({super.key, this.onTasksTap});
+
+  final VoidCallback? onTasksTap;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BattlePassCubit, BattlePassState>(
-      builder: (context, state) => _BattlePassHomeContent(state: state),
+      builder: (context, state) =>
+          _BattlePassHomeContent(state: state, onTasksTap: onTasksTap),
     );
   }
 }
 
 class _BattlePassHomeContent extends StatelessWidget {
-  const _BattlePassHomeContent({required this.state});
+  const _BattlePassHomeContent({required this.state, required this.onTasksTap});
 
   final BattlePassState state;
+  final VoidCallback? onTasksTap;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +49,7 @@ class _BattlePassHomeContent extends StatelessWidget {
             BattlePassHeader(pass: pass),
             completed
                 ? const BattlePassCompletedNotice()
-                : TasksPreview(
-                    tasks: pass.tasks,
-                    onTap: () =>
-                        context.pushRoute(const BattlePassTasksRoute()),
-                  ),
+                : TasksPreview(tasks: pass.tasks, onTap: onTasksTap ?? () {}),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

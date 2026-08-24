@@ -10,10 +10,11 @@ import 'app_router.dart';
 
 class BattlePassApp extends StatelessWidget {
   BattlePassApp({super.key, BattlePassRepository? repository})
-    : _repository = repository;
+    : _repository = repository,
+      _appRouter = AppRouter();
 
   final BattlePassRepository? _repository;
-  final AppRouter _appRouter = AppRouter();
+  final AppRouter _appRouter;
 
   @override
   Widget build(BuildContext context) {

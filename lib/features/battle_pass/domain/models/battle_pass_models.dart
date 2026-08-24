@@ -59,6 +59,20 @@ final class BattlePassLevel {
   final int requiredXp;
   final List<BattlePassReward> freeRewards;
   final List<BattlePassReward> premiumRewards;
+
+  BattlePassLevel copyWith({
+    int? number,
+    int? requiredXp,
+    List<BattlePassReward>? freeRewards,
+    List<BattlePassReward>? premiumRewards,
+  }) {
+    return BattlePassLevel(
+      number: number ?? this.number,
+      requiredXp: requiredXp ?? this.requiredXp,
+      freeRewards: freeRewards ?? this.freeRewards,
+      premiumRewards: premiumRewards ?? this.premiumRewards,
+    );
+  }
 }
 
 final class BattlePassSeason {
@@ -77,6 +91,24 @@ final class BattlePassSeason {
   final DateTime endsAt;
   final int maxLevel;
   final List<BattlePassLevel> levels;
+
+  BattlePassSeason copyWith({
+    String? id,
+    String? title,
+    DateTime? startsAt,
+    DateTime? endsAt,
+    int? maxLevel,
+    List<BattlePassLevel>? levels,
+  }) {
+    return BattlePassSeason(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      startsAt: startsAt ?? this.startsAt,
+      endsAt: endsAt ?? this.endsAt,
+      maxLevel: maxLevel ?? this.maxLevel,
+      levels: levels ?? this.levels,
+    );
+  }
 }
 
 final class BattlePassProgress {
@@ -93,6 +125,18 @@ final class BattlePassProgress {
   double get ratio {
     if (nextLevelXp <= 0) return 1;
     return (currentXp / nextLevelXp).clamp(0, 1);
+  }
+
+  BattlePassProgress copyWith({
+    int? currentLevel,
+    int? currentXp,
+    int? nextLevelXp,
+  }) {
+    return BattlePassProgress(
+      currentLevel: currentLevel ?? this.currentLevel,
+      currentXp: currentXp ?? this.currentXp,
+      nextLevelXp: nextLevelXp ?? this.nextLevelXp,
+    );
   }
 }
 
@@ -120,6 +164,28 @@ final class BattlePassTask {
   bool get completed => currentProgress >= requiredProgress;
   bool get canClaim => status == BattlePassTaskStatus.readyToClaim;
   bool get claimed => status == BattlePassTaskStatus.claimed;
+
+  BattlePassTask copyWith({
+    int? id,
+    String? title,
+    String? rewardTitle,
+    int? rewardAmount,
+    int? currentProgress,
+    int? requiredProgress,
+    String? rewardAssetPath,
+    BattlePassTaskStatus? status,
+  }) {
+    return BattlePassTask(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      rewardTitle: rewardTitle ?? this.rewardTitle,
+      rewardAmount: rewardAmount ?? this.rewardAmount,
+      currentProgress: currentProgress ?? this.currentProgress,
+      requiredProgress: requiredProgress ?? this.requiredProgress,
+      rewardAssetPath: rewardAssetPath ?? this.rewardAssetPath,
+      status: status ?? this.status,
+    );
+  }
 }
 
 final class BattlePass {
@@ -134,4 +200,18 @@ final class BattlePass {
   final BattlePassProgress progress;
   final PremiumStatus premiumStatus;
   final List<BattlePassTask> tasks;
+
+  BattlePass copyWith({
+    BattlePassSeason? season,
+    BattlePassProgress? progress,
+    PremiumStatus? premiumStatus,
+    List<BattlePassTask>? tasks,
+  }) {
+    return BattlePass(
+      season: season ?? this.season,
+      progress: progress ?? this.progress,
+      premiumStatus: premiumStatus ?? this.premiumStatus,
+      tasks: tasks ?? this.tasks,
+    );
+  }
 }

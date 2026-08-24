@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../models/pause_menu_section.dart';
 
 class BattlePassNavigationPanel extends StatelessWidget {
-  const BattlePassNavigationPanel({super.key, required this.title});
+  const BattlePassNavigationPanel({super.key, required this.section});
 
-  final String title;
+  final PauseMenuSection section;
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +24,18 @@ class BattlePassNavigationPanel extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            title,
+            section.label,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.white100, fontSize: 54.sp, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: AppColors.white100,
+              fontSize: 54.sp,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           SizedBox(height: 18.h),
           Text(
-            'Панель открыта',
+            section.placeholderText,
+            textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.white70, fontSize: 28.sp),
           ),
         ],

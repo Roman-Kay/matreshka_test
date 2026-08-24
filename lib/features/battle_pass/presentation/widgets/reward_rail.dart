@@ -683,7 +683,7 @@ class _ClaimRewardButton extends StatelessWidget {
               Color(0xFF56B877),
               Color(0xFF449660),
             ],
-            borderColor: AppColors.transperent,
+            borderColor: AppColors.transparent,
             borderWidth: 0,
             skew: 9.w,
             radius: 20.r,
@@ -1470,7 +1470,7 @@ class _RewardAmountBadge extends StatelessWidget {
       child: CustomPaint(
         painter: _ParallelogramPainter(
           fillColors: const [AppColors.dark, AppColors.dark, AppColors.dark],
-          borderColor: AppColors.transperent,
+          borderColor: AppColors.transparent,
           borderWidth: 0,
           skew: 8.w,
           radius: 10.r,

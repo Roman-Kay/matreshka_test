@@ -10,9 +10,10 @@ import '../cubit/battle_pass_cubit.dart';
 import 'level_badge.dart';
 
 class BattlePassHeader extends StatelessWidget {
-  const BattlePassHeader({super.key, required this.pass});
+  const BattlePassHeader({super.key, required this.pass, this.onClose});
 
   final BattlePass pass;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -71,21 +72,22 @@ class BattlePassHeader extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                padding: EdgeInsets.all(32.r),
-                decoration: BoxDecoration(
-                  color: AppColors.white5,
-                  borderRadius: BorderRadius.circular(100.h),
-                ),
-                child: SvgPicture.asset(
-                  AppAssets.close,
-                  width: 36.r,
-                  height: 36.r,
+            if (onClose != null)
+              GestureDetector(
+                onTap: onClose,
+                child: Container(
+                  padding: EdgeInsets.all(32.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.white5,
+                    borderRadius: BorderRadius.circular(100.h),
+                  ),
+                  child: SvgPicture.asset(
+                    AppAssets.close,
+                    width: 36.r,
+                    height: 36.r,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
