@@ -21,6 +21,13 @@ class RewardRail extends StatefulWidget {
 }
 
 class _RewardRailState extends State<RewardRail> {
+  static const double _railSideInset = 51;
+  static const double _railListPadding = 100;
+  static const double _rewardItemExtent = 242;
+  static const double _premiumPreviewExtent = 596;
+  static const double _premiumPanelReservedWidth = 375;
+  static const double _pinnedPrizeRightInset = 56;
+
   late final ScrollController _scrollController;
   double _scrollOffset = 0;
   int _scrollDirection = 1;
@@ -50,10 +57,11 @@ class _RewardRailState extends State<RewardRail> {
 
   void _scrollByCards(int direction) {
     if (!_scrollController.hasClients) return;
-    final target = (_scrollController.offset + direction * 4 * 242.w).clamp(
-      0.0,
-      _scrollController.position.maxScrollExtent,
-    );
+    final target =
+        (_scrollController.offset + direction * 4 * _rewardItemExtent.w).clamp(
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        );
     _scrollController.animateTo(
       target,
       duration: const Duration(milliseconds: 360),
@@ -82,9 +90,21 @@ class _RewardRailState extends State<RewardRail> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final pinLeft = constraints.maxWidth - 56.w - 242.w;
-          final listDockLeft = constraints.maxWidth - 375.w - 242.w;
-          final listViewportRight = constraints.maxWidth - 375.w;
+          final pinLeft =
+              constraints.maxWidth -
+              _pinnedPrizeRightInset.w -
+              _rewardItemExtent.w;
+          final listDockLeft =
+              constraints.maxWidth -
+              _premiumPanelReservedWidth.w -
+              _rewardItemExtent.w;
+          final listViewportRight =
+              constraints.maxWidth - _premiumPanelReservedWidth.w;
+          final isAtVisibleRewardEnd = _isAtVisibleRewardEnd(
+            premiumLocked,
+            visibleEndLevel,
+            listViewportRight,
+          );
           final pinnedPrize = _pinnedPrize(
             levels,
             listDockLeft,
@@ -108,8 +128,8 @@ class _RewardRailState extends State<RewardRail> {
           return Stack(
             children: [
               Positioned.fill(
-                right: 375.w,
-                left: 51.w,
+                right: isAtVisibleRewardEnd ? 0 : _premiumPanelReservedWidth.w,
+                left: _railSideInset.w,
                 child: ShaderMask(
                   blendMode: BlendMode.dstIn,
                   shaderCallback: (bounds) {
@@ -127,7 +147,7 @@ class _RewardRailState extends State<RewardRail> {
                   },
                   child: ListView.builder(
                     controller: _scrollController,
-                    padding: EdgeInsets.fromLTRB(100.w, 0, 100.w, 0),
+                    padding: EdgeInsets.fromLTRB(_railListPadding.w, 0, 0, 0),
                     scrollDirection: Axis.horizontal,
                     itemCount: railItems.length,
                     itemBuilder: (context, index) {
@@ -184,42 +204,47 @@ class _RewardRailState extends State<RewardRail> {
                 left: pinnedLeft,
                 top: 0,
                 child: IgnorePointer(
-                  ignoring: pinnedPrize == null,
-                  child: AnimatedSwitcher(
+                  ignoring: pinnedPrize == null || isAtVisibleRewardEnd,
+                  child: AnimatedOpacity(
+                    opacity: isAtVisibleRewardEnd ? 0 : 1,
                     duration: const Duration(milliseconds: 180),
-                    reverseDuration: const Duration(milliseconds: 140),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    transitionBuilder: (child, animation) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    child: pinnedPrize == null || pinnedPrizeReward == null
-                        ? SizedBox(
-                            key: const ValueKey('empty-big-prize'),
-                            width: 242.w,
-                            height: 280.h,
-                          )
-                        : _PinnedBigPrizeCard(
-                            key: ValueKey(
-                              'big-prize-${pinnedPrize.level.number}',
+                    curve: Curves.easeOut,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      reverseDuration: const Duration(milliseconds: 140),
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child: pinnedPrize == null || pinnedPrizeReward == null
+                          ? SizedBox(
+                              key: const ValueKey('empty-big-prize'),
+                              width: 242.w,
+                              height: 280.h,
+                            )
+                          : _PinnedBigPrizeCard(
+                              key: ValueKey(
+                                'big-prize-${pinnedPrize.level.number}',
+                              ),
+                              level: pinnedPrize.level.number,
+                              reward: pinnedPrizeReward,
+                              selected:
+                                  widget.state.selectedRewardId ==
+                                  pinnedPrizeReward.id,
+                              dockingProgress: pinnedPrize.dockingProgress,
+                              fixedBadgeOffset:
+                                  (_bigPrizeLeftInViewport(
+                                        premiumLocked,
+                                        pinnedPrize.level.number,
+                                      ) -
+                                      pinnedLeft) *
+                                  pinnedPrize.dockingProgress,
+                              onTap: () => context
+                                  .read<BattlePassCubit>()
+                                  .selectReward(pinnedPrizeReward.id),
                             ),
-                            level: pinnedPrize.level.number,
-                            reward: pinnedPrizeReward,
-                            selected:
-                                widget.state.selectedRewardId ==
-                                pinnedPrizeReward.id,
-                            dockingProgress: pinnedPrize.dockingProgress,
-                            fixedBadgeOffset:
-                                (_bigPrizeLeftInViewport(
-                                      premiumLocked,
-                                      pinnedPrize.level.number,
-                                    ) -
-                                    pinnedLeft) *
-                                pinnedPrize.dockingProgress,
-                            onTap: () => context
-                                .read<BattlePassCubit>()
-                                .selectReward(pinnedPrizeReward.id),
-                          ),
+                    ),
                   ),
                 ),
               ),
@@ -234,9 +259,17 @@ class _RewardRailState extends State<RewardRail> {
               Positioned(
                 right: 334.w,
                 top: scrollButtonTop,
-                child: _RailScrollButton(
-                  direction: AxisDirection.right,
-                  onTap: () => _scrollByCards(1),
+                child: IgnorePointer(
+                  ignoring: isAtVisibleRewardEnd,
+                  child: AnimatedOpacity(
+                    opacity: isAtVisibleRewardEnd ? 0 : 1,
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    child: _RailScrollButton(
+                      direction: AxisDirection.right,
+                      onTap: () => _scrollByCards(1),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -272,11 +305,26 @@ class _RewardRailState extends State<RewardRail> {
   }
 
   double _levelTrackLeft(bool premiumLocked) {
-    return 51.w + 100.w + (premiumLocked ? 636.w : 0);
+    return _railSideInset.w +
+        _railListPadding.w +
+        (premiumLocked ? _premiumPreviewExtent.w : 0);
   }
 
   double _bigPrizeLeftInViewport(bool premiumLocked, int level) {
-    return _levelTrackLeft(premiumLocked) + (level - 1) * 242.w - _scrollOffset;
+    return _levelTrackLeft(premiumLocked) +
+        (level - 1) * _rewardItemExtent.w -
+        _scrollOffset;
+  }
+
+  bool _isAtVisibleRewardEnd(
+    bool premiumLocked,
+    int visibleEndLevel,
+    double listViewportRight,
+  ) {
+    final lastRewardRight =
+        _bigPrizeLeftInViewport(premiumLocked, visibleEndLevel) +
+        _rewardItemExtent.w;
+    return lastRewardRight <= listViewportRight + 0.5;
   }
 
   double _pinnedPrizeLeft(
