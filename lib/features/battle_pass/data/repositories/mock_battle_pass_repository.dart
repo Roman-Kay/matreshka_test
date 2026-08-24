@@ -40,8 +40,8 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: 'Дай пять!',
         startsAt: DateTime.utc(2025, 7, 1),
         endsAt: DateTime.utc(2025, 7, 17, 12, 42),
-        maxLevel: 100,
-        levels: List<BattlePassLevel>.generate(100, (index) {
+        maxLevel: 200,
+        levels: List<BattlePassLevel>.generate(200, (index) {
           final level = index + 1;
           return BattlePassLevel(
             number: level,
