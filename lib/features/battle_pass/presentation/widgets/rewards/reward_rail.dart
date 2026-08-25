@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
+import '../../../../pause/domain/models/player_battle_pass_progress.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import '../../cubit/battle_pass_state.dart';
 import 'reward_card.dart';
@@ -251,12 +252,14 @@ class _RewardRailState extends State<RewardRail>
                             level,
                             widget.state.selectedRewardId,
                           );
+                          final rewardStatus = pass.rewardStatus(reward.id);
                           return Stack(
                             clipBehavior: Clip.none,
                             children: [
                               RewardCard(
                                 level: level.number,
                                 reward: reward,
+                                rewardStatus: rewardStatus,
                                 selected:
                                     widget.state.selectedRewardId == reward.id,
                                 progress: pass.progress,
@@ -271,6 +274,7 @@ class _RewardRailState extends State<RewardRail>
                                   choiceRewards: level.premiumRewards.length > 1
                                       ? level.premiumRewards
                                       : const [],
+                                  rewardStatus: rewardStatus,
                                   level: level.number,
                                   premiumStatus: pass.premiumStatus,
                                 ),
@@ -329,6 +333,9 @@ class _RewardRailState extends State<RewardRail>
                                     widget.state.selectedRewardId ==
                                     pinnedPrizeReward.id,
                                 progress: pass.progress,
+                                rewardStatus: pass.rewardStatus(
+                                  pinnedPrizeReward.id,
+                                ),
                                 premiumStatus: pass.premiumStatus,
                                 dockingProgress: pinnedPrize.dockingProgress,
                                 onSelectReward: widget.onSelectReward,
@@ -389,7 +396,7 @@ class _RewardRailState extends State<RewardRail>
   /// Без премиума виден короткий участок и заглушка. С купленным премиумом
   /// показываем больший диапазон вперед, а на максимальном уровне — всю рельсу.
   int _visibleEndLevel(
-    BattlePassProgress progress,
+    PlayerBattlePassProgress progress,
     int maxLevel,
     bool premiumLocked,
   ) {
@@ -399,7 +406,7 @@ class _RewardRailState extends State<RewardRail>
     return min(((progress.currentLevel ~/ 20) + 2) * 20, maxLevel);
   }
 
-  int? _nextUnlockThreshold(BattlePassProgress progress, int maxLevel) {
+  int? _nextUnlockThreshold(PlayerBattlePassProgress progress, int maxLevel) {
     final threshold = progress.currentLevel < 100
         ? 100
         : ((progress.currentLevel ~/ 20) + 1) * 20;
@@ -559,6 +566,7 @@ class _RewardRailState extends State<RewardRail>
     required BuildContext context,
     required BattlePassReward reward,
     required List<BattlePassReward> choiceRewards,
+    required RewardStatus rewardStatus,
     required int level,
     required PremiumStatus premiumStatus,
   }) {
@@ -567,6 +575,7 @@ class _RewardRailState extends State<RewardRail>
       backgroundColor: AppColors.ink,
       builder: (_) => RewardDetailsSheet(
         reward: reward,
+        rewardStatus: rewardStatus,
         choiceRewards: choiceRewards,
         level: level,
         premiumStatus: premiumStatus,
@@ -1024,6 +1033,7 @@ class _PinnedBigPrizeCard extends StatelessWidget {
     super.key,
     required this.level,
     required this.reward,
+    required this.rewardStatus,
     required this.selected,
     required this.progress,
     required this.premiumStatus,
@@ -1035,8 +1045,9 @@ class _PinnedBigPrizeCard extends StatelessWidget {
 
   final int level;
   final BattlePassReward reward;
+  final RewardStatus rewardStatus;
   final bool selected;
-  final BattlePassProgress progress;
+  final PlayerBattlePassProgress progress;
   final PremiumStatus premiumStatus;
   final double dockingProgress;
   final ValueChanged<int> onSelectReward;
@@ -1045,7 +1056,7 @@ class _PinnedBigPrizeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shouldDockIntoLargeRailCard = reward.status == RewardStatus.available;
+    final shouldDockIntoLargeRailCard = rewardStatus == RewardStatus.available;
     final dockingScale = shouldDockIntoLargeRailCard
         ? 1.0
         : 1 - dockingProgress * 0.16;
@@ -1058,6 +1069,7 @@ class _PinnedBigPrizeCard extends StatelessWidget {
       child: RewardCard(
         level: level,
         reward: reward,
+        rewardStatus: rewardStatus,
         selected: selected,
         progress: progress,
         isFirstLevel: false,
@@ -1069,6 +1081,7 @@ class _PinnedBigPrizeCard extends StatelessWidget {
           backgroundColor: AppColors.ink,
           builder: (_) => RewardDetailsSheet(
             reward: reward,
+            rewardStatus: rewardStatus,
             choiceRewards: const [],
             level: level,
             premiumStatus: premiumStatus,

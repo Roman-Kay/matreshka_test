@@ -6,37 +6,19 @@ final class ClaimAllRewardsUseCase {
 
   ClaimRewardResult call(BattlePass pass) {
     var claimedCount = 0;
+    var nextPass = pass;
 
-    final levels = pass.season.levels
-        .map((level) {
-          List<BattlePassReward> update(List<BattlePassReward> rewards) {
-            return rewards
-                .map((reward) {
-                  final premiumLocked =
-                      reward.track == BattlePassTrack.premium &&
-                      pass.premiumStatus == PremiumStatus.locked;
-                  if (reward.status != RewardStatus.available ||
-                      premiumLocked) {
-                    return reward;
-                  }
-                  claimedCount += 1;
-                  return reward.copyWith(status: RewardStatus.received);
-                })
-                .toList(growable: false);
-          }
+    for (final level in pass.season.levels) {
+      for (final reward in [...level.freeRewards, ...level.premiumRewards]) {
+        final premiumLocked = reward.track == BattlePassTrack.premium && pass.premiumStatus == PremiumStatus.locked;
+        if (pass.rewardStatus(reward.id) != RewardStatus.available || premiumLocked) {
+          continue;
+        }
+        claimedCount += 1;
+        nextPass = nextPass.withRewardStatus(reward.id, RewardStatus.received);
+      }
+    }
 
-          return level.copyWith(
-            freeRewards: update(level.freeRewards),
-            premiumRewards: update(level.premiumRewards),
-          );
-        })
-        .toList(growable: false);
-
-    return ClaimRewardResult(
-      pass: pass.copyWith(season: pass.season.copyWith(levels: levels)),
-      message: claimedCount > 0
-          ? 'Получено наград: $claimedCount'
-          : 'Нет доступных наград',
-    );
+    return ClaimRewardResult(pass: nextPass, message: claimedCount > 0 ? 'Получено наград: $claimedCount' : 'Нет доступных наград');
   }
 }

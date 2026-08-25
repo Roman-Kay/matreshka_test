@@ -39,7 +39,7 @@ class PremiumPanel extends StatelessWidget {
     var count = 0;
     for (final level in pass.season.levels) {
       for (final reward in [...level.freeRewards, ...level.premiumRewards]) {
-        if (reward.status == RewardStatus.available) count += 1;
+        if (pass.rewardStatus(reward.id) == RewardStatus.available) count += 1;
       }
     }
     return count;

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
+import '../../../../pause/domain/models/player_battle_pass_progress.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import 'reward_amount_badge.dart';
 import 'reward_progress_marker.dart';
@@ -16,6 +17,7 @@ class RewardCard extends StatelessWidget {
     super.key,
     required this.level,
     required this.reward,
+    required this.rewardStatus,
     required this.selected,
     required this.progress,
     required this.isFirstLevel,
@@ -32,8 +34,9 @@ class RewardCard extends StatelessWidget {
 
   final int level;
   final BattlePassReward reward;
+  final RewardStatus rewardStatus;
   final bool selected;
-  final BattlePassProgress progress;
+  final PlayerBattlePassProgress progress;
   final bool isFirstLevel;
   final bool isLastLevel;
   final VoidCallback onSelected;
@@ -48,8 +51,8 @@ class RewardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final unlocked = level <= progress.currentLevel;
-    final received = reward.status == RewardStatus.received;
-    final available = reward.status == RewardStatus.available;
+    final received = rewardStatus == RewardStatus.received;
+    final available = rewardStatus == RewardStatus.available;
     final largeSize = available || forceLargeSize;
 
     return InkWell(

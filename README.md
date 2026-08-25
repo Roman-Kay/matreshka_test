@@ -1,13 +1,11 @@
-# Battle Pass Flutter
+# Matreshka RP TEST Flutter
 
-Экран боевого пропуска по Figma-макету «БП / Главная» с четырьмя демонстрационными состояниями: премиум не куплен, премиум куплен с доступными наградами, максимальный уровень, завершенный сезон. Макет в Figma имеет размер `2320x1080` и альбомную ориентацию; приложение принудительно запускается только в горизонтальном полноэкранном режиме. UI собран живыми Flutter-виджетами, а Figma-ассеты сохранены локально в `assets/figma`.
-
+Экран боевого пропуска по Figma-макету «БП / Главная» с демонстрационными состояниями: премиум не куплен, премиум куплен с доступными наградами, премиум с бонусом опыта, максимальный уровень и завершенный сезон.
 ## Требования и запуск
 
 - Flutter stable, Dart `^3.11.5`.
 - Установить зависимости: `flutter pub get`.
 - Запустить: `flutter run`.
-- Проверки: `dart format --set-exit-if-changed .`, `flutter analyze`, `flutter test`.
 
 ## Что реализовано
 
@@ -31,18 +29,7 @@
 
 Доменные модели лежат в `features/battle_pass/domain/models` и `features/tasks/domain/models`, доступ к данным идет через `BattlePassRepository` и `TasksRepository`, mock-реализации находятся в `data/repositories`. Бизнес-логика получения наград и заданий вынесена в use cases, а presentation-виджеты получают callbacks сверху.
 
-Повторяющиеся цвета и ассеты вынесены в `core/theme` и `core/constants`. Шрифт Geologica из Figma не поставлялся как файл, поэтому использован системный fallback `Arial`; это осознанное допущение без нелегальной загрузки шрифта.
-
-## Анимации
-
-Есть `AnimatedSwitcher` при смене сценария, `AnimatedContainer` для выделения выбранной награды, плавный прогресс через `CircularProgressIndicator`, feedback кнопок и карточек через Material ink effects.
-
-## Ограничения и допущения
-
-- Полная выгрузка Figma subtree была усечена инструментом из-за большого количества ассетов; сохранены ключевые изображения главного состояния и reference export.
-- Иконки частично реализованы Material Icons там, где экспорт Figma был избыточен для тестового экрана.
-- Ориентация макета альбомная; приложение фиксирует `landscapeLeft` и `landscapeRight`, включает immersive fullscreen, а canvas масштабируется через `BoxFit.cover`, чтобы занимать весь экран.
-- Экран «Задания» реализован как рабочая стилизованная версия. Данные заданий вынесены в отдельный `TasksRepository`, а действия Battle Pass прокидываются через callbacks.
+Повторяющиеся цвета и ассеты вынесены в `core/theme` и `core/constants`.
 
 ## Использование ИИ
 
@@ -93,7 +80,6 @@ rpc BattlePass {
     int32 amount "Количество";
     BattlePassTrack track "free или premium";
     RewardRarity rarity "Редкость для визуального оформления карточки";
-    RewardStatus status "locked, available, received";
     string assetPath = 256 "Путь к иконке/изображению награды, optional";
   }
 
@@ -120,6 +106,20 @@ rpc BattlePass {
     int32 nextLevelXp "Опыт, нужный для следующего уровня";
   }
 
+  message PlayerRewardState {
+    int32 rewardId "Id награды из Season.Level.Reward";
+    RewardStatus status "Персональный статус награды: locked, available, received";
+    timestamp receivedAt "Когда награда была получена, optional";
+  }
+
+  message PlayerBattlePassState {
+    string userId = 64 "Id игрока";
+    string seasonId = 64 "Id сезона, к которому относится состояние игрока";
+    PremiumStatus premiumStatus "Куплен ли премиум у текущего игрока";
+    Progress progress "Персональный уровень и опыт игрока";
+    repeated PlayerRewardState rewardStates max 600 "Персональные статусы наград сезона";
+  }
+
   enum TaskStatus {
     inProgress "Задание выполняется";
     readyToClaim "Задание выполнено, награду можно забрать";
@@ -141,6 +141,7 @@ rpc BattlePass {
   message RewardDetailsModal {
     Reward reward "Выбранная награда для модалки";
     repeated Reward choiceRewards max 3 "Варианты выбора, если на уровне несколько премиальных наград";
+    PlayerRewardState rewardState "Персональный статус выбранной награды";
     int32 level "Уровень, на котором находится награда";
     bool premiumLocked "true, если награда требует купленный премиум";
     bool canClaim "true, если кнопка Забрать активна";
@@ -153,16 +154,14 @@ rpc BattlePass {
   }
 
   message TasksScreen {
-    Progress progress "Прогресс Battle Pass для шапки экрана заданий";
-    PremiumStatus premiumStatus "Состояние премиума для CTA прокачки";
+    PlayerBattlePassState playerState "Состояние Battle Pass текущего игрока для шапки и CTA прокачки";
     timestamp tasksRefreshAt "Время следующего обновления заданий";
     repeated Task tasks max 12 "Список заданий на отдельном экране";
   }
 
   outgoing Show {
-    Season season "Активный сезон";
-    Progress progress "Текущий прогресс";
-    PremiumStatus premiumStatus "Состояние премиума";
+    Season season "Активный сезон: описание уровней, наград и сроков без данных игрока";
+    PlayerBattlePassState playerState "Персональное состояние игрока в этом сезоне";
     int32 selectedRewardId "Выбранная награда, optional";
     repeated Task tasks max 12 "Задания, связанные с Battle Pass";
     TasksPreview tasksPreview "Данные превью заданий на главном экране";

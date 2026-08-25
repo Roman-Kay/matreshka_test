@@ -6,6 +6,7 @@ import 'app.dart';
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

@@ -12,6 +12,7 @@ class RewardDetailsSheet extends StatelessWidget {
   const RewardDetailsSheet({
     super.key,
     required this.reward,
+    required this.rewardStatus,
     required this.choiceRewards,
     required this.level,
     required this.premiumStatus,
@@ -19,6 +20,7 @@ class RewardDetailsSheet extends StatelessWidget {
   });
 
   final BattlePassReward reward;
+  final RewardStatus rewardStatus;
   final List<BattlePassReward> choiceRewards;
   final int level;
   final PremiumStatus premiumStatus;
@@ -29,12 +31,12 @@ class RewardDetailsSheet extends StatelessWidget {
     final premiumLocked =
         reward.track == BattlePassTrack.premium &&
         premiumStatus == PremiumStatus.locked;
-    final canClaim = reward.status == RewardStatus.available && !premiumLocked;
+    final canClaim = rewardStatus == RewardStatus.available && !premiumLocked;
     final actionText = premiumLocked
         ? 'Прокачать'
-        : reward.status == RewardStatus.received
+        : rewardStatus == RewardStatus.received
         ? 'Получено'
-        : reward.status == RewardStatus.available
+        : rewardStatus == RewardStatus.available
         ? 'Забрать'
         : 'Заблокировано';
 
@@ -179,7 +181,7 @@ class RewardDetailsSheet extends StatelessWidget {
 
   String _statusText(bool premiumLocked) {
     if (premiumLocked) return 'Награда доступна только с премиум-прокачкой.';
-    return switch (reward.status) {
+    return switch (rewardStatus) {
       RewardStatus.received => 'Эта награда уже получена.',
       RewardStatus.available => 'Награда доступна. Можно забрать сейчас.',
       RewardStatus.locked => 'Откроется после достижения нужного уровня.',

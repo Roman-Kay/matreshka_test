@@ -5,6 +5,8 @@ import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/claim_ba
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/claim_reward_use_case.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/compute_reward_statuses_use_case.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/domain/usecases/purchase_premium_use_case.dart';
+import 'package:romankaygo_test_rp/features/pause/domain/models/player_battle_pass_state.dart';
+import 'package:romankaygo_test_rp/features/pause/domain/models/player_battle_pass_progress.dart';
 import 'package:romankaygo_test_rp/features/tasks/domain/models/task.dart';
 
 void main() {
@@ -13,8 +15,14 @@ void main() {
       final result = const ComputeRewardStatusesUseCase()(_pass());
 
       final level = result.season.levels.first;
-      expect(level.freeRewards.first.status, RewardStatus.available);
-      expect(level.premiumRewards.first.status, RewardStatus.locked);
+      expect(
+        result.rewardStatus(level.freeRewards.first.id),
+        RewardStatus.available,
+      );
+      expect(
+        result.rewardStatus(level.premiumRewards.first.id),
+        RewardStatus.locked,
+      );
     });
   });
 
@@ -26,7 +34,7 @@ void main() {
 
       expect(result.premiumStatus, PremiumStatus.purchased);
       expect(
-        result.season.levels.first.premiumRewards.first.status,
+        result.rewardStatus(result.season.levels.first.premiumRewards.first.id),
         RewardStatus.available,
       );
     });
@@ -40,7 +48,9 @@ void main() {
 
       expect(result.message, 'Награда получена');
       expect(
-        result.pass.season.levels.first.freeRewards.first.status,
+        result.pass.rewardStatus(
+          result.pass.season.levels.first.freeRewards.first.id,
+        ),
         RewardStatus.received,
       );
     });
@@ -52,7 +62,9 @@ void main() {
 
       expect(result.message, 'Нужна прокачка');
       expect(
-        result.pass.season.levels.first.premiumRewards.first.status,
+        result.pass.rewardStatus(
+          result.pass.season.levels.first.premiumRewards.first.id,
+        ),
         RewardStatus.locked,
       );
     });
@@ -66,11 +78,15 @@ void main() {
 
       expect(result.message, 'Получено наград: 1');
       expect(
-        result.pass.season.levels.first.freeRewards.first.status,
+        result.pass.rewardStatus(
+          result.pass.season.levels.first.freeRewards.first.id,
+        ),
         RewardStatus.received,
       );
       expect(
-        result.pass.season.levels.first.premiumRewards.first.status,
+        result.pass.rewardStatus(
+          result.pass.season.levels.first.premiumRewards.first.id,
+        ),
         RewardStatus.locked,
       );
     });
@@ -221,12 +237,16 @@ BattlePass _pass({List<Task> tasks = const []}) {
         ),
       ],
     ),
-    progress: const BattlePassProgress(
-      currentLevel: 1,
-      currentXp: 20,
-      nextLevelXp: 100,
+    playerState: const PlayerBattlePassState(
+      userId: 'test-player',
+      progress: PlayerBattlePassProgress(
+        currentLevel: 1,
+        currentXp: 20,
+        nextLevelXp: 100,
+      ),
+      premiumStatus: PremiumStatus.locked,
+      rewardStates: [],
     ),
-    premiumStatus: PremiumStatus.locked,
     tasks: tasks,
   );
 }

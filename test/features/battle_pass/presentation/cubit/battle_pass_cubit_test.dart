@@ -3,6 +3,8 @@ import 'package:romankaygo_test_rp/features/battle_pass/domain/models/battle_pas
 import 'package:romankaygo_test_rp/features/battle_pass/domain/repositories/battle_pass_repository.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/presentation/cubit/battle_pass_cubit.dart';
 import 'package:romankaygo_test_rp/features/battle_pass/presentation/cubit/battle_pass_state.dart';
+import 'package:romankaygo_test_rp/features/pause/domain/models/player_battle_pass_state.dart';
+import 'package:romankaygo_test_rp/features/pause/domain/models/player_battle_pass_progress.dart';
 
 void main() {
   test('load emits loaded state with computed reward statuses', () async {
@@ -19,7 +21,9 @@ void main() {
     expect(states.last.status, BattlePassViewStatus.loaded);
     expect(states.last.battlePass, isNotNull);
     expect(
-      states.last.battlePass!.season.levels.first.freeRewards.first.status,
+      states.last.battlePass!.rewardStatus(
+        states.last.battlePass!.season.levels.first.freeRewards.first.id,
+      ),
       RewardStatus.available,
     );
   });
@@ -103,12 +107,16 @@ BattlePass _pass() {
         ),
       ],
     ),
-    progress: const BattlePassProgress(
-      currentLevel: 1,
-      currentXp: 20,
-      nextLevelXp: 100,
+    playerState: const PlayerBattlePassState(
+      userId: 'test-player',
+      progress: PlayerBattlePassProgress(
+        currentLevel: 1,
+        currentXp: 20,
+        nextLevelXp: 100,
+      ),
+      premiumStatus: PremiumStatus.locked,
+      rewardStates: [],
     ),
-    premiumStatus: PremiumStatus.locked,
     tasks: const [],
   );
 }

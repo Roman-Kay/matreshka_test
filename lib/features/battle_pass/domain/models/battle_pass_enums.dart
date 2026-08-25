@@ -6,12 +6,6 @@ enum RewardType { xp, outfit, currency, consumable, vehicle, unknown }
 
 enum BattlePassTrack { free, premium }
 
-enum BattlePassDemoMode {
-  premiumLocked,
-  premiumUnlocked,
-  premiumWithXpBonus,
-  maxLevel,
-  completed,
-}
+enum BattlePassDemoMode { premiumLocked, premiumUnlocked, premiumWithXpBonus, maxLevel, completed }
 
 enum RewardRarity { common, rare, epic, legendary }

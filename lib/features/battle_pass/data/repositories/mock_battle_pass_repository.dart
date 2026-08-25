@@ -1,20 +1,21 @@
 import '../../../../core/constants/app_assets.dart';
 import '../../../battle_pass/domain/models/battle_pass_models.dart';
 import '../../../battle_pass/domain/repositories/battle_pass_repository.dart';
+import '../../../pause/data/repositories/mock_pause_profile_repository.dart';
+import '../../../pause/domain/repositories/pause_profile_repository.dart';
 import '../../../tasks/data/repositories/mock_tasks_repository.dart';
 import '../../../tasks/domain/models/task.dart';
 import '../../../tasks/domain/repositories/tasks_repository.dart';
 
 final class MockBattlePassRepository implements BattlePassRepository {
-  MockBattlePassRepository({
-    this.delay = const Duration(milliseconds: 350),
-    TasksRepository? tasksRepository,
-    DateTime Function()? now,
-  }) : _tasksRepository = tasksRepository ?? const MockTasksRepository(),
-       _now = now ?? DateTime.now;
+  MockBattlePassRepository({this.delay = const Duration(milliseconds: 350), TasksRepository? tasksRepository, PauseProfileRepository? pauseProfileRepository, DateTime Function()? now})
+    : _tasksRepository = tasksRepository ?? const MockTasksRepository(),
+      _pauseProfileRepository = pauseProfileRepository ?? const MockPauseProfileRepository(),
+      _now = now ?? DateTime.now;
 
   final Duration delay;
   final TasksRepository _tasksRepository;
+  final PauseProfileRepository _pauseProfileRepository;
   final DateTime Function() _now;
 
   @override
@@ -22,36 +23,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
     if (delay > Duration.zero) {
       await Future<void>.delayed(delay);
     }
-    final premium = mode == BattlePassDemoMode.premiumLocked
-        ? PremiumStatus.locked
-        : PremiumStatus.purchased;
-    final progress = switch (mode) {
-      BattlePassDemoMode.premiumLocked => const BattlePassProgress(
-        currentLevel: 10,
-        currentXp: 900,
-        nextLevelXp: 1600,
-      ),
-      BattlePassDemoMode.premiumUnlocked => const BattlePassProgress(
-        currentLevel: 108,
-        currentXp: 900,
-        nextLevelXp: 1600,
-      ),
-      BattlePassDemoMode.premiumWithXpBonus => const BattlePassProgress(
-        currentLevel: 108,
-        currentXp: 900,
-        nextLevelXp: 1600,
-      ),
-      BattlePassDemoMode.maxLevel => const BattlePassProgress(
-        currentLevel: 200,
-        currentXp: 1600,
-        nextLevelXp: 1600,
-      ),
-      BattlePassDemoMode.completed => const BattlePassProgress(
-        currentLevel: 108,
-        currentXp: 900,
-        nextLevelXp: 1600,
-      ),
-    };
+    final playerState = await _pauseProfileRepository.loadBattlePassState(mode: mode);
     final now = _now();
     final startedAt = DateTime.utc(now.year, now.month, now.day);
 
@@ -62,7 +34,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         startsAt: startedAt,
         endsAt: startedAt.add(const Duration(days: 16, hours: 12, minutes: 42)),
         maxLevel: 200,
-        instantPremiumRewards: _instantPremiumRewards(premium),
+        instantPremiumRewards: _instantPremiumRewards(),
         levels: List<BattlePassLevel>.generate(200, (index) {
           final level = index + 1;
           return BattlePassLevel(
@@ -77,69 +49,27 @@ final class MockBattlePassRepository implements BattlePassRepository {
                 track: BattlePassTrack.free,
                 assetPath: _freeRewardAssetForLevel(level),
                 rarity: _rarityForLevel(level),
-                status: _initialRewardStatus(
-                  level: level,
-                  track: BattlePassTrack.free,
-                  premium: premium,
-                ),
               ),
             ],
-            premiumRewards: _premiumRewardsForLevel(level, premium),
+            premiumRewards: _premiumRewardsForLevel(level),
           );
         }),
       ),
-      progress: progress,
-      premiumStatus: premium,
-      tasks: _tasksWithPremiumBonus(
-        await _tasksRepository.loadBattlePassTasks(),
-        mode,
-      ),
+      playerState: playerState,
+      tasks: _tasksWithPremiumBonus(await _tasksRepository.loadBattlePassTasks(), mode),
     );
   }
 
   List<Task> _tasksWithPremiumBonus(List<Task> tasks, BattlePassDemoMode mode) {
     if (mode != BattlePassDemoMode.premiumWithXpBonus) return tasks;
-    return tasks
-        .map((task) => task.copyWith(xpBonusPercent: 100))
-        .toList(growable: false);
+    return tasks.map((task) => task.copyWith(xpBonusPercent: 100)).toList(growable: false);
   }
 
-  List<BattlePassReward> _instantPremiumRewards(PremiumStatus premium) {
-    final status = premium == PremiumStatus.purchased
-        ? RewardStatus.received
-        : RewardStatus.locked;
-
+  List<BattlePassReward> _instantPremiumRewards() {
     return [
-      BattlePassReward(
-        id: 9001,
-        type: RewardType.outfit,
-        title: 'Маска именинника',
-        amount: 16,
-        track: BattlePassTrack.premium,
-        assetPath: AppAssets.railBirthdayMask,
-        rarity: RewardRarity.rare,
-        status: status,
-      ),
-      BattlePassReward(
-        id: 9002,
-        type: RewardType.currency,
-        title: 'Премиум XP-буст',
-        amount: 16,
-        track: BattlePassTrack.premium,
-        assetPath: AppAssets.railCanister,
-        rarity: RewardRarity.epic,
-        status: status,
-      ),
-      BattlePassReward(
-        id: 9003,
-        type: RewardType.outfit,
-        title: 'Праздничный сет',
-        amount: 16,
-        track: BattlePassTrack.premium,
-        assetPath: AppAssets.railOutfit,
-        rarity: RewardRarity.rare,
-        status: status,
-      ),
+      BattlePassReward(id: 9001, type: RewardType.outfit, title: 'Маска именинника', amount: 16, track: BattlePassTrack.premium, assetPath: AppAssets.railBirthdayMask, rarity: RewardRarity.rare),
+      BattlePassReward(id: 9002, type: RewardType.currency, title: 'Премиум XP-буст', amount: 16, track: BattlePassTrack.premium, assetPath: AppAssets.railCanister, rarity: RewardRarity.epic),
+      BattlePassReward(id: 9003, type: RewardType.outfit, title: 'Праздничный сет', amount: 16, track: BattlePassTrack.premium, assetPath: AppAssets.railOutfit, rarity: RewardRarity.rare),
     ];
   }
 
@@ -150,16 +80,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
     return RewardRarity.common;
   }
 
-  List<BattlePassReward> _premiumRewardsForLevel(
-    int level,
-    PremiumStatus premium,
-  ) {
-    final status = _initialRewardStatus(
-      level: level,
-      track: BattlePassTrack.premium,
-      premium: premium,
-    );
-
+  List<BattlePassReward> _premiumRewardsForLevel(int level) {
     if (level == 4) {
       return [
         BattlePassReward(
@@ -170,18 +91,8 @@ final class MockBattlePassRepository implements BattlePassRepository {
           track: BattlePassTrack.premium,
           assetPath: AppAssets.railWhiteMask,
           rarity: RewardRarity.rare,
-          status: status,
         ),
-        BattlePassReward(
-          id: level * 10 + 2,
-          type: RewardType.outfit,
-          title: '«Босс мафии»',
-          amount: 1,
-          track: BattlePassTrack.premium,
-          assetPath: AppAssets.railOutfit,
-          rarity: RewardRarity.rare,
-          status: status,
-        ),
+        BattlePassReward(id: level * 10 + 2, type: RewardType.outfit, title: '«Босс мафии»', amount: 1, track: BattlePassTrack.premium, assetPath: AppAssets.railOutfit, rarity: RewardRarity.rare),
       ];
     }
 
@@ -193,45 +104,19 @@ final class MockBattlePassRepository implements BattlePassRepository {
         amount: level == 10 ? 1 : 16,
         track: BattlePassTrack.premium,
         assetPath: _premiumRewardAssetForLevel(level),
-        rarity: level % 10 == 0
-            ? RewardRarity.legendary
-            : _rarityForLevel(level + 1),
-        status: status,
+        rarity: level % 10 == 0 ? RewardRarity.legendary : _rarityForLevel(level + 1),
       ),
     ];
   }
 
-  RewardStatus _initialRewardStatus({
-    required int level,
-    required BattlePassTrack track,
-    required PremiumStatus premium,
-  }) {
-    if (level > 5) return RewardStatus.locked;
-    if (track == BattlePassTrack.free) return RewardStatus.received;
-    return premium == PremiumStatus.purchased
-        ? RewardStatus.received
-        : RewardStatus.locked;
-  }
-
   String _freeRewardAssetForLevel(int level) {
-    const assets = [
-      AppAssets.railBag,
-      AppAssets.railCandy,
-      AppAssets.railPassport,
-      AppAssets.railWristband,
-      AppAssets.railGreenMask,
-    ];
+    const assets = [AppAssets.railBag, AppAssets.railCandy, AppAssets.railPassport, AppAssets.railWristband, AppAssets.railGreenMask];
     return assets[(level - 1) % assets.length];
   }
 
   String _premiumRewardAssetForLevel(int level) {
     if (level % 10 == 0) return AppAssets.railVehicle;
-    const assets = [
-      AppAssets.railBirthdayMask,
-      AppAssets.railCanister,
-      AppAssets.railWhiteMask,
-      AppAssets.railOutfit,
-    ];
+    const assets = [AppAssets.railBirthdayMask, AppAssets.railCanister, AppAssets.railWhiteMask, AppAssets.railOutfit];
     return assets[(level - 1) % assets.length];
   }
 }

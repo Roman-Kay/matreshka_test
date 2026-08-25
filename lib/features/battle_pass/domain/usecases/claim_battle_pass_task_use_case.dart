@@ -32,7 +32,10 @@ final class ClaimBattlePassTaskUseCase {
     );
 
     return ClaimBattlePassTaskResult(
-      pass: pass.copyWith(progress: progress, tasks: tasks),
+      pass: pass.copyWith(
+        playerState: pass.playerState.copyWith(progress: progress),
+        tasks: tasks,
+      ),
       message: '+$rewardAmount опыта Battle Pass',
     );
   }

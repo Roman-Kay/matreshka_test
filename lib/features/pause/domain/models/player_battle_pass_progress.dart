@@ -1,5 +1,5 @@
-final class BattlePassProgress {
-  const BattlePassProgress({
+final class PlayerBattlePassProgress {
+  const PlayerBattlePassProgress({
     required this.currentLevel,
     required this.currentXp,
     required this.nextLevelXp,
@@ -14,12 +14,12 @@ final class BattlePassProgress {
     return (currentXp / nextLevelXp).clamp(0, 1);
   }
 
-  BattlePassProgress copyWith({
+  PlayerBattlePassProgress copyWith({
     int? currentLevel,
     int? currentXp,
     int? nextLevelXp,
   }) {
-    return BattlePassProgress(
+    return PlayerBattlePassProgress(
       currentLevel: currentLevel ?? this.currentLevel,
       currentXp: currentXp ?? this.currentXp,
       nextLevelXp: nextLevelXp ?? this.nextLevelXp,

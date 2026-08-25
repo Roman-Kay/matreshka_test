@@ -12,40 +12,36 @@ final class ClaimRewardUseCase {
 
   ClaimRewardResult call(BattlePass pass, int rewardId) {
     var message = 'Награда получена';
+    BattlePassReward? targetReward;
 
-    final levels = pass.season.levels
-        .map((level) {
-          List<BattlePassReward> update(List<BattlePassReward> rewards) {
-            return rewards
-                .map((reward) {
-                  if (reward.id != rewardId) return reward;
-                  if (reward.status == RewardStatus.received) {
-                    message = 'Награда уже получена';
-                    return reward;
-                  }
-                  if (reward.track == BattlePassTrack.premium &&
-                      pass.premiumStatus == PremiumStatus.locked) {
-                    message = 'Нужна прокачка';
-                    return reward;
-                  }
-                  if (reward.status != RewardStatus.available) {
-                    message = 'Награда пока заблокирована';
-                    return reward;
-                  }
-                  return reward.copyWith(status: RewardStatus.received);
-                })
-                .toList(growable: false);
-          }
+    for (final level in pass.season.levels) {
+      for (final reward in [...level.freeRewards, ...level.premiumRewards]) {
+        if (reward.id == rewardId) targetReward = reward;
+      }
+    }
 
-          return level.copyWith(
-            freeRewards: update(level.freeRewards),
-            premiumRewards: update(level.premiumRewards),
-          );
-        })
-        .toList(growable: false);
+    if (targetReward == null) {
+      return ClaimRewardResult(pass: pass, message: 'Награда не найдена');
+    }
+
+    final reward = targetReward;
+    final status = pass.rewardStatus(rewardId);
+    if (status == RewardStatus.received) {
+      message = 'Награда уже получена';
+      return ClaimRewardResult(pass: pass, message: message);
+    }
+    if (reward.track == BattlePassTrack.premium &&
+        pass.premiumStatus == PremiumStatus.locked) {
+      message = 'Нужна прокачка';
+      return ClaimRewardResult(pass: pass, message: message);
+    }
+    if (status != RewardStatus.available) {
+      message = 'Награда пока заблокирована';
+      return ClaimRewardResult(pass: pass, message: message);
+    }
 
     return ClaimRewardResult(
-      pass: pass.copyWith(season: pass.season.copyWith(levels: levels)),
+      pass: pass.withRewardStatus(rewardId, RewardStatus.received),
       message: message,
     );
   }
