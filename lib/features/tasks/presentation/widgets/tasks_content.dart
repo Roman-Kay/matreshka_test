@@ -9,7 +9,7 @@ import 'task_card.dart';
 import 'tasks_header.dart';
 import 'upgrade_hint_text.dart';
 
-class TasksContent extends StatelessWidget {
+class TasksContent extends StatefulWidget {
   const TasksContent({
     super.key,
     this.progress,
@@ -26,6 +26,29 @@ class TasksContent extends StatelessWidget {
   final VoidCallback? onPurchasePremium;
 
   @override
+  State<TasksContent> createState() => _TasksContentState();
+}
+
+class _TasksContentState extends State<TasksContent>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _entranceController;
+
+  @override
+  void initState() {
+    super.initState();
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 680),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
@@ -33,36 +56,88 @@ class TasksContent extends StatelessWidget {
         Image.asset(AppAssets.bgTask, fit: BoxFit.cover),
         Column(
           children: [
-            TasksHeader(progress: progress, onBack: onBack, onExit: onExit),
+            _TasksEntranceTransition(
+              animation: _entranceController,
+              interval: const Interval(0.00, 0.62, curve: Curves.easeOutCubic),
+              beginOffset: Offset(0, -96.h),
+              child: TasksHeader(
+                progress: widget.progress,
+                onBack: widget.onBack,
+                onExit: widget.onExit,
+              ),
+            ),
             SizedBox(height: 125.h),
-            SizedBox(
-              height: 502.h,
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: 51.w),
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (_, index) => TaskCard(task: tasks[index]),
-                separatorBuilder: (context, index) => SizedBox(width: 26.25.w),
-                itemCount: tasks.length,
+            _TasksEntranceTransition(
+              animation: _entranceController,
+              interval: const Interval(0.12, 0.84, curve: Curves.easeOutCubic),
+              beginOffset: Offset(0, 120.h),
+              child: SizedBox(
+                height: 502.h,
+                child: ListView.separated(
+                  padding: EdgeInsets.symmetric(horizontal: 51.w),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (_, index) =>
+                      TaskCard(task: widget.tasks[index]),
+                  separatorBuilder: (context, index) =>
+                      SizedBox(width: 26.25.w),
+                  itemCount: widget.tasks.length,
+                ),
               ),
             ),
             const Spacer(),
-            Padding(
-              padding: EdgeInsetsGeometry.only(left: 51.w, bottom: 49.h),
-              child: Row(
-                children: [
-                  PremiumActionButton(
-                    iconAsset: AppAssets.premium,
-                    text: 'Прокачать',
-                    onPressed: onPurchasePremium,
-                  ),
-                  SizedBox(width: 50.w),
-                  const UpgradeHintText(),
-                ],
+            _TasksEntranceTransition(
+              animation: _entranceController,
+              interval: const Interval(0.22, 1.00, curve: Curves.easeOutCubic),
+              beginOffset: Offset(-120.w, 0),
+              child: Padding(
+                padding: EdgeInsetsGeometry.only(left: 51.w, bottom: 49.h),
+                child: Row(
+                  children: [
+                    PremiumActionButton(
+                      iconAsset: AppAssets.premium,
+                      text: 'Прокачать',
+                      onPressed: widget.onPurchasePremium,
+                    ),
+                    SizedBox(width: 50.w),
+                    const UpgradeHintText(),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _TasksEntranceTransition extends StatelessWidget {
+  const _TasksEntranceTransition({
+    required this.animation,
+    required this.interval,
+    required this.beginOffset,
+    required this.child,
+  });
+
+  final Animation<double> animation;
+  final Interval interval;
+  final Offset beginOffset;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      child: RepaintBoundary(child: child),
+      builder: (context, child) {
+        final progress = interval.transform(animation.value);
+        final offset = Offset.lerp(beginOffset, Offset.zero, progress)!;
+
+        return Opacity(
+          opacity: progress.clamp(0.0, 1.0),
+          child: Transform.translate(offset: offset, child: child),
+        );
+      },
     );
   }
 }
