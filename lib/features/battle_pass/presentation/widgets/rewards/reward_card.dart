@@ -25,6 +25,7 @@ class RewardCard extends StatelessWidget {
     required this.onShowDetails,
     this.showRoadLines = true,
     this.forceLargeSize = false,
+    this.availableGlowAnimation,
   });
 
   final int level;
@@ -38,6 +39,7 @@ class RewardCard extends StatelessWidget {
   final VoidCallback onShowDetails;
   final bool showRoadLines;
   final bool forceLargeSize;
+  final Animation<double>? availableGlowAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +68,7 @@ class RewardCard extends StatelessWidget {
                   received: received,
                   largeSize: largeSize,
                   onClaim: onClaim,
+                  availableGlowAnimation: availableGlowAnimation,
                 ),
               ),
             ),
@@ -92,6 +95,7 @@ class RewardCardVisual extends StatelessWidget {
     required this.received,
     required this.largeSize,
     this.onClaim,
+    this.availableGlowAnimation,
   });
 
   final BattlePassReward reward;
@@ -100,6 +104,7 @@ class RewardCardVisual extends StatelessWidget {
   final bool received;
   final bool largeSize;
   final VoidCallback? onClaim;
+  final Animation<double>? availableGlowAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +122,7 @@ class RewardCardVisual extends StatelessWidget {
       height: cardHeight,
       child: Center(
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             Opacity(
               opacity: received ? 0.5 : 1,
@@ -138,6 +144,7 @@ class RewardCardVisual extends StatelessWidget {
                           glowColor: available ? AppColors.green : null,
                         ),
                         child: Stack(
+                          clipBehavior: Clip.none,
                           children: [
                             Center(
                               child: Padding(
@@ -178,6 +185,22 @@ class RewardCardVisual extends StatelessWidget {
                 },
               ),
             ),
+            if (available)
+              Positioned(
+                left: -42.h,
+                top: -42.h,
+                width: cardWidth + 84.h,
+                height: cardHeight + 84.h,
+                child: IgnorePointer(
+                  child: _AvailableRewardBorderGlow(
+                    animation: availableGlowAnimation,
+                    skew: 26.h,
+                    radius: 24.h,
+                    strokeWidth: 4.h,
+                    inset: 42.h,
+                  ),
+                ),
+              ),
             if (received)
               Positioned(
                 right: 26.h,
@@ -192,6 +215,178 @@ class RewardCardVisual extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _AvailableRewardBorderGlow extends StatelessWidget {
+  const _AvailableRewardBorderGlow({
+    required this.animation,
+    required this.skew,
+    required this.radius,
+    required this.strokeWidth,
+    required this.inset,
+  });
+
+  final Animation<double>? animation;
+  final double skew;
+  final double radius;
+  final double strokeWidth;
+  final double inset;
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = this.animation;
+    if (animation == null) return const SizedBox.shrink();
+
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) {
+          return CustomPaint(
+            painter: _AvailableRewardBorderGlowPainter(
+              progress: animation.value,
+              skew: skew,
+              radius: radius,
+              strokeWidth: strokeWidth,
+              inset: inset,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _AvailableRewardBorderGlowPainter extends CustomPainter {
+  const _AvailableRewardBorderGlowPainter({
+    required this.progress,
+    required this.skew,
+    required this.radius,
+    required this.strokeWidth,
+    required this.inset,
+  });
+
+  final double progress;
+  final double skew;
+  final double radius;
+  final double strokeWidth;
+  final double inset;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = _roundedParallelogramPath(
+      Size(size.width - inset * 2, size.height - inset * 2),
+    ).shift(Offset(inset, inset));
+    const travelEnd = 0.56;
+    const pulseEnd = 0.82;
+    final pulseProgress = ((progress - travelEnd) / (pulseEnd - travelEnd))
+        .clamp(0.0, 1.0);
+    final pulseOpacity = pulseProgress < 0.5
+        ? pulseProgress * 2
+        : (1 - pulseProgress) * 2;
+
+    if (pulseOpacity > 0) {
+      final pulsePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 8
+        ..color = AppColors.green.withValues(alpha: 0.82 * pulseOpacity)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 28.r);
+      canvas.drawPath(path, pulsePaint);
+    }
+
+    if (progress > travelEnd) return;
+
+    final metric = path.computeMetrics().first;
+    final segmentLength = metric.length * 0.12;
+    final travelProgress = (progress / travelEnd).clamp(0.0, 1.0);
+    final segmentFadeIn = (progress / (travelEnd * 0.16)).clamp(0.0, 1.0);
+    final segmentFadeOut = progress < travelEnd * 0.84
+        ? 1.0
+        : (1 - (progress - travelEnd * 0.84) / (travelEnd * 0.16)).clamp(
+            0.0,
+            1.0,
+          );
+    final segmentOpacity =
+        Curves.easeOut.transform(segmentFadeIn) * segmentFadeOut;
+    final head = metric.length * Curves.easeInOutSine.transform(travelProgress);
+    final tail = head - segmentLength;
+    final segment = Path();
+
+    if (tail < 0) {
+      segment.addPath(
+        metric.extractPath(metric.length + tail, metric.length),
+        Offset.zero,
+      );
+      segment.addPath(metric.extractPath(0, head), Offset.zero);
+    } else {
+      segment.addPath(metric.extractPath(tail, head), Offset.zero);
+    }
+
+    final movingShadowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = strokeWidth + 14
+      ..color = AppColors.green.withValues(alpha: 0.36 * segmentOpacity)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 16.r);
+    final glowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = strokeWidth + 8
+      ..color = Colors.white.withValues(alpha: 0.12 * segmentOpacity)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 18.r);
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = strokeWidth * 0.55
+      ..color = Colors.white.withValues(alpha: 0.18 * segmentOpacity);
+
+    canvas.drawPath(segment, movingShadowPaint);
+    canvas.drawPath(segment, glowPaint);
+    canvas.drawPath(segment, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(_AvailableRewardBorderGlowPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.skew != skew ||
+        oldDelegate.radius != radius ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.inset != inset;
+  }
+
+  Path _roundedParallelogramPath(Size size) {
+    final points = [
+      Offset(skew, 0),
+      Offset(size.width, 0),
+      Offset(size.width - skew, size.height),
+      Offset(0, size.height),
+    ];
+    final path = Path();
+
+    for (var index = 0; index < points.length; index++) {
+      final previous = points[(index - 1 + points.length) % points.length];
+      final current = points[index];
+      final next = points[(index + 1) % points.length];
+      final start = _pointAlong(current, previous, radius);
+      final end = _pointAlong(current, next, radius);
+
+      if (index == 0) {
+        path.moveTo(start.dx, start.dy);
+      } else {
+        path.lineTo(start.dx, start.dy);
+      }
+
+      path.arcToPoint(end, radius: Radius.circular(radius));
+    }
+
+    return path..close();
+  }
+
+  Offset _pointAlong(Offset from, Offset to, double distance) {
+    final vector = to - from;
+    final length = vector.distance;
+    if (length == 0) return from;
+    return from + vector / length * distance.clamp(0, length / 2);
   }
 }
 
