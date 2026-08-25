@@ -96,6 +96,7 @@ rpc BattlePass {
     timestamp startsAt "Дата начала сезона";
     timestamp endsAt "Дата окончания сезона";
     int32 maxLevel "Максимальный уровень";
+    string backgroundAssetPath = 256 "Фоновая картинка сезона для экрана Battle Pass";
     repeated Reward instantPremiumRewards max 3 "Награды, которые игрок получает сразу после покупки премиума";
     repeated Level levels max 200 "Уровни боевого пропуска";
   }

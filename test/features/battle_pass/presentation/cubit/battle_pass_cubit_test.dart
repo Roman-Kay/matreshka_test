@@ -79,6 +79,7 @@ BattlePass _pass() {
       startsAt: DateTime.utc(2026),
       endsAt: DateTime.utc(2026, 2),
       maxLevel: 1,
+      backgroundAssetPath: 'assets/images/bg.png',
       instantPremiumRewards: const [],
       levels: const [
         BattlePassLevel(

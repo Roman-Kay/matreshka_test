@@ -83,6 +83,12 @@ class _BattlePassContentState extends State<BattlePassContent>
 
     return Stack(
       children: [
+        Positioned.fill(
+          child: Image.asset(
+            pass.season.backgroundAssetPath,
+            fit: BoxFit.cover,
+          ),
+        ),
         Positioned(
           left: 0,
           right: 0,

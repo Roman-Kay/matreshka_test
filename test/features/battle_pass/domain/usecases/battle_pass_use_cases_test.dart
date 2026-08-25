@@ -194,6 +194,7 @@ BattlePass _pass({List<Task> tasks = const []}) {
       startsAt: DateTime.utc(2026),
       endsAt: DateTime.utc(2026, 2),
       maxLevel: 2,
+      backgroundAssetPath: 'assets/images/bg.png',
       instantPremiumRewards: const [],
       levels: const [
         BattlePassLevel(
