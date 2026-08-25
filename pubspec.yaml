@@ -63,9 +63,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/figma/
-    - assets/figma/nav/
-    - assets/rail/
+    - assets/images/
+    - assets/images/nav/
+    - assets/images/rail/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

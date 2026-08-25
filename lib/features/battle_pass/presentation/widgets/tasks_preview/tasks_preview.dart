@@ -10,12 +10,7 @@ import 'task_preview_header.dart';
 import 'task_preview_progress_segments.dart';
 
 class TasksPreview extends StatefulWidget {
-  const TasksPreview({
-    super.key,
-    required this.tasks,
-    required this.onTap,
-    required this.onClaim,
-  });
+  const TasksPreview({super.key, required this.tasks, required this.onTap, required this.onClaim});
 
   final List<Task> tasks;
   final VoidCallback onTap;
@@ -44,7 +39,7 @@ class _TasksPreviewState extends State<TasksPreview> {
       }
       _textPageController.animateToPage(
         nextIndex,
-        duration: const Duration(milliseconds: 320),
+        duration: _taskScrollDuration(from: _activeIndex.value, to: nextIndex, baseDuration: const Duration(milliseconds: 320)),
         curve: Curves.easeOutCubic,
       );
     });
@@ -95,31 +90,20 @@ class _TasksPreviewState extends State<TasksPreview> {
                     height: 110.r,
                     decoration: BoxDecoration(
                       color: const Color(0xFF353747).withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.r),
-                        topRight: Radius.circular(30.r),
-                      ),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(30.r), topRight: Radius.circular(30.r)),
                     ),
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 320),
                       switchInCurve: Curves.easeOutCubic,
                       switchOutCurve: Curves.easeInCubic,
-                      child: TaskPreviewHeader(
-                        key: ValueKey('header-${tasks[activeIndex].id}'),
-                        task: tasks[activeIndex],
-                        taskIndex: activeIndex,
-                        taskCount: tasks.length,
-                      ),
+                      child: TaskPreviewHeader(key: ValueKey('header-${tasks[activeIndex].id}'), task: tasks[activeIndex], taskIndex: activeIndex, taskCount: tasks.length),
                     ),
                   ),
                   Container(
                     height: 290.r,
                     decoration: BoxDecoration(
                       color: const Color(0xFF202231).withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30.r),
-                        bottomRight: Radius.circular(30.r),
-                      ),
+                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30.r), bottomRight: Radius.circular(30.r)),
                     ),
                     child: Column(
                       children: [
@@ -130,8 +114,7 @@ class _TasksPreviewState extends State<TasksPreview> {
                           child: PageView.builder(
                             controller: _textPageController,
                             itemCount: tasks.length,
-                            onPageChanged: (index) =>
-                                _activeIndex.value = index,
+                            onPageChanged: (index) => _activeIndex.value = index,
                             itemBuilder: (context, index) {
                               final task = tasks[index];
                               return Text(
@@ -140,9 +123,7 @@ class _TasksPreviewState extends State<TasksPreview> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: task.claimed
-                                      ? AppColors.white60.withValues(alpha: 0.4)
-                                      : AppColors.white60,
+                                  color: task.claimed ? AppColors.white60.withValues(alpha: 0.4) : AppColors.white60,
                                   fontSize: 22.r,
                                   fontWeight: FontWeight.w500,
                                   height: 1.20,
@@ -153,16 +134,9 @@ class _TasksPreviewState extends State<TasksPreview> {
                           ),
                         ),
                         const Spacer(flex: 50),
-                        TaskPreviewProgressSegments(
-                          count: tasks.length,
-                          activeIndex: activeIndex,
-                        ),
+                        TaskPreviewProgressSegments(count: tasks.length, activeIndex: activeIndex),
                         SizedBox(height: 26.r),
-                        TaskPreviewActionButton(
-                          task: activeTask,
-                          onOpenTasks: widget.onTap,
-                          onClaim: () => widget.onClaim(activeTask.id),
-                        ),
+                        TaskPreviewActionButton(task: activeTask, onOpenTasks: widget.onTap, onClaim: () => widget.onClaim(activeTask.id)),
                         SizedBox(height: 36.r),
                       ],
                     ),
@@ -179,14 +153,23 @@ class _TasksPreviewState extends State<TasksPreview> {
   void _goToTask(int index) {
     if (widget.tasks.isEmpty) return;
     final nextIndex = index.clamp(0, widget.tasks.length - 1);
-    if (nextIndex == _activeIndex.value) return;
+    final currentIndex = _activeIndex.value;
+    if (nextIndex == currentIndex) return;
 
     _activeIndex.value = nextIndex;
     if (!_textPageController.hasClients) return;
     _textPageController.animateToPage(
       nextIndex,
-      duration: const Duration(milliseconds: 240),
+      duration: _taskScrollDuration(from: currentIndex, to: nextIndex, baseDuration: const Duration(milliseconds: 240)),
       curve: Curves.easeOutCubic,
     );
+  }
+
+  Duration _taskScrollDuration({required int from, required int to, required Duration baseDuration}) {
+    final taskCount = widget.tasks.length;
+    final wrapsToFirst = taskCount > 1 && from == taskCount - 1 && to == 0;
+    if (!wrapsToFirst) return baseDuration;
+
+    return Duration(milliseconds: (baseDuration.inMilliseconds * taskCount / 2).toInt());
   }
 }
