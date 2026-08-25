@@ -31,142 +31,29 @@
 
 Повторяющиеся цвета и ассеты вынесены в `core/theme` и `core/constants`.
 
-## Использование ИИ
 
-ИИ использовался для анализа структуры задачи, подготовки архитектурного каркаса, декомпозиции UI, проверки пограничных сценариев, помощи с тестами и документацией. Итоговая реализация, архитектурные решения и проверка результата контролировались разработчиком.
-
-## Proto-схема
-
-Набросок описывает данные, которые нужны для главного экрана Battle Pass, превью заданий, экрана заданий и модалки деталей награды. Синтаксис условный: важны структура, вложенность, ограничения массивов и смысл полей.
+## Proto‑подобная схема данных (кратко)
+Ниже — упрощённый proto‑набросок, показывающий ключевые структуры: сезоны, уровни, награды, состояние игрока и задания.
 
 ```proto
 rpc BattlePass {
-  enum PremiumStatus {
-    locked "Премиум-прокачка не куплена";
-    purchased "Премиум-прокачка куплена";
-  }
-
-  enum RewardStatus {
-    locked "Награда закрыта";
-    available "Награду можно забрать";
-    received "Награда уже получена";
-  }
-
-  enum RewardType {
-    xp "Опыт Battle Pass";
-    outfit "Скин или одежда";
-    currency "Валюта или очки";
-    consumable "Расходник";
-    vehicle "Транспорт или большой приз";
-    unknown "Fallback для неизвестного типа";
-  }
-
-  enum BattlePassTrack {
-    free "Бесплатная дорожка";
-    premium "Премиальная дорожка";
-  }
-
-  enum RewardRarity {
-    common "Обычная редкость";
-    rare "Редкая награда";
-    epic "Эпическая награда";
-    legendary "Легендарная награда / большой приз";
-  }
-
-  message Reward {
-    int32 id "Уникальный id награды";
-    RewardType type "Тип награды";
-    string title = 96 "Отображаемое название";
-    int32 amount "Количество";
-    BattlePassTrack track "free или premium";
-    RewardRarity rarity "Редкость для визуального оформления карточки";
-    string assetPath = 256 "Путь к иконке/изображению награды, optional";
-  }
-
-  message Level {
-    int32 number "Номер уровня";
-    int32 requiredXp "Опыт, необходимый для уровня";
-    repeated Reward freeRewards max 2 "Награды бесплатной дорожки";
-    repeated Reward premiumRewards max 3 "Награды премиальной дорожки, включая выбор из нескольких наград";
-  }
-
-  message Season {
-    string id = 64 "Id сезона";
-    string title = 64 "Название сезона";
-    timestamp startsAt "Дата начала сезона";
-    timestamp endsAt "Дата окончания сезона";
-    int32 maxLevel "Максимальный уровень";
-    string backgroundAssetPath = 256 "Фоновая картинка сезона для экрана Battle Pass";
-    repeated Reward instantPremiumRewards max 3 "Награды, которые игрок получает сразу после покупки премиума";
-    repeated Level levels max 200 "Уровни боевого пропуска";
-  }
-
-  message Progress {
-    int32 currentLevel "Текущий уровень";
-    int32 currentXp "Опыт внутри текущего уровня";
-    int32 nextLevelXp "Опыт, нужный для следующего уровня";
-  }
-
-  message PlayerRewardState {
-    int32 rewardId "Id награды из Season.Level.Reward";
-    RewardStatus status "Персональный статус награды: locked, available, received";
-    timestamp receivedAt "Когда награда была получена, optional";
-  }
-
-  message PlayerBattlePassState {
-    string userId = 64 "Id игрока";
-    string seasonId = 64 "Id сезона, к которому относится состояние игрока";
-    PremiumStatus premiumStatus "Куплен ли премиум у текущего игрока";
-    Progress progress "Персональный уровень и опыт игрока";
-    repeated PlayerRewardState rewardStates max 600 "Персональные статусы наград сезона";
-  }
-
-  enum TaskStatus {
-    inProgress "Задание выполняется";
-    readyToClaim "Задание выполнено, награду можно забрать";
-    claimed "Награда за задание получена";
-  }
-
-  message Task {
-    int32 id "Уникальный id задания";
-    string title = 160 "Описание задания";
-    string rewardTitle = 32 "Название награды за задание";
-    int32 rewardAmount "Количество опыта/награды";
-    int32 currentProgress "Текущий прогресс выполнения";
-    int32 requiredProgress "Цель выполнения";
-    string rewardAssetPath = 256 "Иконка награды";
-    int32 xpBonusPercent "Процент бонуса к опыту при активном премиуме, 0 если бонуса нет";
-    TaskStatus status "Состояние задания";
-  }
-
-  message RewardDetailsModal {
-    Reward reward "Выбранная награда для модалки";
-    repeated Reward choiceRewards max 3 "Варианты выбора, если на уровне несколько премиальных наград";
-    PlayerRewardState rewardState "Персональный статус выбранной награды";
-    int32 level "Уровень, на котором находится награда";
-    bool premiumLocked "true, если награда требует купленный премиум";
-    bool canClaim "true, если кнопка Забрать активна";
-    string actionText = 32 "Текст CTA: Забрать, Получено, Прокачать, Заблокировано";
-  }
-
-  message TasksPreview {
-    repeated Task tasks max 5 "Короткий список заданий для карточки на главном экране";
-    int32 activeTaskIndex "Индекс активного задания в автопрокрутке";
-  }
-
-  message TasksScreen {
-    PlayerBattlePassState playerState "Состояние Battle Pass текущего игрока для шапки и CTA прокачки";
-    timestamp tasksRefreshAt "Время следующего обновления заданий";
-    repeated Task tasks max 12 "Список заданий на отдельном экране";
-  }
-
-  outgoing Show {
-    Season season "Активный сезон: описание уровней, наград и сроков без данных игрока";
-    PlayerBattlePassState playerState "Персональное состояние игрока в этом сезоне";
-    int32 selectedRewardId "Выбранная награда, optional";
-    repeated Task tasks max 12 "Задания, связанные с Battle Pass";
-    TasksPreview tasksPreview "Данные превью заданий на главном экране";
-    RewardDetailsModal rewardDetails "Данные для модалки выбранной награды, optional";
-  }
+  message Reward { int32 id; string title; int32 amount; string assetPath; }
+  message Level { int32 number; int32 requiredXp; repeated Reward freeRewards; repeated Reward premiumRewards; }
+  message Season { string id; string title; timestamp startsAt; timestamp endsAt; int32 maxLevel; repeated Level levels; }
+  message Progress { int32 currentLevel; int32 currentXp; int32 nextLevelXp; }
+  message Task { int32 id; string title; int32 rewardAmount; int32 currentProgress; int32 requiredProgress; int32 xpBonusPercent; enum TaskStatus { inProgress, readyToClaim, claimed } }
+  message PlayerBattlePassState { string userId; Progress progress; enum PremiumStatus { locked, purchased } premiumStatus; repeated int32 claimedRewardIds; }
+  outgoing Show { Season season; PlayerBattlePassState playerState; repeated Task tasks; }
 }
 ```
+
+
+##  Как использовался ИИ
+ИИ применялся: 
+- для генерации наброска UI из фигмы после проходился по всем файлам и делал ровно так как фигме вручную.
+- для создание папок, дал описание архитектуры название были сгенерированы
+- для вынесения assets в AppAssets
+- для генериции заданий и наград в моках
+- для анимаций
+
+
