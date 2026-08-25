@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
+import '../../../../../core/ui/pressable_scale.dart';
 import '../../../../pause/domain/models/player_battle_pass_progress.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import '../../cubit/battle_pass_state.dart';
@@ -637,7 +638,7 @@ class _PremiumPreview extends StatelessWidget {
               SizedBox(height: 8.h),
               Padding(
                 padding: EdgeInsets.only(right: 23.h),
-                child: const _PremiumPreviewButton(),
+                child: const PressableScale(child: _PremiumPreviewButton()),
               ),
             ],
           ),
@@ -919,12 +920,11 @@ class _RailScrollButton extends StatelessWidget {
       width: 36.h,
       height: 36.h,
     );
-    return GestureDetector(
+    return PressableScale(
       onTap: onTap,
       onLongPressStart: (_) => onHoldStart(),
       onLongPressEnd: (_) => onHoldEnd(),
       onLongPressCancel: onHoldEnd,
-      behavior: HitTestBehavior.opaque,
       child: Container(
         width: 84.h,
         height: 84.h,

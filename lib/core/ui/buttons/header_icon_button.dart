@@ -3,6 +3,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../theme/app_colors.dart';
+import '../pressable_scale.dart';
 
 class HeaderIconButton extends StatelessWidget {
   const HeaderIconButton({
@@ -16,7 +17,7 @@ class HeaderIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressableScale(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(32.r),

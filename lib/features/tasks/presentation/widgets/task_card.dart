@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/ui/pressable_scale.dart';
 import '../../domain/models/task.dart';
 
 class TaskCard extends StatelessWidget {
@@ -218,48 +219,51 @@ class _TaskActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 250.h,
-      height: 88.h,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(0.50, 1.00),
-          end: Alignment(0.50, 0.00),
-          colors: canClaim
-              ? [
-                  Color(0xFF55B675).withValues(alpha: 0.4),
-                  Color(0xFF449761).withValues(alpha: 0.4),
-                ]
-              : claimed
-              ? const [Color(0xFF9F4327), Color(0xFF9F4327)]
-              : const [Color(0xFFE22929), Color(0xFFFF6435)],
+    return PressableScale(
+      enabled: !claimed,
+      child: Container(
+        width: 250.h,
+        height: 88.h,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment(0.50, 1.00),
+            end: Alignment(0.50, 0.00),
+            colors: canClaim
+                ? [
+                    Color(0xFF55B675).withValues(alpha: 0.4),
+                    Color(0xFF449761).withValues(alpha: 0.4),
+                  ]
+                : claimed
+                ? const [Color(0xFF9F4327), Color(0xFF9F4327)]
+                : const [Color(0xFFE22929), Color(0xFFFF6435)],
+          ),
+          borderRadius: BorderRadius.horizontal(
+            left: Radius.circular(30.h),
+            right: Radius.circular(6.h),
+          ),
         ),
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(30.h),
-          right: Radius.circular(6.h),
-        ),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 16.h,
-          children: [
-            if (claimed) SvgPicture.asset(AppAssets.done, height: 30.h),
-            Text(
-              canClaim
-                  ? 'Забрать опыт'
-                  : claimed
-                  ? 'Готово'
-                  : 'Перейти',
-              style: TextStyle(
-                color: canClaim ? AppColors.secondary100 : AppColors.white100,
-                fontSize: 26.h,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26.h,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 16.h,
+            children: [
+              if (claimed) SvgPicture.asset(AppAssets.done, height: 30.h),
+              Text(
+                canClaim
+                    ? 'Забрать опыт'
+                    : claimed
+                    ? 'Готово'
+                    : 'Перейти',
+                style: TextStyle(
+                  color: canClaim ? AppColors.secondary100 : AppColors.white100,
+                  fontSize: 26.h,
+                  fontWeight: FontWeight.w500,
+                  height: 1.20,
+                  letterSpacing: -0.26.h,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

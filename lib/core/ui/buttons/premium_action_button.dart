@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../pressable_scale.dart';
+
 class PremiumActionButton extends StatefulWidget {
   const PremiumActionButton({
     super.key,
@@ -82,9 +84,9 @@ class _PremiumActionButtonState extends State<PremiumActionButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressableScale(
       onTap: widget.onPressed,
-      behavior: HitTestBehavior.opaque,
+      enabled: widget.onPressed != null,
       child: SizedBox(
         width: 400.r,
         height: 100.r,

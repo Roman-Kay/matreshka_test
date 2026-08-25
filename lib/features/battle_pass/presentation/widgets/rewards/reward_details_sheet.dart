@@ -4,6 +4,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
+import '../../../../../core/ui/pressable_scale.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import 'reward_amount_badge.dart';
 import 'reward_rarity_style.dart';
@@ -144,29 +145,32 @@ class RewardDetailsSheet extends StatelessWidget {
                 SizedBox(
                   width: 230.h,
                   height: 58.h,
-                  child: ElevatedButton(
-                    onPressed: canClaim
+                  child: PressableScale(
+                    enabled: canClaim,
+                    onTap: canClaim
                         ? () {
                             onClaim();
                             Navigator.of(context).pop();
                           }
                         : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: premiumLocked
-                          ? AppColors.gold
-                          : AppColors.green,
-                      disabledBackgroundColor: AppColors.background10,
-                      foregroundColor: AppColors.ink,
-                      disabledForegroundColor: AppColors.white40,
-                      shape: RoundedRectangleBorder(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: canClaim
+                            ? premiumLocked
+                                  ? AppColors.gold
+                                  : AppColors.green
+                            : AppColors.background10,
                         borderRadius: BorderRadius.circular(18.h),
                       ),
-                    ),
-                    child: Text(
-                      actionText,
-                      style: TextStyle(
-                        fontSize: 22.h,
-                        fontWeight: FontWeight.w700,
+                      child: Center(
+                        child: Text(
+                          actionText,
+                          style: TextStyle(
+                            color: canClaim ? AppColors.ink : AppColors.white40,
+                            fontSize: 22.h,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ),
                   ),

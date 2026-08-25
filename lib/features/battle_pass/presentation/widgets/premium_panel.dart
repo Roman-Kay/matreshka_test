@@ -4,6 +4,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/ui/buttons/premium_action_button.dart';
+import '../../../../core/ui/pressable_scale.dart';
 import '../../domain/models/battle_pass_models.dart';
 
 class PremiumPanel extends StatelessWidget {
@@ -221,9 +222,8 @@ class _ClaimAllRewardsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressableScale(
       onTap: onPressed,
-      behavior: HitTestBehavior.opaque,
       child: Container(
         width: 400.r,
         padding: EdgeInsets.fromLTRB(36.r, 20.r, 36.r, 23.r),

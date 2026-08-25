@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/ui/painters/parallelogram_painter.dart';
+import '../../../../../core/ui/pressable_scale.dart';
 import '../../../../pause/domain/models/player_battle_pass_progress.dart';
 import '../../../domain/models/battle_pass_models.dart';
 import 'reward_amount_badge.dart';
@@ -85,12 +86,7 @@ class RewardCard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 6.h),
-            RewardProgressMarker(
-              level: level,
-              unlocked: unlocked,
-              drawLeftLine: showRoadLines && !isFirstLevel,
-              drawRightLine: showRoadLines && !isLastLevel,
-            ),
+            RewardProgressMarker(level: level, unlocked: unlocked, drawLeftLine: showRoadLines && !isFirstLevel, drawRightLine: showRoadLines && !isLastLevel),
           ],
         ),
       ),
@@ -155,24 +151,15 @@ class RewardCardVisual extends StatelessWidget {
                           borderWidth: animatedBorderWidth,
                           skew: 26.h,
                           radius: 24.h,
-                          glowColor:
-                              staticGlowColor ??
-                              (available ? AppColors.green : null),
+                          glowColor: staticGlowColor ?? (available ? AppColors.green : null),
                         ),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
                             Center(
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: 18.h,
-                                  bottom: 10.h,
-                                ),
-                                child: Image.asset(
-                                  reward.assetPath ??
-                                      AppAssets.railBirthdayMask,
-                                  fit: BoxFit.contain,
-                                ),
+                                padding: EdgeInsets.only(top: 18.h, bottom: 10.h),
+                                child: Image.asset(reward.assetPath ?? AppAssets.railBirthdayMask, fit: BoxFit.contain),
                               ),
                             ),
                             if (!available)
@@ -184,13 +171,13 @@ class RewardCardVisual extends StatelessWidget {
                             if (reward.amount > 1)
                               Positioned(
                                 right: 28.h,
-                                bottom: available ? 70.h : 12.h,
+                                bottom: available ? 74.h : 12.h,
                                 child: RewardAmountBadge(amount: reward.amount),
                               ),
                             if (available && onClaim != null)
                               Positioned(
                                 left: 13.h,
-                                bottom: 14.h,
+                                bottom: 7.h,
                                 child: _ClaimRewardButton(onTap: onClaim!),
                               ),
                           ],
@@ -208,24 +195,14 @@ class RewardCardVisual extends StatelessWidget {
                 width: cardWidth + 84.h,
                 height: cardHeight + 84.h,
                 child: IgnorePointer(
-                  child: _AvailableRewardBorderGlow(
-                    animation: availableGlowAnimation,
-                    skew: 26.h,
-                    radius: 24.h,
-                    strokeWidth: 4.h,
-                    inset: 42.h,
-                  ),
+                  child: _AvailableRewardBorderGlow(animation: availableGlowAnimation, skew: 26.h, radius: 24.h, strokeWidth: 4.h, inset: 42.h),
                 ),
               ),
             if (received)
               Positioned(
                 right: 26.h,
                 top: 24.h,
-                child: SvgPicture.asset(
-                  AppAssets.done,
-                  width: 62.h,
-                  height: 42.h,
-                ),
+                child: SvgPicture.asset(AppAssets.done, width: 62.h, height: 42.h),
               ),
           ],
         ),
@@ -235,13 +212,7 @@ class RewardCardVisual extends StatelessWidget {
 }
 
 class _AvailableRewardBorderGlow extends StatelessWidget {
-  const _AvailableRewardBorderGlow({
-    required this.animation,
-    required this.skew,
-    required this.radius,
-    required this.strokeWidth,
-    required this.inset,
-  });
+  const _AvailableRewardBorderGlow({required this.animation, required this.skew, required this.radius, required this.strokeWidth, required this.inset});
 
   final Animation<double>? animation;
   final double skew;
@@ -259,13 +230,7 @@ class _AvailableRewardBorderGlow extends StatelessWidget {
         animation: animation,
         builder: (context, _) {
           return CustomPaint(
-            painter: _AvailableRewardBorderGlowPainter(
-              progress: animation.value,
-              skew: skew,
-              radius: radius,
-              strokeWidth: strokeWidth,
-              inset: inset,
-            ),
+            painter: _AvailableRewardBorderGlowPainter(progress: animation.value, skew: skew, radius: radius, strokeWidth: strokeWidth, inset: inset),
           );
         },
       ),
@@ -274,13 +239,7 @@ class _AvailableRewardBorderGlow extends StatelessWidget {
 }
 
 class _AvailableRewardBorderGlowPainter extends CustomPainter {
-  const _AvailableRewardBorderGlowPainter({
-    required this.progress,
-    required this.skew,
-    required this.radius,
-    required this.strokeWidth,
-    required this.inset,
-  });
+  const _AvailableRewardBorderGlowPainter({required this.progress, required this.skew, required this.radius, required this.strokeWidth, required this.inset});
 
   final double progress;
   final double skew;
@@ -290,16 +249,11 @@ class _AvailableRewardBorderGlowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = _roundedParallelogramPath(
-      Size(size.width - inset * 2, size.height - inset * 2),
-    ).shift(Offset(inset, inset));
+    final path = _roundedParallelogramPath(Size(size.width - inset * 2, size.height - inset * 2)).shift(Offset(inset, inset));
     const travelEnd = 0.56;
     const pulseEnd = 0.82;
-    final pulseProgress = ((progress - travelEnd) / (pulseEnd - travelEnd))
-        .clamp(0.0, 1.0);
-    final pulseOpacity = pulseProgress < 0.5
-        ? pulseProgress * 2
-        : (1 - pulseProgress) * 2;
+    final pulseProgress = ((progress - travelEnd) / (pulseEnd - travelEnd)).clamp(0.0, 1.0);
+    final pulseOpacity = pulseProgress < 0.5 ? pulseProgress * 2 : (1 - pulseProgress) * 2;
 
     if (pulseOpacity > 0) {
       final pulsePaint = Paint()
@@ -316,23 +270,14 @@ class _AvailableRewardBorderGlowPainter extends CustomPainter {
     final segmentLength = metric.length * 0.12;
     final travelProgress = (progress / travelEnd).clamp(0.0, 1.0);
     final segmentFadeIn = (progress / (travelEnd * 0.16)).clamp(0.0, 1.0);
-    final segmentFadeOut = progress < travelEnd * 0.84
-        ? 1.0
-        : (1 - (progress - travelEnd * 0.84) / (travelEnd * 0.16)).clamp(
-            0.0,
-            1.0,
-          );
-    final segmentOpacity =
-        Curves.easeOut.transform(segmentFadeIn) * segmentFadeOut;
+    final segmentFadeOut = progress < travelEnd * 0.84 ? 1.0 : (1 - (progress - travelEnd * 0.84) / (travelEnd * 0.16)).clamp(0.0, 1.0);
+    final segmentOpacity = Curves.easeOut.transform(segmentFadeIn) * segmentFadeOut;
     final head = metric.length * Curves.easeInOutSine.transform(travelProgress);
     final tail = head - segmentLength;
     final segment = Path();
 
     if (tail < 0) {
-      segment.addPath(
-        metric.extractPath(metric.length + tail, metric.length),
-        Offset.zero,
-      );
+      segment.addPath(metric.extractPath(metric.length + tail, metric.length), Offset.zero);
       segment.addPath(metric.extractPath(0, head), Offset.zero);
     } else {
       segment.addPath(metric.extractPath(tail, head), Offset.zero);
@@ -363,20 +308,11 @@ class _AvailableRewardBorderGlowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_AvailableRewardBorderGlowPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.skew != skew ||
-        oldDelegate.radius != radius ||
-        oldDelegate.strokeWidth != strokeWidth ||
-        oldDelegate.inset != inset;
+    return oldDelegate.progress != progress || oldDelegate.skew != skew || oldDelegate.radius != radius || oldDelegate.strokeWidth != strokeWidth || oldDelegate.inset != inset;
   }
 
   Path _roundedParallelogramPath(Size size) {
-    final points = [
-      Offset(skew, 0),
-      Offset(size.width, 0),
-      Offset(size.width - skew, size.height),
-      Offset(0, size.height),
-    ];
+    final points = [Offset(skew, 0), Offset(size.width, 0), Offset(size.width - skew, size.height), Offset(0, size.height)];
     final path = Path();
 
     for (var index = 0; index < points.length; index++) {
@@ -413,34 +349,17 @@ class _ClaimRewardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressableScale(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: 198.h,
         height: 60.h,
         child: CustomPaint(
-          painter: ParallelogramPainter(
-            fillColors: const [
-              Color(0xFF56B877),
-              Color(0xFF56B877),
-              Color(0xFF449660),
-            ],
-            borderColor: AppColors.transparent,
-            borderWidth: 0,
-            skew: 9.h,
-            radius: 20.h,
-          ),
+          painter: ParallelogramPainter(fillColors: const [Color(0xFF56B877), Color(0xFF56B877), Color(0xFF449660)], borderColor: AppColors.transparent, borderWidth: 0, skew: 9.h, radius: 20.h),
           child: Center(
             child: Text(
               'Забрать',
-              style: TextStyle(
-                color: AppColors.white100,
-                fontSize: 26.h,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26.h,
-              ),
+              style: TextStyle(color: AppColors.white100, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
             ),
           ),
         ),
