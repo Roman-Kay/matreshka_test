@@ -29,4 +29,14 @@ abstract final class AppAssets {
   static const dotedLine = 'assets/figma/doted_line.png';
   static const danger = 'assets/figma/danger.png';
   static const question = 'assets/figma/question.svg';
+  static const railWristband = 'assets/rail/1.png';
+  static const railBag = 'assets/rail/2.png';
+  static const railCanister = 'assets/rail/3.png';
+  static const railCandy = 'assets/rail/4.png';
+  static const railBirthdayMask = 'assets/rail/5.png';
+  static const railPassport = 'assets/rail/6.png';
+  static const railWhiteMask = 'assets/rail/7.png';
+  static const railOutfit = 'assets/rail/8.png';
+  static const railVehicle = 'assets/rail/9.png';
+  static const railGreenMask = 'assets/rail/11.png';
 }

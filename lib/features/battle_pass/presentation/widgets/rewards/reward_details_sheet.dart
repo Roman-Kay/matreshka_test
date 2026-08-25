@@ -60,7 +60,7 @@ class RewardDetailsSheet extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(24.h),
                       child: Image.asset(
-                        reward.assetPath ?? AppAssets.rewardTwo,
+                        reward.assetPath ?? AppAssets.railBirthdayMask,
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -254,7 +254,7 @@ class _ChoiceRewardCard extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(14.h),
           child: Image.asset(
-            reward.assetPath ?? AppAssets.rewardTwo,
+            reward.assetPath ?? AppAssets.railBirthdayMask,
             fit: BoxFit.contain,
           ),
         ),

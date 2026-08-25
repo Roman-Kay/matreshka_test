@@ -146,7 +146,8 @@ class RewardCardVisual extends StatelessWidget {
                                   bottom: 10.h,
                                 ),
                                 child: Image.asset(
-                                  reward.assetPath ?? AppAssets.rewardTwo,
+                                  reward.assetPath ??
+                                      AppAssets.railBirthdayMask,
                                   fit: BoxFit.contain,
                                 ),
                               ),

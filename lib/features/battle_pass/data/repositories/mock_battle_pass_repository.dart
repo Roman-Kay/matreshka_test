@@ -75,9 +75,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
                 title: level.isEven ? 'Опыт БП' : 'Набор XP',
                 amount: level.isEven ? 250 : 100,
                 track: BattlePassTrack.free,
-                assetPath: level.isEven
-                    ? AppAssets.rewardOne
-                    : AppAssets.rewardTwo,
+                assetPath: _freeRewardAssetForLevel(level),
                 rarity: _rarityForLevel(level),
                 status: _initialRewardStatus(
                   level: level,
@@ -118,7 +116,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: 'Маска именинника',
         amount: 16,
         track: BattlePassTrack.premium,
-        assetPath: AppAssets.rewardOne,
+        assetPath: AppAssets.railBirthdayMask,
         rarity: RewardRarity.rare,
         status: status,
       ),
@@ -128,7 +126,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: 'Премиум XP-буст',
         amount: 16,
         track: BattlePassTrack.premium,
-        assetPath: AppAssets.rewardTwo,
+        assetPath: AppAssets.railCanister,
         rarity: RewardRarity.epic,
         status: status,
       ),
@@ -138,7 +136,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: 'Праздничный сет',
         amount: 16,
         track: BattlePassTrack.premium,
-        assetPath: AppAssets.rewardOne,
+        assetPath: AppAssets.railOutfit,
         rarity: RewardRarity.rare,
         status: status,
       ),
@@ -170,7 +168,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
           title: '«Роковая женщина»',
           amount: 1,
           track: BattlePassTrack.premium,
-          assetPath: AppAssets.rewardOne,
+          assetPath: AppAssets.railWhiteMask,
           rarity: RewardRarity.rare,
           status: status,
         ),
@@ -180,7 +178,7 @@ final class MockBattlePassRepository implements BattlePassRepository {
           title: '«Босс мафии»',
           amount: 1,
           track: BattlePassTrack.premium,
-          assetPath: AppAssets.rewardTwo,
+          assetPath: AppAssets.railOutfit,
           rarity: RewardRarity.rare,
           status: status,
         ),
@@ -194,8 +192,10 @@ final class MockBattlePassRepository implements BattlePassRepository {
         title: level == 10 ? 'Мега пак' : 'Премиум награда $level',
         amount: level == 10 ? 1 : 16,
         track: BattlePassTrack.premium,
-        assetPath: level == 10 ? AppAssets.hero : AppAssets.rewardOne,
-        rarity: _rarityForLevel(level + 1),
+        assetPath: _premiumRewardAssetForLevel(level),
+        rarity: level % 10 == 0
+            ? RewardRarity.legendary
+            : _rarityForLevel(level + 1),
         status: status,
       ),
     ];
@@ -211,5 +211,27 @@ final class MockBattlePassRepository implements BattlePassRepository {
     return premium == PremiumStatus.purchased
         ? RewardStatus.received
         : RewardStatus.locked;
+  }
+
+  String _freeRewardAssetForLevel(int level) {
+    const assets = [
+      AppAssets.railBag,
+      AppAssets.railCandy,
+      AppAssets.railPassport,
+      AppAssets.railWristband,
+      AppAssets.railGreenMask,
+    ];
+    return assets[(level - 1) % assets.length];
+  }
+
+  String _premiumRewardAssetForLevel(int level) {
+    if (level % 10 == 0) return AppAssets.railVehicle;
+    const assets = [
+      AppAssets.railBirthdayMask,
+      AppAssets.railCanister,
+      AppAssets.railWhiteMask,
+      AppAssets.railOutfit,
+    ];
+    return assets[(level - 1) % assets.length];
   }
 }
