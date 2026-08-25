@@ -34,6 +34,7 @@ class _RewardRailState extends State<RewardRail>
     with SingleTickerProviderStateMixin {
   static const double _railSideInset = 51;
   static const double _railTrailingInset = 100;
+  static const double _finalRailTrailingInset = 200;
   static const double _railListPadding = 100;
   static const double _rewardItemExtent = 242;
   static const double _premiumPreviewExtent = 596;
@@ -178,11 +179,14 @@ class _RewardRailState extends State<RewardRail>
                   );
             final scrollButtonTop = 68.h;
             final leftScrollButtonLeft = 51.h;
+            final showingSeasonEnd = visibleEndLevel >= pass.season.maxLevel;
             final effectiveRailRightInset = shouldReleaseTrailingSpace
                 ? 0.0
                 : _premiumPanelReservedWidth.h;
             final effectiveListTrailingPadding = shouldReleaseTrailingSpace
-                ? 0.0
+                ? showingSeasonEnd
+                      ? _finalRailTrailingInset.w
+                      : 0.0
                 : _railTrailingInset.h;
 
             return Stack(
@@ -253,6 +257,9 @@ class _RewardRailState extends State<RewardRail>
                             widget.state.selectedRewardId,
                           );
                           final rewardStatus = pass.rewardStatus(reward.id);
+                          final isLastSeasonLevel =
+                              showingSeasonEnd &&
+                              level.number >= pass.season.maxLevel;
                           return Stack(
                             clipBehavior: Clip.none,
                             children: [
@@ -281,15 +288,16 @@ class _RewardRailState extends State<RewardRail>
                                 availableGlowAnimation:
                                     _availableRewardGlowController,
                               ),
-                              Positioned(
-                                right: -5.h,
-                                top: 184.h / 2,
-                                child: SvgPicture.asset(
-                                  AppAssets.arrowRoad,
-                                  width: 12.h,
-                                  height: 20.h,
+                              if (!isLastSeasonLevel)
+                                Positioned(
+                                  right: -5.h,
+                                  top: 184.h / 2,
+                                  child: SvgPicture.asset(
+                                    AppAssets.arrowRoad,
+                                    width: 12.h,
+                                    height: 20.h,
+                                  ),
                                 ),
-                              ),
                             ],
                           );
                         },
