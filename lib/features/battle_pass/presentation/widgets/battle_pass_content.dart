@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 import '../../../../app/app_router.dart';
-import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/battle_pass_models.dart';
 import '../cubit/battle_pass_state.dart';
 import 'battle_pass_header.dart';
 import 'premium_panel.dart';
+import 'photo_anchored_reward_preview.dart';
 import 'rewards/reward_rail.dart';
-import 'rewards/reward_title.dart';
 import 'battle_pass_completed_notice.dart';
 import 'tasks_preview/tasks_preview.dart';
 
@@ -34,6 +33,9 @@ class BattlePassContent extends StatelessWidget {
   final ValueChanged<int> onSelectReward;
   final ValueChanged<int> onClaimReward;
   final ValueChanged<BattlePassDemoMode> onDemoModeSelected;
+  static const Size _backgroundDesignSize = Size(703, 678);
+  static const Offset _rewardFrameCenter = Offset(385, 280);
+  static const double _rewardFrameSize = 512;
 
   @override
   Widget build(BuildContext context) {
@@ -52,74 +54,36 @@ class BattlePassContent extends StatelessWidget {
           height: 440.h,
           child: const DecoratedBox(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.50, 0),
-                end: Alignment(0.50, 1),
-                colors: [
-                  Color(0x00450D05),
-                  Color(0xB2350D03),
-                  Color(0xFF220401),
-                ],
-              ),
+              gradient: LinearGradient(begin: Alignment(0.50, 0), end: Alignment(0.50, 1), colors: [Color(0x00450D05), Color(0xB2350D03), Color(0xFF220401)]),
             ),
           ),
         ),
-        Padding(
-          // для центровки контейнера с выбранной наградой, чтобы он был по центру bg картинки, а не по центру экрана
-          padding: EdgeInsets.only(top: 105.h, right: 105.w),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              children: [
-                Image.asset(
-                  selected?.assetPath ?? AppAssets.hero,
-                  height: 521.h,
-                  width: 521.w,
-                ),
-                RewardTitle(
-                  reward: selected,
-                  choiceRewards: choiceRewards,
-                  premiumLocked: premiumLocked,
-                ),
-              ],
-            ),
+        Positioned.fill(
+          child: PhotoAnchoredRewardPreview(
+            designSize: _backgroundDesignSize,
+            designCenter: _rewardFrameCenter,
+            designSizePx: _rewardFrameSize,
+            reward: selected,
+            choiceRewards: choiceRewards,
+            premiumLocked: premiumLocked,
           ),
         ),
         Align(
           alignment: Alignment.topRight,
-          child: PremiumPanel(
-            pass: pass,
-            onPurchasePremium: onPurchasePremium,
-            onClaimAllRewards: onClaimAllRewards,
-          ),
+          child: PremiumPanel(pass: pass, onPurchasePremium: onPurchasePremium, onClaimAllRewards: onClaimAllRewards),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 32.h),
-            BattlePassHeader(
-              pass: pass,
-              onDemoModeSelected: onDemoModeSelected,
-              onClose: onExitToGame,
-            ),
-            completed
-                ? const BattlePassCompletedNotice()
-                : TasksPreview(
-                    tasks: pass.tasks,
-                    onTap: () =>
-                        context.router.push(const BattlePassTasksRoute()),
-                    onClaim: onClaimTask,
-                  ),
+            BattlePassHeader(pass: pass, onDemoModeSelected: onDemoModeSelected, onClose: onExitToGame),
+            completed ? const BattlePassCompletedNotice() : TasksPreview(tasks: pass.tasks, onTap: () => context.router.push(const BattlePassTasksRoute()), onClaim: onClaimTask),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
                   height: 320.h,
-                  child: RewardRail(
-                    state: state,
-                    onSelectReward: onSelectReward,
-                    onClaimReward: onClaimReward,
-                  ),
+                  child: RewardRail(state: state, onSelectReward: onSelectReward, onClaimReward: onClaimReward),
                 ),
               ),
             ),

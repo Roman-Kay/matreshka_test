@@ -21,10 +21,10 @@ class RewardTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleStyle = TextStyle(
       color: AppColors.white100,
-      fontSize: 36.sp,
+      fontSize: 36.h,
       fontWeight: FontWeight.w600,
       height: 1.30,
-      letterSpacing: -0.36,
+      letterSpacing: -0.36.h,
     );
 
     return Column(
@@ -38,25 +38,25 @@ class RewardTitle extends StatelessWidget {
                 end: Alignment(0.50, 1.00),
                 colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)],
               ),
-              borderRadius: BorderRadius.circular(30.r),
+              borderRadius: BorderRadius.circular(30.h),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(width: 12.w),
-                SvgPicture.asset(AppAssets.premium, width: 24.r, height: 24.r),
-                SizedBox(width: 12.w),
+                SizedBox(width: 12.h),
+                SvgPicture.asset(AppAssets.premium, width: 24.h, height: 24.h),
+                SizedBox(width: 12.h),
                 Text(
                   'Доступно с прокачкой!',
                   style: TextStyle(
                     color: const Color(0xFF3C0B0B),
-                    fontSize: 22.sp,
+                    fontSize: 22.h,
                     fontWeight: FontWeight.w500,
                     height: 1.20,
-                    letterSpacing: -0.22,
+                    letterSpacing: -0.22.h,
                   ),
                 ),
-                SizedBox(width: 19.w),
+                SizedBox(width: 19.h),
               ],
             ),
           ),
@@ -64,22 +64,20 @@ class RewardTitle extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(
-              child: choiceRewards.length > 1
-                  ? _ChoiceRewardTitle(
-                      rewards: choiceRewards,
-                      titleStyle: titleStyle,
-                    )
-                  : Text(
-                      reward?.title ?? 'Мега пак',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: titleStyle,
-                    ),
-            ),
-            SizedBox(width: 16.w),
-            SvgPicture.asset(AppAssets.info, width: 36.r, height: 36.r),
+            choiceRewards.length > 1
+                ? _ChoiceRewardTitle(
+                    rewards: choiceRewards,
+                    titleStyle: titleStyle,
+                  )
+                : Text(
+                    reward?.title ?? 'Мега пак',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: titleStyle,
+                  ),
+            SizedBox(width: 16.h),
+            SvgPicture.asset(AppAssets.info, width: 36.h, height: 36.h),
           ],
         ),
       ],
@@ -98,7 +96,7 @@ class _ChoiceRewardTitle extends StatelessWidget {
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 8.w,
+      spacing: 8.h,
       children: [
         Text(
           rewards.first.title,

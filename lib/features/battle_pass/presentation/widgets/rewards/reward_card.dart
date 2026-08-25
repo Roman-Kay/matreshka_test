@@ -49,21 +49,33 @@ class RewardCard extends StatelessWidget {
     return InkWell(
       onTap: onSelected,
       onLongPress: onShowDetails,
-      borderRadius: BorderRadius.circular(18.r),
+      borderRadius: BorderRadius.circular(18.h),
       child: SizedBox(
-        width: 242.w,
+        width: 242.h,
         height: 300.h,
         child: Column(
           children: [
             SizedBox(
               height: 220.h,
-              width: 242.w,
+              width: 242.h,
               child: Center(
-                child: RewardCardVisual(reward: reward, selected: selected, available: available, received: received, largeSize: largeSize, onClaim: onClaim),
+                child: RewardCardVisual(
+                  reward: reward,
+                  selected: selected,
+                  available: available,
+                  received: received,
+                  largeSize: largeSize,
+                  onClaim: onClaim,
+                ),
               ),
             ),
             SizedBox(height: 6.h),
-            RewardProgressMarker(level: level, unlocked: unlocked, drawLeftLine: showRoadLines && !isFirstLevel, drawRightLine: showRoadLines && !isLastLevel),
+            RewardProgressMarker(
+              level: level,
+              unlocked: unlocked,
+              drawLeftLine: showRoadLines && !isFirstLevel,
+              drawRightLine: showRoadLines && !isLastLevel,
+            ),
           ],
         ),
       ),
@@ -72,7 +84,15 @@ class RewardCard extends StatelessWidget {
 }
 
 class RewardCardVisual extends StatelessWidget {
-  const RewardCardVisual({super.key, required this.reward, required this.selected, required this.available, required this.received, required this.largeSize, this.onClaim});
+  const RewardCardVisual({
+    super.key,
+    required this.reward,
+    required this.selected,
+    required this.available,
+    required this.received,
+    required this.largeSize,
+    this.onClaim,
+  });
 
   final BattlePassReward reward;
   final bool selected;
@@ -83,14 +103,14 @@ class RewardCardVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardWidth = largeSize ? 242.w : 210.w;
+    final cardWidth = largeSize ? 242.h : 210.h;
     final cardHeight = largeSize ? 220.h : 184.h;
     final borderColor = selected
         ? AppColors.white100
         : available
         ? AppColors.green
         : AppColors.white40;
-    final borderWidth = selected || available ? 4.r : 1.r;
+    final borderWidth = selected || available ? 4.h : 1.h;
 
     return SizedBox(
       width: cardWidth,
@@ -113,33 +133,39 @@ class RewardCardVisual extends StatelessWidget {
                           fillColors: reward.rarity.gradientColors,
                           borderColor: animatedBorderColor ?? borderColor,
                           borderWidth: animatedBorderWidth,
-                          skew: 26.w,
-                          radius: 24.r,
+                          skew: 26.h,
+                          radius: 24.h,
                           glowColor: available ? AppColors.green : null,
                         ),
                         child: Stack(
                           children: [
                             Center(
                               child: Padding(
-                                padding: EdgeInsets.only(top: 18.h, bottom: 10.h),
-                                child: Image.asset(reward.assetPath ?? AppAssets.rewardTwo, fit: BoxFit.contain),
+                                padding: EdgeInsets.only(
+                                  top: 18.h,
+                                  bottom: 10.h,
+                                ),
+                                child: Image.asset(
+                                  reward.assetPath ?? AppAssets.rewardTwo,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                             if (!available)
                               Positioned(
-                                left: 26.w,
+                                left: 26.h,
                                 top: 10.h,
                                 child: RewardTrackIcon(track: reward.track),
                               ),
                             if (reward.amount > 1)
                               Positioned(
-                                right: 28.w,
+                                right: 28.h,
                                 bottom: available ? 70.h : 12.h,
                                 child: RewardAmountBadge(amount: reward.amount),
                               ),
                             if (available && onClaim != null)
                               Positioned(
-                                left: 13.w,
+                                left: 13.h,
                                 bottom: 14.h,
                                 child: _ClaimRewardButton(onTap: onClaim!),
                               ),
@@ -153,9 +179,13 @@ class RewardCardVisual extends StatelessWidget {
             ),
             if (received)
               Positioned(
-                right: 26.w,
+                right: 26.h,
                 top: 24.h,
-                child: SvgPicture.asset(AppAssets.done, width: 62.w, height: 42.h),
+                child: SvgPicture.asset(
+                  AppAssets.done,
+                  width: 62.h,
+                  height: 42.h,
+                ),
               ),
           ],
         ),
@@ -175,14 +205,30 @@ class _ClaimRewardButton extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 198.w,
+        width: 198.h,
         height: 60.h,
         child: CustomPaint(
-          painter: ParallelogramPainter(fillColors: const [Color(0xFF56B877), Color(0xFF56B877), Color(0xFF449660)], borderColor: AppColors.transparent, borderWidth: 0, skew: 9.w, radius: 20.r),
+          painter: ParallelogramPainter(
+            fillColors: const [
+              Color(0xFF56B877),
+              Color(0xFF56B877),
+              Color(0xFF449660),
+            ],
+            borderColor: AppColors.transparent,
+            borderWidth: 0,
+            skew: 9.h,
+            radius: 20.h,
+          ),
           child: Center(
             child: Text(
               'Забрать',
-              style: TextStyle(color: AppColors.white100, fontSize: 26.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26),
+              style: TextStyle(
+                color: AppColors.white100,
+                fontSize: 26.h,
+                fontWeight: FontWeight.w500,
+                height: 1.20,
+                letterSpacing: -0.26.h,
+              ),
             ),
           ),
         ),

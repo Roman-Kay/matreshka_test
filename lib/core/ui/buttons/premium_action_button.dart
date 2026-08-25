@@ -43,8 +43,8 @@ class _PremiumActionButtonState extends State<PremiumActionButton>
       onTap: widget.onPressed,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 400.w,
-        height: 100.h,
+        width: 400.r,
+        height: 100.r,
         child: Stack(
           children: [
             Positioned.fill(
@@ -52,8 +52,11 @@ class _PremiumActionButtonState extends State<PremiumActionButton>
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF8A00),
                   borderRadius: BorderRadius.circular(30.r),
-                  boxShadow: const [
-                    BoxShadow(color: Color(0xB2FF8900), blurRadius: 41.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xB2FF8900),
+                      blurRadius: 41.5.r,
+                    ),
                   ],
                 ),
               ),
@@ -110,7 +113,7 @@ class _PremiumActionButtonState extends State<PremiumActionButton>
                       BlendMode.srcIn,
                     ),
                   ),
-                  SizedBox(width: 24.w),
+                  SizedBox(width: 24.r),
                   Flexible(
                     child: Text(
                       widget.text,
@@ -119,10 +122,10 @@ class _PremiumActionButtonState extends State<PremiumActionButton>
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: const Color(0xFF3B0B0B),
-                        fontSize: 30.sp,
+                        fontSize: 30.r,
                         fontWeight: FontWeight.w500,
                         height: 1.20,
-                        letterSpacing: -0.30,
+                        letterSpacing: -0.30.r,
                       ),
                     ),
                   ),

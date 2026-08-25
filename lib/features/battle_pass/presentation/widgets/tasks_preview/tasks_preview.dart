@@ -78,7 +78,7 @@ class _TasksPreviewState extends State<TasksPreview> {
         final activeTask = tasks[activeIndex];
 
         return Padding(
-          padding: EdgeInsets.only(left: 61.w, top: 59.h),
+          padding: EdgeInsets.only(left: 61.r, top: 59.r),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: widget.onTap,
@@ -88,11 +88,11 @@ class _TasksPreviewState extends State<TasksPreview> {
               if (velocity > 120) _goToTask(activeIndex - 1);
             },
             child: SizedBox(
-              width: 400.w,
+              width: 400.r,
               child: Column(
                 children: [
                   Container(
-                    height: 110.h,
+                    height: 110.r,
                     decoration: BoxDecoration(
                       color: const Color(0xFF353747).withValues(alpha: 0.6),
                       borderRadius: BorderRadius.only(
@@ -113,7 +113,7 @@ class _TasksPreviewState extends State<TasksPreview> {
                     ),
                   ),
                   Container(
-                    height: 290.h,
+                    height: 290.r,
                     decoration: BoxDecoration(
                       color: const Color(0xFF202231).withValues(alpha: 0.6),
                       borderRadius: BorderRadius.only(
@@ -125,8 +125,8 @@ class _TasksPreviewState extends State<TasksPreview> {
                       children: [
                         const Spacer(flex: 44),
                         SizedBox(
-                          width: 320.w,
-                          height: 54.h,
+                          width: 320.r,
+                          height: 54.r,
                           child: PageView.builder(
                             controller: _textPageController,
                             itemCount: tasks.length,
@@ -143,10 +143,10 @@ class _TasksPreviewState extends State<TasksPreview> {
                                   color: task.claimed
                                       ? AppColors.white60.withValues(alpha: 0.4)
                                       : AppColors.white60,
-                                  fontSize: 22.sp,
+                                  fontSize: 22.r,
                                   fontWeight: FontWeight.w500,
                                   height: 1.20,
-                                  letterSpacing: -0.22,
+                                  letterSpacing: -0.22.r,
                                 ),
                               );
                             },
@@ -157,13 +157,13 @@ class _TasksPreviewState extends State<TasksPreview> {
                           count: tasks.length,
                           activeIndex: activeIndex,
                         ),
-                        SizedBox(height: 26.h),
+                        SizedBox(height: 26.r),
                         TaskPreviewActionButton(
                           task: activeTask,
                           onOpenTasks: widget.onTap,
                           onClaim: () => widget.onClaim(activeTask.id),
                         ),
-                        SizedBox(height: 36.h),
+                        SizedBox(height: 36.r),
                       ],
                     ),
                   ),

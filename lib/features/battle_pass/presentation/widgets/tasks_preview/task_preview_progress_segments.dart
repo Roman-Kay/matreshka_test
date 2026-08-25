@@ -20,9 +20,9 @@ class TaskPreviewProgressSegments extends StatelessWidget {
   Widget build(BuildContext context) {
     if (count <= 0) return const SizedBox.shrink();
 
-    final divWidth = 12.w;
+    final divWidth = 12.r;
     final totalWidth = divWidth * (count - 1);
-    final segmentWidth = (320.w - totalWidth) / count;
+    final segmentWidth = (320.r - totalWidth) / count;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +31,7 @@ class TaskPreviewProgressSegments extends StatelessWidget {
         for (var index = 0; index < count; index++) ...[
           Container(
             width: segmentWidth,
-            height: 8.h,
+            height: 8.r,
             decoration: BoxDecoration(
               color: index == activeIndex ? _activeColor : _inactiveColor,
               borderRadius: BorderRadius.circular(4.r),

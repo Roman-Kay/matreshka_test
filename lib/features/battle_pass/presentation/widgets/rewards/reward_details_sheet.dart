@@ -39,26 +39,26 @@ class RewardDetailsSheet extends StatelessWidget {
         : 'Заблокировано';
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(28.w, 24.h, 28.w, 28.h),
+      padding: EdgeInsets.fromLTRB(28.h, 24.h, 28.h, 28.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 240.w,
+            width: 240.h,
             height: 190.h,
             child: CustomPaint(
               painter: ParallelogramPainter(
                 fillColors: reward.rarity.gradientColors,
                 borderColor: reward.rarity.accentColor,
-                borderWidth: 2.r,
-                skew: 24.w,
-                radius: 24.r,
+                borderWidth: 2.h,
+                skew: 24.h,
+                radius: 24.h,
               ),
               child: Stack(
                 children: [
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24.r),
+                      padding: EdgeInsets.all(24.h),
                       child: Image.asset(
                         reward.assetPath ?? AppAssets.rewardTwo,
                         fit: BoxFit.contain,
@@ -67,7 +67,7 @@ class RewardDetailsSheet extends StatelessWidget {
                   ),
                   if (reward.amount > 1)
                     Positioned(
-                      right: 20.w,
+                      right: 20.h,
                       bottom: 14.h,
                       child: RewardAmountBadge(amount: reward.amount),
                     ),
@@ -75,7 +75,7 @@ class RewardDetailsSheet extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 28.w),
+          SizedBox(width: 28.h),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -84,7 +84,7 @@ class RewardDetailsSheet extends StatelessWidget {
                 Row(
                   children: [
                     _SheetPill(text: 'Уровень $level'),
-                    SizedBox(width: 10.w),
+                    SizedBox(width: 10.h),
                     _SheetPill(
                       text: reward.track.label,
                       color: reward.track == BattlePassTrack.premium
@@ -93,7 +93,7 @@ class RewardDetailsSheet extends StatelessWidget {
                       textColor: AppColors.ink,
                     ),
                     if (level % 10 == 0) ...[
-                      SizedBox(width: 10.w),
+                      SizedBox(width: 10.h),
                       const _SheetPill(
                         text: 'Большой приз',
                         color: AppColors.orange,
@@ -112,7 +112,7 @@ class RewardDetailsSheet extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppColors.white100,
-                      fontSize: 30.sp,
+                      fontSize: 30.h,
                       fontWeight: FontWeight.w700,
                       height: 1.1,
                     ),
@@ -120,7 +120,7 @@ class RewardDetailsSheet extends StatelessWidget {
                 if (choiceRewards.length > 1) ...[
                   SizedBox(height: 18.h),
                   Wrap(
-                    spacing: 14.w,
+                    spacing: 14.h,
                     runSpacing: 14.h,
                     children: [
                       for (final choiceReward in choiceRewards)
@@ -133,14 +133,14 @@ class RewardDetailsSheet extends StatelessWidget {
                   _statusText(premiumLocked),
                   style: TextStyle(
                     color: premiumLocked ? AppColors.gold : AppColors.white70,
-                    fontSize: 20.sp,
+                    fontSize: 20.h,
                     fontWeight: FontWeight.w500,
                     height: 1.25,
                   ),
                 ),
                 SizedBox(height: 22.h),
                 SizedBox(
-                  width: 230.w,
+                  width: 230.h,
                   height: 58.h,
                   child: ElevatedButton(
                     onPressed: canClaim
@@ -157,13 +157,13 @@ class RewardDetailsSheet extends StatelessWidget {
                       foregroundColor: AppColors.ink,
                       disabledForegroundColor: AppColors.white40,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.r),
+                        borderRadius: BorderRadius.circular(18.h),
                       ),
                     ),
                     child: Text(
                       actionText,
                       style: TextStyle(
-                        fontSize: 22.sp,
+                        fontSize: 22.h,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -198,17 +198,17 @@ class _ChoiceRewardTitle extends StatelessWidget {
     final secondTitle = rewards.length > 1 ? rewards[1].title : '';
     final titleStyle = TextStyle(
       color: AppColors.white100,
-      fontSize: 36.sp,
+      fontSize: 36.h,
       fontWeight: FontWeight.w600,
       height: 1.30,
-      letterSpacing: -0.36,
+      letterSpacing: -0.36.h,
     );
 
     return Center(
       child: Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8.w,
+        spacing: 8.h,
         children: [
           Text(firstTitle, textAlign: TextAlign.center, style: titleStyle),
           ShaderMask(
@@ -241,18 +241,18 @@ class _ChoiceRewardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 132.w,
+      width: 132.h,
       height: 108.h,
       child: CustomPaint(
         painter: ParallelogramPainter(
           fillColors: reward.rarity.gradientColors,
           borderColor: reward.rarity.accentColor,
-          borderWidth: 2.r,
-          skew: 16.w,
-          radius: 18.r,
+          borderWidth: 2.h,
+          skew: 16.h,
+          radius: 18.h,
         ),
         child: Padding(
-          padding: EdgeInsets.all(14.r),
+          padding: EdgeInsets.all(14.h),
           child: Image.asset(
             reward.assetPath ?? AppAssets.rewardTwo,
             fit: BoxFit.contain,
@@ -277,16 +277,16 @@ class _SheetPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.h),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(10.h),
       ),
       child: Text(
         text,
         style: TextStyle(
           color: textColor,
-          fontSize: 14.sp,
+          fontSize: 14.h,
           fontWeight: FontWeight.w700,
         ),
       ),

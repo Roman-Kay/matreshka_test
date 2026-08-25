@@ -15,6 +15,6 @@ class RewardTrackIcon extends StatelessWidget {
       BattlePassTrack.free => AppAssets.freeReward,
       BattlePassTrack.premium => AppAssets.premiumReward,
     };
-    return Image.asset(assetPath, width: 55.r, height: 50.r);
+    return Image.asset(assetPath, width: 55.h, height: 50.h);
   }
 }

@@ -25,31 +25,31 @@ class RewardProgressMarker extends StatelessWidget {
     const inactiveColor = AppColors.background10;
     final markerColor = unlocked ? activeColor : inactiveColor;
     return SizedBox(
-      width: 242.w,
+      width: 242.h,
       height: 60.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
           if (drawLeftLine)
             Positioned(
-              right: 121.w,
-              width: 121.w,
+              right: 121.h,
+              width: 121.h,
               child: Container(height: 10.h, color: markerColor),
             ),
           if (drawRightLine)
             Positioned(
-              left: 121.w,
-              width: 121.w,
+              left: 121.h,
+              width: 121.h,
               child: Container(height: 10.h, color: markerColor),
             ),
           Transform.rotate(
             angle: pi / 4,
             child: Container(
-              width: 45.r,
-              height: 45.r,
+              width: 45.h,
+              height: 45.h,
               decoration: BoxDecoration(
                 color: markerColor,
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8.h),
               ),
             ),
           ),
@@ -57,10 +57,10 @@ class RewardProgressMarker extends StatelessWidget {
             '$level',
             style: TextStyle(
               color: AppColors.white100,
-              fontSize: 22.sp,
+              fontSize: 22.h,
               fontWeight: FontWeight.w500,
               height: 1.20,
-              letterSpacing: -0.22,
+              letterSpacing: -0.22.h,
             ),
           ),
         ],

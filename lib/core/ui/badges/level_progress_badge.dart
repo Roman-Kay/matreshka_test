@@ -23,13 +23,16 @@ class LevelProgressBadge extends StatelessWidget {
             width: 100.r,
             height: 100.r,
             child: Stack(
+              fit: StackFit.expand,
               alignment: Alignment.center,
               children: [
                 CircularProgressIndicator(value: progressRatio, strokeWidth: 8.r, color: colors.progress, backgroundColor: colors.progressBackground),
-                Text(
-                  '$level',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: colors.level, fontSize: 42.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.42),
+                Center(
+                  child: Text(
+                    '$level',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: colors.level, fontSize: 42.sp, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.42),
+                  ),
                 ),
               ],
             ),
@@ -66,7 +69,7 @@ enum LevelProgressBadgeStyle {
         level: AppColors.white100,
         currentXp: AppColors.white100,
         nextLevelXp: AppColors.white40,
-        progress: AppColors.grey,
+        progress: AppColors.white60,
         progressBackground: AppColors.white10,
       ),
       LevelProgressBadgeStyle.premium => const _LevelProgressBadgeColors(

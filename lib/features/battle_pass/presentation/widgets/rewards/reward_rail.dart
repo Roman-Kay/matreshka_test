@@ -13,12 +13,7 @@ import 'reward_card.dart';
 import 'reward_details_sheet.dart';
 
 class RewardRail extends StatefulWidget {
-  const RewardRail({
-    super.key,
-    required this.state,
-    required this.onSelectReward,
-    required this.onClaimReward,
-  });
+  const RewardRail({super.key, required this.state, required this.onSelectReward, required this.onClaimReward});
 
   final BattlePassState state;
   final ValueChanged<int> onSelectReward;
@@ -65,16 +60,8 @@ class _RewardRailState extends State<RewardRail> {
 
   void _scrollByCards(int direction) {
     if (!_scrollController.hasClients) return;
-    final target =
-        (_scrollController.offset + direction * 4 * _rewardItemExtent.w).clamp(
-          0.0,
-          _scrollController.position.maxScrollExtent,
-        );
-    _scrollController.animateTo(
-      target,
-      duration: const Duration(milliseconds: 360),
-      curve: Curves.easeOutCubic,
-    );
+    final target = (_scrollController.offset + direction * 4 * _rewardItemExtent.h).clamp(0.0, _scrollController.position.maxScrollExtent);
+    _scrollController.animateTo(target, duration: const Duration(milliseconds: 360), curve: Curves.easeOutCubic);
   }
 
   void _startHeldScroll(int direction) {
@@ -86,9 +73,7 @@ class _RewardRailState extends State<RewardRail> {
 
     _scrollController.animateTo(
       target,
-      duration: Duration(
-        milliseconds: max(120, (distance / _heldScrollSpeed * 1000).round()),
-      ),
+      duration: Duration(milliseconds: max(120, (distance / _heldScrollSpeed * 1000).round())),
       curve: Curves.linear,
     );
   }
@@ -103,260 +88,165 @@ class _RewardRailState extends State<RewardRail> {
     final pass = widget.state.battlePass!;
     final levels = pass.season.levels;
     final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
-    final visibleEndLevel = _visibleEndLevel(
-      pass.progress,
-      pass.season.maxLevel,
-      premiumLocked,
-    );
-    final nextUnlockThreshold = _nextUnlockThreshold(
-      pass.progress,
-      pass.season.maxLevel,
-    );
-    final visibleLevels = levels
-        .where((level) => level.number <= visibleEndLevel)
-        .toList(growable: false);
-    final railItems = _railItems(
-      visibleLevels,
-      premiumLocked,
-      nextUnlockThreshold,
-      visibleEndLevel,
-    );
+    final visibleEndLevel = _visibleEndLevel(pass.progress, pass.season.maxLevel, premiumLocked);
+    final nextUnlockThreshold = _nextUnlockThreshold(pass.progress, pass.season.maxLevel);
+    final visibleLevels = levels.where((level) => level.number <= visibleEndLevel).toList(growable: false);
+    final railItems = _railItems(visibleLevels, premiumLocked, nextUnlockThreshold, visibleEndLevel);
 
     return AnimatedBuilder(
       animation: _scrollController,
       builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            color: const Color(0x553A0A0A),
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final layout = _RailLayoutMetrics.fromViewport(
-                viewportWidth: constraints.maxWidth,
-                pinnedPrizeRightInset: _pinnedPrizeRightInset.w,
-                rewardItemExtent: _rewardItemExtent.w,
-                premiumPanelReservedWidth: _premiumPanelReservedWidth.w,
-              );
-              final isAtScrollEnd =
-                  _isAtScrollEnd() ||
-                  _isAtFinalRewardEnd(
-                    premiumLocked,
-                    visibleEndLevel,
-                    pass.season.maxLevel,
-                    constraints.maxWidth,
-                  );
-              final isAtLeadingEdge = _scrollOffset <= 0.5;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final layout = _RailLayoutMetrics.fromViewport(
+              viewportWidth: constraints.maxWidth,
+              pinnedPrizeRightInset: _pinnedPrizeRightInset.h,
+              rewardItemExtent: _rewardItemExtent.h,
+              premiumPanelReservedWidth: _premiumPanelReservedWidth.h,
+            );
+            final isAtScrollEnd = _isAtScrollEnd() || _isAtFinalRewardEnd(premiumLocked, visibleEndLevel, pass.season.maxLevel, constraints.maxWidth);
+            final isAtLeadingEdge = _scrollOffset <= 0.5;
 
-              // Каждый 10-й уровень показывает большую награду у премиум-панели.
-              // Когда настоящая карточка доезжает до нее, закрепленная копия
-              // плавно встраивается в скрол
-              final pinnedPrize = _pinnedPrize(
-                visibleLevels,
-                layout.listDockLeft,
-                layout.listViewportRight,
-                premiumLocked,
-              );
-              final pinnedPrizeReward = pinnedPrize == null
-                  ? null
-                  : _bigPrizeReward(pinnedPrize.level);
-              final pinnedLeft = pinnedPrize == null
-                  ? layout.pinLeft
-                  : _pinnedPrizeLeft(
-                      pinnedPrize.level.number,
-                      layout.pinLeft,
-                      premiumLocked,
-                      pinnedPrize.dockingProgress,
-                    );
-              final scrollButtonTop = 68.h;
-              final leftScrollButtonLeft = 51.w;
+            // Каждый 10-й уровень показывает большую награду у премиум-панели.
+            // Когда настоящая карточка доезжает до нее, закрепленная копия
+            // плавно встраивается в скрол
+            final pinnedPrize = _pinnedPrize(visibleLevels, layout.listDockLeft, layout.listViewportRight, premiumLocked);
+            final pinnedPrizeReward = pinnedPrize == null ? null : _bigPrizeReward(pinnedPrize.level);
+            final pinnedLeft = pinnedPrize == null ? layout.pinLeft : _pinnedPrizeLeft(pinnedPrize.level.number, layout.pinLeft, premiumLocked, pinnedPrize.dockingProgress);
+            final scrollButtonTop = 68.h;
+            final leftScrollButtonLeft = 51.h;
 
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    right: isAtScrollEnd
-                        ? _railTrailingInset.w
-                        : _premiumPanelReservedWidth.w,
-                    left: _railSideInset.w,
-                    child: ShaderMask(
-                      blendMode: BlendMode.dstIn,
-                      shaderCallback: (bounds) {
-                        return const LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Color(0x00000000),
-                            Color(0xFF000000),
-                            Color(0xFF000000),
-                            Color(0x00000000),
-                          ],
-                          stops: [0, 0.08, 0.92, 1],
-                        ).createShader(bounds);
-                      },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: EdgeInsets.fromLTRB(
-                          _railListPadding.w,
-                          0,
-                          _railTrailingInset.w,
-                          0,
-                        ),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: railItems.length,
-                        itemBuilder: (context, index) {
-                          final item = railItems[index];
-                          if (item.isPremiumPreview) {
-                            // При закрытом премиуме скрол начинается с превью:
-                            return _PremiumPreview(
-                              rewards: pass.season.instantPremiumRewards,
-                              selectedRewardId: widget.state.selectedRewardId,
-                              onSelectReward: widget.onSelectReward,
-                            );
-                          }
+            return Stack(
+              children: [
+                Positioned.fill(
+                  right: isAtScrollEnd ? _railTrailingInset.h : _premiumPanelReservedWidth.h,
+                  left: _railSideInset.h,
+                  child: ShaderMask(
+                    blendMode: BlendMode.dstIn,
+                    shaderCallback: (bounds) {
+                      return const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [Color(0x00000000), Color(0xFF000000), Color(0xFF000000), Color(0x00000000)],
+                        stops: [0, 0.08, 0.92, 1],
+                      ).createShader(bounds);
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.fromLTRB(_railListPadding.h, 0, _railTrailingInset.h, 0),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: railItems.length,
+                      itemBuilder: (context, index) {
+                        final item = railItems[index];
+                        if (item.isPremiumPreview) {
+                          // При закрытом премиуме скрол начинается с превью:
+                          return _PremiumPreview(rewards: pass.season.instantPremiumRewards, selectedRewardId: widget.state.selectedRewardId, onSelectReward: widget.onSelectReward);
+                        }
 
-                          final gate = item.gateAfterLevel;
-                          if (gate != null) {
-                            // Уровни за пределами видимой зоны показываем одной карточкой-заглушкой
-                            // и коротким продолжением дороги.
-                            return _LockedFutureLevelsPreview(
-                              afterLevel: gate,
-                              roadFromLevel: item.roadFromLevel!,
-                              roadToLevel: item.roadToLevel!,
-                              premiumLocked: premiumLocked,
-                            );
-                          }
+                        final gate = item.gateAfterLevel;
+                        if (gate != null) {
+                          // Уровни за пределами видимой зоны показываем одной карточкой-заглушкой
+                          // и коротким продолжением дороги.
+                          return _LockedFutureLevelsPreview(afterLevel: gate, roadFromLevel: item.roadFromLevel!, roadToLevel: item.roadToLevel!, premiumLocked: premiumLocked);
+                        }
 
-                          final level = item.level!;
-                          final levelIndex = levels.indexOf(level);
-                          final reward = _rewardForLevel(
-                            level,
-                            widget.state.selectedRewardId,
-                          );
-                          return Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              RewardCard(
-                                level: level.number,
+                        final level = item.level!;
+                        final levelIndex = levels.indexOf(level);
+                        final reward = _rewardForLevel(level, widget.state.selectedRewardId);
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            RewardCard(
+                              level: level.number,
+                              reward: reward,
+                              selected: widget.state.selectedRewardId == reward.id,
+                              progress: pass.progress,
+                              isFirstLevel: levelIndex == 0,
+                              isLastLevel: false,
+                              onSelected: () => widget.onSelectReward(reward.id),
+                              onClaim: () => widget.onClaimReward(reward.id),
+                              onShowDetails: () => _showRewardDetails(
+                                context: context,
                                 reward: reward,
-                                selected:
-                                    widget.state.selectedRewardId == reward.id,
-                                progress: pass.progress,
-                                isFirstLevel: levelIndex == 0,
-                                isLastLevel: false,
-                                onSelected: () =>
-                                    widget.onSelectReward(reward.id),
-                                onClaim: () => widget.onClaimReward(reward.id),
-                                onShowDetails: () => _showRewardDetails(
-                                  context: context,
-                                  reward: reward,
-                                  choiceRewards: level.premiumRewards.length > 1
-                                      ? level.premiumRewards
-                                      : const [],
-                                  level: level.number,
-                                  premiumStatus: pass.premiumStatus,
-                                ),
+                                choiceRewards: level.premiumRewards.length > 1 ? level.premiumRewards : const [],
+                                level: level.number,
+                                premiumStatus: pass.premiumStatus,
                               ),
-                              Positioned(
-                                right: -5.w,
-                                top: 184.h / 2,
-                                child: SvgPicture.asset(
-                                  AppAssets.arrowRoad,
-                                  width: 12.w,
-                                  height: 20.h,
-                                ),
-                              ),
-                            ],
-                          );
+                            ),
+                            Positioned(
+                              right: -5.h,
+                              top: 184.h / 2,
+                              child: SvgPicture.asset(AppAssets.arrowRoad, width: 12.h, height: 20.h),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: pinnedLeft,
+                  top: 0,
+                  child: IgnorePointer(
+                    ignoring: pinnedPrize == null || isAtScrollEnd,
+                    child: AnimatedOpacity(
+                      opacity: isAtScrollEnd ? 0 : 1,
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 180),
+                        reverseDuration: const Duration(milliseconds: 140),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(opacity: animation, child: child);
                         },
+                        child: pinnedPrize == null || pinnedPrizeReward == null
+                            ? SizedBox(key: const ValueKey('empty-big-prize'), width: 242.h, height: 280.h)
+                            : _PinnedBigPrizeCard(
+                                key: ValueKey('big-prize-${pinnedPrize.level.number}'),
+                                level: pinnedPrize.level.number,
+                                reward: pinnedPrizeReward,
+                                selected: widget.state.selectedRewardId == pinnedPrizeReward.id,
+                                progress: pass.progress,
+                                premiumStatus: pass.premiumStatus,
+                                dockingProgress: pinnedPrize.dockingProgress,
+                                onSelectReward: widget.onSelectReward,
+                                onClaimReward: widget.onClaimReward,
+                              ),
                       ),
                     ),
                   ),
-                  Positioned(
-                    left: pinnedLeft,
-                    top: 0,
-                    child: IgnorePointer(
-                      ignoring: pinnedPrize == null || isAtScrollEnd,
-                      child: AnimatedOpacity(
-                        opacity: isAtScrollEnd ? 0 : 1,
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOut,
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 180),
-                          reverseDuration: const Duration(milliseconds: 140),
-                          switchInCurve: Curves.easeOut,
-                          switchOutCurve: Curves.easeIn,
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child:
-                              pinnedPrize == null || pinnedPrizeReward == null
-                              ? SizedBox(
-                                  key: const ValueKey('empty-big-prize'),
-                                  width: 242.w,
-                                  height: 280.h,
-                                )
-                              : _PinnedBigPrizeCard(
-                                  key: ValueKey(
-                                    'big-prize-${pinnedPrize.level.number}',
-                                  ),
-                                  level: pinnedPrize.level.number,
-                                  reward: pinnedPrizeReward,
-                                  selected:
-                                      widget.state.selectedRewardId ==
-                                      pinnedPrizeReward.id,
-                                  progress: pass.progress,
-                                  premiumStatus: pass.premiumStatus,
-                                  dockingProgress: pinnedPrize.dockingProgress,
-                                  onSelectReward: widget.onSelectReward,
-                                  onClaimReward: widget.onClaimReward,
-                                ),
-                        ),
-                      ),
+                ),
+                Positioned(
+                  left: leftScrollButtonLeft,
+                  top: scrollButtonTop,
+                  child: IgnorePointer(
+                    ignoring: isAtLeadingEdge,
+                    child: AnimatedOpacity(
+                      opacity: isAtLeadingEdge ? 0 : 1,
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      child: _RailScrollButton(direction: AxisDirection.left, onTap: () => _scrollByCards(-1), onHoldStart: () => _startHeldScroll(-1), onHoldEnd: _stopHeldScroll),
                     ),
                   ),
-                  Positioned(
-                    left: leftScrollButtonLeft,
-                    top: scrollButtonTop,
-                    child: IgnorePointer(
-                      ignoring: isAtLeadingEdge,
-                      child: AnimatedOpacity(
-                        opacity: isAtLeadingEdge ? 0 : 1,
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOut,
-                        child: _RailScrollButton(
-                          direction: AxisDirection.left,
-                          onTap: () => _scrollByCards(-1),
-                          onHoldStart: () => _startHeldScroll(-1),
-                          onHoldEnd: _stopHeldScroll,
-                        ),
-                      ),
+                ),
+                Positioned(
+                  right: 334.h,
+                  top: scrollButtonTop,
+                  child: IgnorePointer(
+                    ignoring: isAtScrollEnd,
+                    child: AnimatedOpacity(
+                      opacity: isAtScrollEnd ? 0 : 1,
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      child: _RailScrollButton(direction: AxisDirection.right, onTap: () => _scrollByCards(1), onHoldStart: () => _startHeldScroll(1), onHoldEnd: _stopHeldScroll),
                     ),
                   ),
-                  Positioned(
-                    right: 334.w,
-                    top: scrollButtonTop,
-                    child: IgnorePointer(
-                      ignoring: isAtScrollEnd,
-                      child: AnimatedOpacity(
-                        opacity: isAtScrollEnd ? 0 : 1,
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOut,
-                        child: _RailScrollButton(
-                          direction: AxisDirection.right,
-                          onTap: () => _scrollByCards(1),
-                          onHoldStart: () => _startHeldScroll(1),
-                          onHoldEnd: _stopHeldScroll,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -366,11 +256,7 @@ class _RewardRailState extends State<RewardRail> {
   ///
   /// Без премиума виден короткий участок и заглушка. С купленным премиумом
   /// показываем больший диапазон вперед, а на максимальном уровне — всю рельсу.
-  int _visibleEndLevel(
-    BattlePassProgress progress,
-    int maxLevel,
-    bool premiumLocked,
-  ) {
+  int _visibleEndLevel(BattlePassProgress progress, int maxLevel, bool premiumLocked) {
     if (progress.currentLevel < 100) {
       return min(premiumLocked ? 100 : 119, maxLevel);
     }
@@ -378,36 +264,21 @@ class _RewardRailState extends State<RewardRail> {
   }
 
   int? _nextUnlockThreshold(BattlePassProgress progress, int maxLevel) {
-    final threshold = progress.currentLevel < 100
-        ? 100
-        : ((progress.currentLevel ~/ 20) + 1) * 20;
+    final threshold = progress.currentLevel < 100 ? 100 : ((progress.currentLevel ~/ 20) + 1) * 20;
     return threshold < maxLevel ? threshold : null;
   }
 
   /// Превращает видимые уровни в элементы ListView: превью премиума,
   /// карточки наград и, если нужно, заглушку будущих уровней.
-  List<_RailItem> _railItems(
-    List<BattlePassLevel> levels,
-    bool premiumLocked,
-    int? nextUnlockThreshold,
-    int visibleEndLevel,
-  ) {
-    final items = <_RailItem>[
-      if (premiumLocked) const _RailItem.premiumPreview(),
-    ];
+  List<_RailItem> _railItems(List<BattlePassLevel> levels, bool premiumLocked, int? nextUnlockThreshold, int visibleEndLevel) {
+    final items = <_RailItem>[if (premiumLocked) const _RailItem.premiumPreview()];
 
     for (final level in levels) {
       items.add(_RailItem.level(level));
     }
 
     if (nextUnlockThreshold != null) {
-      items.add(
-        _RailItem.gate(
-          afterLevel: nextUnlockThreshold,
-          roadFromLevel: visibleEndLevel + 1,
-          roadToLevel: _futureRoadToLevel(visibleEndLevel),
-        ),
-      );
+      items.add(_RailItem.gate(afterLevel: nextUnlockThreshold, roadFromLevel: visibleEndLevel + 1, roadToLevel: _futureRoadToLevel(visibleEndLevel)));
     }
 
     return items;
@@ -415,22 +286,16 @@ class _RewardRailState extends State<RewardRail> {
 
   /// Считает, до какого уровня должна тянуться фейковая дорога после заглушки.
   int _futureRoadToLevel(int visibleEndLevel) {
-    return visibleEndLevel % 20 == 0
-        ? visibleEndLevel + 20
-        : visibleEndLevel + 21;
+    return visibleEndLevel % 20 == 0 ? visibleEndLevel + 20 : visibleEndLevel + 21;
   }
 
   double _levelTrackLeft(bool premiumLocked) {
-    return _railSideInset.w +
-        _railListPadding.w +
-        (premiumLocked ? _premiumPreviewExtent.w : 0);
+    return _railSideInset.h + _railListPadding.h + (premiumLocked ? _premiumPreviewExtent.h : 0);
   }
 
   /// Левая координата карточки уровня во viewport до логики закрепления.
   double _bigPrizeLeftInViewport(bool premiumLocked, int level) {
-    return _levelTrackLeft(premiumLocked) +
-        (level - 1) * _rewardItemExtent.w -
-        _scrollOffset;
+    return _levelTrackLeft(premiumLocked) + (level - 1) * _rewardItemExtent.h - _scrollOffset;
   }
 
   bool _isAtScrollEnd() {
@@ -440,26 +305,14 @@ class _RewardRailState extends State<RewardRail> {
 
   /// Последняя настоящая награда может закончиться раньше maxScrollExtent,
   /// потому что справа зарезервировано место под премиум-панель.
-  bool _isAtFinalRewardEnd(
-    bool premiumLocked,
-    int visibleEndLevel,
-    int maxLevel,
-    double viewportWidth,
-  ) {
+  bool _isAtFinalRewardEnd(bool premiumLocked, int visibleEndLevel, int maxLevel, double viewportWidth) {
     if (visibleEndLevel < maxLevel) return false;
-    final lastRewardRight =
-        _bigPrizeLeftInViewport(premiumLocked, visibleEndLevel) +
-        _rewardItemExtent.w;
-    return lastRewardRight <= viewportWidth - _railTrailingInset.w + 0.5;
+    final lastRewardRight = _bigPrizeLeftInViewport(premiumLocked, visibleEndLevel) + _rewardItemExtent.h;
+    return lastRewardRight <= viewportWidth - _railTrailingInset.h + 0.5;
   }
 
   /// Плавно переводит большую закрепленную награду из боковой позиции в рельсу.
-  double _pinnedPrizeLeft(
-    int level,
-    double pinLeft,
-    bool premiumLocked,
-    double dockingProgress,
-  ) {
+  double _pinnedPrizeLeft(int level, double pinLeft, bool premiumLocked, double dockingProgress) {
     if (dockingProgress <= 0) return pinLeft;
     final targetLeft = _bigPrizeLeftInViewport(premiumLocked, level);
     final easedProgress = Curves.easeOutCubic.transform(dockingProgress);
@@ -467,28 +320,18 @@ class _RewardRailState extends State<RewardRail> {
   }
 
   /// Возвращает следующий уровень с большой наградой для закрепления или въезда.
-  _PinnedPrize? _pinnedPrize(
-    List<BattlePassLevel> levels,
-    double pinLeft,
-    double listViewportRight,
-    bool premiumLocked,
-  ) {
-    final cardWidth = 242.w;
+  _PinnedPrize? _pinnedPrize(List<BattlePassLevel> levels, double pinLeft, double listViewportRight, bool premiumLocked) {
+    final cardWidth = 242.h;
     final dockingStartLeft = listViewportRight + cardWidth * 0.5;
     final dockingEndLeft = listViewportRight - cardWidth;
     final dockingDistance = dockingStartLeft - dockingEndLeft;
     for (final level in levels) {
       if (level.number % 10 != 0) continue;
       final levelLeft = _bigPrizeLeftInViewport(premiumLocked, level.number);
-      final isDocking =
-          _scrollDirection > 0 &&
-          levelLeft <= dockingStartLeft &&
-          levelLeft >= dockingEndLeft;
+      final isDocking = _scrollDirection > 0 && levelLeft <= dockingStartLeft && levelLeft >= dockingEndLeft;
 
       if (isDocking) {
-        final rawProgress = ((dockingStartLeft - levelLeft) / dockingDistance)
-            .clamp(0, 1)
-            .toDouble();
+        final rawProgress = ((dockingStartLeft - levelLeft) / dockingDistance).clamp(0, 1).toDouble();
         return _PinnedPrize(level: level, dockingProgress: rawProgress);
       }
 
@@ -501,8 +344,7 @@ class _RewardRailState extends State<RewardRail> {
 
   BattlePassReward _bigPrizeReward(BattlePassLevel level) {
     for (final reward in level.premiumRewards) {
-      if (reward.type == RewardType.vehicle ||
-          reward.rarity == RewardRarity.legendary) {
+      if (reward.type == RewardType.vehicle || reward.rarity == RewardRarity.legendary) {
         return reward;
       }
     }
@@ -523,33 +365,17 @@ class _RewardRailState extends State<RewardRail> {
     return level.freeRewards.first;
   }
 
-  void _showRewardDetails({
-    required BuildContext context,
-    required BattlePassReward reward,
-    required List<BattlePassReward> choiceRewards,
-    required int level,
-    required PremiumStatus premiumStatus,
-  }) {
+  void _showRewardDetails({required BuildContext context, required BattlePassReward reward, required List<BattlePassReward> choiceRewards, required int level, required PremiumStatus premiumStatus}) {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.ink,
-      builder: (_) => RewardDetailsSheet(
-        reward: reward,
-        choiceRewards: choiceRewards,
-        level: level,
-        premiumStatus: premiumStatus,
-        onClaim: () => widget.onClaimReward(reward.id),
-      ),
+      builder: (_) => RewardDetailsSheet(reward: reward, choiceRewards: choiceRewards, level: level, premiumStatus: premiumStatus, onClaim: () => widget.onClaimReward(reward.id)),
     );
   }
 }
 
 class _PremiumPreview extends StatelessWidget {
-  const _PremiumPreview({
-    required this.rewards,
-    required this.selectedRewardId,
-    required this.onSelectReward,
-  });
+  const _PremiumPreview({required this.rewards, required this.selectedRewardId, required this.onSelectReward});
 
   final List<BattlePassReward> rewards;
   final int? selectedRewardId;
@@ -571,15 +397,9 @@ class _PremiumPreview extends StatelessWidget {
                     for (final reward in rewards)
                       InkWell(
                         onTap: () => onSelectReward(reward.id),
-                        borderRadius: BorderRadius.circular(18.r),
+                        borderRadius: BorderRadius.circular(18.h),
                         child: Center(
-                          child: RewardCardVisual(
-                            reward: reward,
-                            selected: selectedRewardId == reward.id,
-                            available: false,
-                            received: false,
-                            largeSize: false,
-                          ),
+                          child: RewardCardVisual(reward: reward, selected: selectedRewardId == reward.id, available: false, received: false, largeSize: false),
                         ),
                       ),
                   ],
@@ -587,19 +407,15 @@ class _PremiumPreview extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Padding(
-                padding: EdgeInsets.only(right: 23.w),
+                padding: EdgeInsets.only(right: 23.h),
                 child: const _PremiumPreviewButton(),
               ),
             ],
           ),
           Positioned(
-            right: -12.w,
+            right: -12.h,
             top: 184.h / 2,
-            child: SvgPicture.asset(
-              AppAssets.arrowRoad,
-              width: 12.w,
-              height: 20.h,
-            ),
+            child: SvgPicture.asset(AppAssets.arrowRoad, width: 12.h, height: 20.h),
           ),
         ],
       ),
@@ -613,37 +429,21 @@ class _PremiumPreviewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 596.w,
+      width: 596.h,
       height: 60.h,
       child: CustomPaint(
-        painter: ParallelogramPainter(
-          fillColors: const [
-            Color(0x996B3108),
-            Color(0x996B3108),
-            Color(0x996B3108),
-          ],
-          borderColor: AppColors.transparent,
-          borderWidth: 0,
-          skew: 12.w,
-          radius: 20.r,
-        ),
+        painter: ParallelogramPainter(fillColors: const [Color(0x996B3108), Color(0x996B3108), Color(0x996B3108)], borderColor: AppColors.transparent, borderWidth: 0, skew: 12.h, radius: 20.h),
         child: Center(
           child: Text(
             'Получи все сразу!',
             style: TextStyle(
               color: const Color(0xFFFFD149),
-              fontSize: 30.sp,
+              fontSize: 30.h,
               fontFamily: 'Geologica Roman',
               fontWeight: FontWeight.w500,
               height: 1.20,
-              letterSpacing: -0.30,
-              shadows: [
-                Shadow(
-                  offset: Offset(0, 0),
-                  blurRadius: 14,
-                  color: Color(0xFFFF5C00).withValues(alpha: 1),
-                ),
-              ],
+              letterSpacing: -0.30.h,
+              shadows: [Shadow(offset: Offset(0, 0), blurRadius: 14, color: Color(0xFFFF5C00).withValues(alpha: 1))],
             ),
           ),
         ),
@@ -653,12 +453,7 @@ class _PremiumPreviewButton extends StatelessWidget {
 }
 
 class _LockedFutureLevelsPreview extends StatelessWidget {
-  const _LockedFutureLevelsPreview({
-    required this.afterLevel,
-    required this.roadFromLevel,
-    required this.roadToLevel,
-    required this.premiumLocked,
-  });
+  const _LockedFutureLevelsPreview({required this.afterLevel, required this.roadFromLevel, required this.roadToLevel, required this.premiumLocked});
 
   final int afterLevel;
   final int roadFromLevel;
@@ -668,55 +463,38 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 760.w,
+      width: 760.h,
       height: 300.h,
       child: Stack(
         children: [
           Positioned(
-            left: 28.w,
+            left: 28.h,
             top: 26.h,
             child: SizedBox(
-              width: 520.w,
+              width: 520.h,
               height: 184.h,
               child: CustomPaint(
                 painter: ParallelogramPainter(
-                  fillColors: const [
-                    Color(0x00000000),
-                    Color(0x00000000),
-                    Color(0x00000000),
-                  ],
+                  fillColors: const [Color(0x00000000), Color(0x00000000), Color(0x00000000)],
                   borderColor: const Color(0x33E9E9F3),
-                  borderWidth: 4.r,
-                  skew: 28.w,
-                  radius: 24.r,
+                  borderWidth: 4.h,
+                  skew: 28.h,
+                  radius: 24.h,
                 ),
                 child: Center(
                   child: SizedBox(
-                    width: 400.w,
+                    width: 400.h,
                     child: premiumLocked
                         ? Text.rich(
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text:
-                                      'Награды 100+ уровней доступны только\nс ',
-                                  style: TextStyle(
-                                    color: AppColors.white60,
-                                    fontSize: 26.sp,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26,
-                                  ),
+                                  text: 'Награды 100+ уровней доступны только\nс ',
+                                  style: TextStyle(color: AppColors.white60, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
                                 ),
                                 TextSpan(
                                   text: 'прокачкой',
-                                  style: TextStyle(
-                                    color: AppColors.white100,
-                                    fontSize: 26.sp,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26,
-                                  ),
+                                  style: TextStyle(color: AppColors.white100, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
                                 ),
                               ],
                             ),
@@ -727,33 +505,15 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
                               children: [
                                 TextSpan(
                                   text: 'Награды откроются после прохождения',
-                                  style: TextStyle(
-                                    color: AppColors.white60,
-                                    fontSize: 26.sp,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26,
-                                  ),
+                                  style: TextStyle(color: AppColors.white60, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
                                 ),
                                 TextSpan(
                                   text: ' ',
-                                  style: TextStyle(
-                                    color: const Color(0xE5E9E9F3),
-                                    fontSize: 26.sp,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26,
-                                  ),
+                                  style: TextStyle(color: const Color(0xE5E9E9F3), fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
                                 ),
                                 TextSpan(
                                   text: '$afterLevel уровня',
-                                  style: TextStyle(
-                                    color: AppColors.white100,
-                                    fontSize: 26.sp,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26,
-                                  ),
+                                  style: TextStyle(color: AppColors.white100, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
                                 ),
                               ],
                             ),
@@ -768,10 +528,7 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 14.h,
-            child: _FutureLevelsRoad(
-              fromLevel: roadFromLevel,
-              toLevel: roadToLevel,
-            ),
+            child: _FutureLevelsRoad(fromLevel: roadFromLevel, toLevel: roadToLevel),
           ),
         ],
       ),
@@ -788,30 +545,26 @@ class _FutureLevelsRoad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 760.w,
+      width: 760.h,
       height: 60.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Positioned(
             left: 0,
-            width: 121.w,
+            width: 121.h,
             child: Container(height: 10.h, color: AppColors.background10),
           ),
           Positioned(
-            left: 76.w,
+            left: 76.h,
             child: _FutureLevelMarker(level: fromLevel),
           ),
           Positioned(
-            left: 162.w,
-            child: Image.asset(
-              AppAssets.dotedLine,
-              width: 160.w,
-              fit: BoxFit.fill,
-            ),
+            left: 162.h,
+            child: Image.asset(AppAssets.dotedLine, width: 160.h, fit: BoxFit.fill),
           ),
           Positioned(
-            left: 318.w,
+            left: 318.h,
             child: _FutureLevelMarker(level: toLevel),
           ),
         ],
@@ -828,7 +581,7 @@ class _FutureLevelMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 90.w,
+      width: 90.h,
       height: 60.h,
       child: Stack(
         alignment: Alignment.center,
@@ -836,23 +589,14 @@ class _FutureLevelMarker extends StatelessWidget {
           Transform.rotate(
             angle: pi / 4,
             child: Container(
-              width: 45.r,
-              height: 45.r,
-              decoration: BoxDecoration(
-                color: AppColors.background10,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
+              width: 45.h,
+              height: 45.h,
+              decoration: BoxDecoration(color: AppColors.background10, borderRadius: BorderRadius.circular(8.h)),
             ),
           ),
           Text(
             '$level',
-            style: TextStyle(
-              color: AppColors.white100,
-              fontSize: 22.sp,
-              fontWeight: FontWeight.w500,
-              height: 1.20,
-              letterSpacing: -0.22,
-            ),
+            style: TextStyle(color: AppColors.white100, fontSize: 22.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22.h),
           ),
         ],
       ),
@@ -861,12 +605,7 @@ class _FutureLevelMarker extends StatelessWidget {
 }
 
 class _RailScrollButton extends StatelessWidget {
-  const _RailScrollButton({
-    required this.direction,
-    required this.onTap,
-    required this.onHoldStart,
-    required this.onHoldEnd,
-  });
+  const _RailScrollButton({required this.direction, required this.onTap, required this.onHoldStart, required this.onHoldEnd});
 
   final AxisDirection direction;
   final VoidCallback onTap;
@@ -875,11 +614,7 @@ class _RailScrollButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = SvgPicture.asset(
-      AppAssets.arrowLeft,
-      width: 36.r,
-      height: 36.r,
-    );
+    final icon = SvgPicture.asset(AppAssets.arrowLeft, width: 36.h, height: 36.h);
     return GestureDetector(
       onTap: onTap,
       onLongPressStart: (_) => onHoldStart(),
@@ -887,19 +622,15 @@ class _RailScrollButton extends StatelessWidget {
       onLongPressCancel: onHoldEnd,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 84.r,
-        height: 84.r,
-        padding: EdgeInsets.all(24.r),
+        width: 84.h,
+        height: 84.h,
+        padding: EdgeInsets.all(24.h),
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: AppColors.white10,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.r),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.h)),
         ),
-        child: direction == AxisDirection.right
-            ? Transform.rotate(angle: pi, child: icon)
-            : icon,
+        child: direction == AxisDirection.right ? Transform.rotate(angle: pi, child: icon) : icon,
       ),
     );
   }
@@ -913,22 +644,12 @@ final class _PinnedPrize {
 }
 
 final class _RailLayoutMetrics {
-  const _RailLayoutMetrics({
-    required this.pinLeft,
-    required this.listDockLeft,
-    required this.listViewportRight,
-  });
+  const _RailLayoutMetrics({required this.pinLeft, required this.listDockLeft, required this.listViewportRight});
 
-  factory _RailLayoutMetrics.fromViewport({
-    required double viewportWidth,
-    required double pinnedPrizeRightInset,
-    required double rewardItemExtent,
-    required double premiumPanelReservedWidth,
-  }) {
+  factory _RailLayoutMetrics.fromViewport({required double viewportWidth, required double pinnedPrizeRightInset, required double rewardItemExtent, required double premiumPanelReservedWidth}) {
     return _RailLayoutMetrics(
       pinLeft: viewportWidth - pinnedPrizeRightInset - rewardItemExtent,
-      listDockLeft:
-          viewportWidth - premiumPanelReservedWidth - rewardItemExtent,
+      listDockLeft: viewportWidth - premiumPanelReservedWidth - rewardItemExtent,
       listViewportRight: viewportWidth - premiumPanelReservedWidth,
     );
   }
@@ -939,27 +660,13 @@ final class _RailLayoutMetrics {
 }
 
 final class _RailItem {
-  const _RailItem._({
-    this.level,
-    this.gateAfterLevel,
-    this.roadFromLevel,
-    this.roadToLevel,
-    this.isPremiumPreview = false,
-  });
+  const _RailItem._({this.level, this.gateAfterLevel, this.roadFromLevel, this.roadToLevel, this.isPremiumPreview = false});
 
   const _RailItem.premiumPreview() : this._(isPremiumPreview: true);
 
   const _RailItem.level(BattlePassLevel level) : this._(level: level);
 
-  const _RailItem.gate({
-    required int afterLevel,
-    required int roadFromLevel,
-    required int roadToLevel,
-  }) : this._(
-         gateAfterLevel: afterLevel,
-         roadFromLevel: roadFromLevel,
-         roadToLevel: roadToLevel,
-       );
+  const _RailItem.gate({required int afterLevel, required int roadFromLevel, required int roadToLevel}) : this._(gateAfterLevel: afterLevel, roadFromLevel: roadFromLevel, roadToLevel: roadToLevel);
 
   final BattlePassLevel? level;
   final int? gateAfterLevel;
@@ -993,12 +700,8 @@ class _PinnedBigPrizeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shouldDockIntoLargeRailCard = reward.status == RewardStatus.available;
-    final dockingScale = shouldDockIntoLargeRailCard
-        ? 1.0
-        : 1 - dockingProgress * 0.16;
-    final dockingOpacity = dockingProgress < 0.55
-        ? 1.0
-        : (1 - (dockingProgress - 0.55) / 0.45).clamp(0, 1).toDouble();
+    final dockingScale = shouldDockIntoLargeRailCard ? 1.0 : 1 - dockingProgress * 0.16;
+    final dockingOpacity = dockingProgress < 0.55 ? 1.0 : (1 - (dockingProgress - 0.55) / 0.45).clamp(0, 1).toDouble();
 
     return Opacity(
       opacity: dockingOpacity,
@@ -1017,13 +720,7 @@ class _PinnedBigPrizeCard extends StatelessWidget {
           onShowDetails: () => showModalBottomSheet<void>(
             context: context,
             backgroundColor: AppColors.ink,
-            builder: (_) => RewardDetailsSheet(
-              reward: reward,
-              choiceRewards: const [],
-              level: level,
-              premiumStatus: premiumStatus,
-              onClaim: () => onClaimReward(reward.id),
-            ),
+            builder: (_) => RewardDetailsSheet(reward: reward, choiceRewards: const [], level: level, premiumStatus: premiumStatus, onClaim: () => onClaimReward(reward.id)),
           ),
           showRoadLines: false,
           forceLargeSize: true,
