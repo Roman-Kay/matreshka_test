@@ -11,7 +11,7 @@ class PauseFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(AppAssets.bg, fit: BoxFit.cover),
+        Image.asset(AppAssets.bg, fit: BoxFit.cover, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height),
         child,
       ],
     );

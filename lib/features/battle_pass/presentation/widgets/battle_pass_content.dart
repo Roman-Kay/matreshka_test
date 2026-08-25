@@ -45,6 +45,25 @@ class BattlePassContent extends StatelessWidget {
 
     return Stack(
       children: [
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 440.h,
+          child: const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.50, 0),
+                end: Alignment(0.50, 1),
+                colors: [
+                  Color(0x00450D05),
+                  Color(0xB2350D03),
+                  Color(0xFF220401),
+                ],
+              ),
+            ),
+          ),
+        ),
         Padding(
           // для центровки контейнера с выбранной наградой, чтобы он был по центру bg картинки, а не по центру экрана
           padding: EdgeInsets.only(top: 105.h, right: 105.w),

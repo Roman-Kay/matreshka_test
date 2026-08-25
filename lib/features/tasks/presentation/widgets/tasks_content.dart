@@ -10,7 +10,14 @@ import 'tasks_header.dart';
 import 'upgrade_hint_text.dart';
 
 class TasksContent extends StatelessWidget {
-  const TasksContent({super.key, this.progress, required this.tasks, this.onBack, this.onExit, this.onPurchasePremium});
+  const TasksContent({
+    super.key,
+    this.progress,
+    required this.tasks,
+    this.onBack,
+    this.onExit,
+    this.onPurchasePremium,
+  });
 
   final TasksProgressSummary? progress;
   final List<Task> tasks;
@@ -43,7 +50,11 @@ class TasksContent extends StatelessWidget {
               padding: EdgeInsetsGeometry.only(left: 51.w, bottom: 49.h),
               child: Row(
                 children: [
-                  PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: onPurchasePremium),
+                  PremiumActionButton(
+                    iconAsset: AppAssets.premium,
+                    text: 'Прокачать',
+                    onPressed: onPurchasePremium,
+                  ),
                   SizedBox(width: 50.w),
                   const UpgradeHintText(),
                 ],
