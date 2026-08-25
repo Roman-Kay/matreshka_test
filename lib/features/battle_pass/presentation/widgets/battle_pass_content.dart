@@ -43,17 +43,13 @@ class BattlePassContent extends StatefulWidget {
   State<BattlePassContent> createState() => _BattlePassContentState();
 }
 
-class _BattlePassContentState extends State<BattlePassContent>
-    with SingleTickerProviderStateMixin {
+class _BattlePassContentState extends State<BattlePassContent> with SingleTickerProviderStateMixin {
   late final AnimationController _entranceController;
 
   @override
   void initState() {
     super.initState();
-    _entranceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 760),
-    )..forward();
+    _entranceController = AnimationController(vsync: this, duration: const Duration(milliseconds: 760))..forward();
   }
 
   @override
@@ -74,21 +70,13 @@ class _BattlePassContentState extends State<BattlePassContent>
   Widget build(BuildContext context) {
     final pass = widget.state.battlePass!;
     final selected = _selectedReward(pass, widget.state.selectedRewardId);
-    final choiceRewards = _selectedChoiceRewards(
-      pass,
-      widget.state.selectedRewardId,
-    );
+    final choiceRewards = _selectedChoiceRewards(pass, widget.state.selectedRewardId);
     final premiumLocked = pass.premiumStatus == PremiumStatus.locked;
     final completed = widget.state.demoMode == BattlePassDemoMode.completed;
 
     return Stack(
       children: [
-        Positioned.fill(
-          child: Image.asset(
-            pass.season.backgroundAssetPath,
-            fit: BoxFit.cover,
-          ),
-        ),
+        Positioned.fill(child: Image.asset(pass.season.backgroundAssetPath, fit: BoxFit.cover)),
         Positioned(
           left: 0,
           right: 0,
@@ -100,15 +88,7 @@ class _BattlePassContentState extends State<BattlePassContent>
             beginOffset: Offset(0, 80.h),
             child: const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment(0.50, 0),
-                  end: Alignment(0.50, 1),
-                  colors: [
-                    Color(0x00450D05),
-                    Color(0xB2350D03),
-                    Color(0xFF220401),
-                  ],
-                ),
+                gradient: LinearGradient(begin: Alignment(0.50, 0), end: Alignment(0.50, 1), colors: [Color(0x00450D05), Color(0xB2350D03), Color(0xFF220401)]),
               ),
             ),
           ),
@@ -135,11 +115,7 @@ class _BattlePassContentState extends State<BattlePassContent>
             animation: _entranceController,
             interval: const Interval(0.16, 0.82, curve: Curves.easeOutCubic),
             beginOffset: Offset(160.w, 0),
-            child: PremiumPanel(
-              pass: pass,
-              onPurchasePremium: widget.onPurchasePremium,
-              onClaimAllRewards: widget.onClaimAllRewards,
-            ),
+            child: PremiumPanel(pass: pass, onPurchasePremium: widget.onPurchasePremium, onClaimAllRewards: widget.onClaimAllRewards),
           ),
         ),
         Column(
@@ -150,42 +126,24 @@ class _BattlePassContentState extends State<BattlePassContent>
               animation: _entranceController,
               interval: const Interval(0.04, 0.66, curve: Curves.easeOutCubic),
               beginOffset: Offset(0, -96.h),
-              child: BattlePassHeader(
-                pass: pass,
-                onDemoModeSelected: widget.onDemoModeSelected,
-                onClose: widget.onExitToGame,
-              ),
+              child: BattlePassHeader(pass: pass, onDemoModeSelected: widget.onDemoModeSelected, onClose: widget.onExitToGame),
             ),
             _EntranceTransition(
               animation: _entranceController,
               interval: const Interval(0.10, 0.76, curve: Curves.easeOutCubic),
               beginOffset: Offset(-160.w, 0),
-              child: completed
-                  ? const BattlePassCompletedNotice()
-                  : TasksPreview(
-                      tasks: pass.tasks,
-                      onTap: _openTasks,
-                      onClaim: widget.onClaimTask,
-                    ),
+              child: completed ? const BattlePassCompletedNotice() : TasksPreview(tasks: pass.tasks, onTap: _openTasks, onClaim: widget.onClaimTask),
             ),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: _EntranceTransition(
                   animation: _entranceController,
-                  interval: const Interval(
-                    0.22,
-                    1.00,
-                    curve: Curves.easeOutCubic,
-                  ),
+                  interval: const Interval(0.22, 1.00, curve: Curves.easeOutCubic),
                   beginOffset: Offset(0, 180.h),
                   child: SizedBox(
                     height: 320.h,
-                    child: RewardRail(
-                      state: widget.state,
-                      onSelectReward: widget.onSelectReward,
-                      onClaimReward: widget.onClaimReward,
-                    ),
+                    child: RewardRail(state: widget.state, onSelectReward: widget.onSelectReward, onClaimReward: widget.onClaimReward),
                   ),
                 ),
               ),
@@ -197,7 +155,7 @@ class _BattlePassContentState extends State<BattlePassContent>
   }
 
   Future<void> _openTasks() async {
-    await context.router.push(const BattlePassTasksRoute());
+    await context.router.push(const TasksRoute());
     if (!mounted) return;
     _entranceController.forward(from: 0);
   }
@@ -225,13 +183,7 @@ class _BattlePassContentState extends State<BattlePassContent>
 }
 
 class _EntranceTransition extends StatelessWidget {
-  const _EntranceTransition({
-    required this.animation,
-    required this.interval,
-    required this.beginOffset,
-    required this.child,
-    this.beginScale = 1,
-  });
+  const _EntranceTransition({required this.animation, required this.interval, required this.beginOffset, required this.child, this.beginScale = 1});
 
   final Animation<double> animation;
   final Interval interval;

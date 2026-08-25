@@ -15,21 +15,12 @@ class PauseShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final notificationSections = _notificationsRepository
-        .loadNotificationSections();
+    final notificationSections = _notificationsRepository.loadNotificationSections();
 
     return Scaffold(
       body: PauseFrame(
         child: AutoTabsRouter(
-          routes: const [
-            EventRoute(),
-            BattlePassRoute(),
-            BattlePassTasksRoute(),
-            NewcomerCalendarRoute(),
-            AfterLessonsRoute(),
-            InviteFriendRoute(),
-            PromoRoute(),
-          ],
+          routes: const [EventRoute(), BattlePassRoute(), TasksRoute(), NewcomerCalendarRoute(), AfterLessonsRoute(), InviteFriendRoute(), PromoRoute()],
           builder: (context, child) {
             final tabsRouter = AutoTabsRouter.of(context);
             return Row(

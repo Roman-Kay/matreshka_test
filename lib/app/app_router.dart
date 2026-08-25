@@ -27,7 +27,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: EventRoute.page, path: 'event'),
         AutoRoute(page: BattlePassRoute.page, path: 'battle-pass', initial: true),
         CustomRoute(
-          page: BattlePassTasksRoute.page,
+          page: TasksRoute.page,
           path: 'battle-pass/tasks',
           transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
           duration: const Duration(milliseconds: 320),

@@ -43,17 +43,17 @@ class BattlePassRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [BattlePassTasksPage]
-class BattlePassTasksRoute extends PageRouteInfo<void> {
-  const BattlePassTasksRoute({List<PageRouteInfo>? children})
-    : super(BattlePassTasksRoute.name, initialChildren: children);
+/// [TasksRoute]
+class TasksRoute extends PageRouteInfo<void> {
+  const TasksRoute({List<PageRouteInfo>? children})
+    : super(TasksRoute.name, initialChildren: children);
 
-  static const String name = 'BattlePassTasksRoute';
+  static const String name = 'TasksRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const BattlePassTasksPage();
+      return const TasksPage();
     },
   );
 }
