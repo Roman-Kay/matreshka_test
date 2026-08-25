@@ -2,14 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class ParallelogramPainter extends CustomPainter {
-  const ParallelogramPainter({
-    required this.fillColors,
-    required this.borderColor,
-    required this.borderWidth,
-    required this.skew,
-    required this.radius,
-    this.glowColor,
-  });
+  const ParallelogramPainter({required this.fillColors, required this.borderColor, required this.borderWidth, required this.skew, required this.radius, this.glowColor});
 
   final List<Color> fillColors;
   final Color borderColor;
@@ -31,13 +24,7 @@ class ParallelogramPainter extends CustomPainter {
       canvas.drawPath(path, shadowPaint);
     }
 
-    final fill = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: fillColors,
-        stops: const [0, 0.48, 1],
-      ).createShader(Offset.zero & size);
+    final fill = Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: fillColors, stops: const [0, 0.48, 1]).createShader(Offset.zero & size);
 
     final border = Paint()
       ..style = PaintingStyle.stroke
@@ -59,12 +46,7 @@ class ParallelogramPainter extends CustomPainter {
   }
 
   Path _roundedParallelogramPath(Size size) {
-    final points = [
-      Offset(skew, 0),
-      Offset(size.width, 0),
-      Offset(size.width - skew, size.height),
-      Offset(0, size.height),
-    ];
+    final points = [Offset(skew, 0), Offset(size.width, 0), Offset(size.width - skew, size.height), Offset(0, size.height)];
     final path = Path();
 
     for (var index = 0; index < points.length; index++) {

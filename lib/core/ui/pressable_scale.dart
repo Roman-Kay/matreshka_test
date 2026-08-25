@@ -68,12 +68,7 @@ class _PressableScaleState extends State<PressableScale> {
         scale: _pressed ? widget.pressedScale : 1,
         duration: widget.duration,
         curve: Curves.easeOutCubic,
-        child: AnimatedOpacity(
-          opacity: enabled ? 1 : 0.58,
-          duration: widget.duration,
-          curve: Curves.easeOutCubic,
-          child: widget.child,
-        ),
+        child: AnimatedOpacity(opacity: enabled ? 1 : 0.58, duration: widget.duration, curve: Curves.easeOutCubic, child: widget.child),
       ),
     );
   }

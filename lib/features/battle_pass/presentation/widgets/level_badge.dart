@@ -10,11 +10,6 @@ class BattlePassLevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LevelProgressBadge(
-      level: progress.currentLevel,
-      currentXp: progress.currentXp,
-      nextLevelXp: progress.nextLevelXp,
-      progressRatio: progress.ratio,
-    );
+    return LevelProgressBadge(level: progress.currentLevel, currentXp: progress.currentXp, nextLevelXp: progress.nextLevelXp, progressRatio: progress.ratio);
   }
 }

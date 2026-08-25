@@ -39,8 +39,7 @@ final class BattlePassSeason {
       endsAt: endsAt ?? this.endsAt,
       maxLevel: maxLevel ?? this.maxLevel,
       backgroundAssetPath: backgroundAssetPath ?? this.backgroundAssetPath,
-      instantPremiumRewards:
-          instantPremiumRewards ?? this.instantPremiumRewards,
+      instantPremiumRewards: instantPremiumRewards ?? this.instantPremiumRewards,
       levels: levels ?? this.levels,
     );
   }

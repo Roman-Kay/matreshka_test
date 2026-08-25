@@ -1,15 +1,7 @@
 import 'battle_pass_enums.dart';
 
 final class BattlePassReward {
-  const BattlePassReward({
-    required this.id,
-    required this.type,
-    required this.title,
-    required this.amount,
-    required this.track,
-    required this.assetPath,
-    this.rarity = RewardRarity.common,
-  });
+  const BattlePassReward({required this.id, required this.type, required this.title, required this.amount, required this.track, required this.assetPath, this.rarity = RewardRarity.common});
 
   final int id;
   final RewardType type;

@@ -25,9 +25,7 @@ final class ClaimBattlePassTaskUseCase {
     final nextXp = pass.progress.currentXp + rewardAmount;
     final leveledUp = nextXp >= pass.progress.nextLevelXp;
     final progress = pass.progress.copyWith(
-      currentLevel: leveledUp
-          ? (pass.progress.currentLevel + 1).clamp(1, pass.season.maxLevel)
-          : pass.progress.currentLevel,
+      currentLevel: leveledUp ? (pass.progress.currentLevel + 1).clamp(1, pass.season.maxLevel) : pass.progress.currentLevel,
       currentXp: leveledUp ? nextXp - pass.progress.nextLevelXp : nextXp,
     );
 

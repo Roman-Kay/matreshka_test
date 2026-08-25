@@ -51,15 +51,14 @@ class _PhotoAnchoredRewardPreviewState extends State<PhotoAnchoredRewardPreview>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenSize = MediaQuery.sizeOf(context);
-        final contentLeft = screenSize.width - constraints.maxWidth;
-        final scale = _coverScale(widget.designSize, screenSize);
+        final viewport = constraints.biggest;
+        final scale = _coverScale(widget.designSize, viewport);
         final backgroundLeft =
-            (screenSize.width - widget.designSize.width * scale) / 2;
+            (viewport.width - widget.designSize.width * scale) / 2;
         final backgroundTop =
-            (screenSize.height - widget.designSize.height * scale) / 2;
+            (viewport.height - widget.designSize.height * scale) / 2;
         final center = Offset(
-          backgroundLeft + widget.designCenter.dx * scale - contentLeft,
+          backgroundLeft + widget.designCenter.dx * scale,
           backgroundTop + widget.designCenter.dy * scale,
         );
         final previewSize = widget.designSizePx.w;

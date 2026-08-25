@@ -8,9 +8,10 @@ import '../../../../core/ui/pressable_scale.dart';
 import '../../domain/models/task.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({super.key, required this.task});
+  const TaskCard({super.key, required this.task, this.onClaim});
 
   final Task task;
+  final VoidCallback? onClaim;
 
   @override
   Widget build(BuildContext context) {
@@ -37,38 +38,18 @@ class TaskCard extends StatelessWidget {
                 children: [
                   Container(
                     width: 166.h,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.h,
-                      vertical: 10.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF65231),
-                      borderRadius: BorderRadius.circular(30.h),
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
+                    decoration: BoxDecoration(color: const Color(0xFFF65231), borderRadius: BorderRadius.circular(30.h)),
                     child: Text(
                       task.rewardTitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.white100,
-                        fontSize: 22.h,
-                        fontWeight: FontWeight.w500,
-                        height: 1.20,
-                        letterSpacing: -0.22.h,
-                      ),
+                      style: TextStyle(color: AppColors.white100, fontSize: 22.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22.h),
                     ),
                   ),
                   SizedBox(height: 10.h),
                   Text(
                     'x ${task.rewardAmount}',
-                    style: TextStyle(
-                      color: task.hasXpBonus
-                          ? const Color(0xFFFFD149)
-                          : AppColors.white50,
-                      fontSize: 30.h,
-                      fontWeight: FontWeight.w500,
-                      height: 1.20,
-                      letterSpacing: -0.30.h,
-                    ),
+                    style: TextStyle(color: task.hasXpBonus ? const Color(0xFFFFD149) : AppColors.white50, fontSize: 30.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.30.h),
                   ),
                 ],
               ),
@@ -101,21 +82,12 @@ class TaskCard extends StatelessWidget {
                       style: const TextStyle(color: AppColors.white100),
                     ),
                   ],
-                  style: TextStyle(
-                    fontSize: 36.h,
-                    fontWeight: FontWeight.w600,
-                    height: 1.30,
-                    letterSpacing: -0.36.h,
-                  ),
+                  style: TextStyle(fontSize: 36.h, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36.h),
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 9.h),
-              Container(
-                width: 320.h,
-                height: 2.h,
-                color: AppColors.white10.withValues(alpha: 0.1),
-              ),
+              Container(width: 320.h, height: 2.h, color: AppColors.white10.withValues(alpha: 0.1)),
               SizedBox(height: 24.h),
               SizedBox(
                 width: 322.h,
@@ -123,13 +95,7 @@ class TaskCard extends StatelessWidget {
                   task.title,
                   textAlign: TextAlign.center,
                   maxLines: 4,
-                  style: TextStyle(
-                    color: claimed ? AppColors.white70 : AppColors.white80,
-                    fontSize: 22.h,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.22.h,
-                  ),
+                  style: TextStyle(color: claimed ? AppColors.white70 : AppColors.white80, fontSize: 22.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22.h),
                 ),
               ),
               const Spacer(),
@@ -137,7 +103,7 @@ class TaskCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 10.h,
                 children: [
-                  _TaskActionButton(canClaim: canClaim, claimed: claimed),
+                  _TaskActionButton(canClaim: canClaim, claimed: claimed, onClaim: onClaim),
                   const _TaskInfoButton(),
                 ],
               ),
@@ -187,24 +153,14 @@ class _TaskXpBonusBadge extends StatelessWidget {
       width: 94.h,
       height: 35.h,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(0.50, 0),
-          end: Alignment(0.50, 1),
-          colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)],
-        ),
+        gradient: LinearGradient(begin: Alignment(0.50, 0), end: Alignment(0.50, 1), colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)]),
         borderRadius: BorderRadius.circular(26.h),
       ),
       child: Center(
         child: Text(
           '+$percent%',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF3C0B0B),
-            fontSize: 5.63.h,
-            fontWeight: FontWeight.w800,
-            height: 1.20,
-            letterSpacing: -0.06.h,
-          ),
+          style: TextStyle(color: const Color(0xFF3C0B0B), fontSize: 5.63.h, fontWeight: FontWeight.w800, height: 1.20, letterSpacing: -0.06.h),
         ),
       ),
     );
@@ -212,15 +168,17 @@ class _TaskXpBonusBadge extends StatelessWidget {
 }
 
 class _TaskActionButton extends StatelessWidget {
-  const _TaskActionButton({required this.canClaim, required this.claimed});
+  const _TaskActionButton({required this.canClaim, required this.claimed, this.onClaim});
 
   final bool canClaim;
   final bool claimed;
+  final VoidCallback? onClaim;
 
   @override
   Widget build(BuildContext context) {
     return PressableScale(
       enabled: !claimed,
+      onTap: canClaim ? onClaim : null,
       child: Container(
         width: 250.h,
         height: 88.h,
@@ -229,18 +187,12 @@ class _TaskActionButton extends StatelessWidget {
             begin: Alignment(0.50, 1.00),
             end: Alignment(0.50, 0.00),
             colors: canClaim
-                ? [
-                    Color(0xFF55B675).withValues(alpha: 0.4),
-                    Color(0xFF449761).withValues(alpha: 0.4),
-                  ]
+                ? [Color(0xFF55B675).withValues(alpha: 0.4), Color(0xFF449761).withValues(alpha: 0.4)]
                 : claimed
                 ? const [Color(0xFF9F4327), Color(0xFF9F4327)]
                 : const [Color(0xFFE22929), Color(0xFFFF6435)],
           ),
-          borderRadius: BorderRadius.horizontal(
-            left: Radius.circular(30.h),
-            right: Radius.circular(6.h),
-          ),
+          borderRadius: BorderRadius.horizontal(left: Radius.circular(30.h), right: Radius.circular(6.h)),
         ),
         child: Center(
           child: Row(
@@ -254,13 +206,7 @@ class _TaskActionButton extends StatelessWidget {
                     : claimed
                     ? 'Готово'
                     : 'Перейти',
-                style: TextStyle(
-                  color: canClaim ? AppColors.secondary100 : AppColors.white100,
-                  fontSize: 26.h,
-                  fontWeight: FontWeight.w500,
-                  height: 1.20,
-                  letterSpacing: -0.26.h,
-                ),
+                style: TextStyle(color: canClaim ? AppColors.secondary100 : AppColors.white100, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
               ),
             ],
           ),
@@ -280,10 +226,7 @@ class _TaskInfoButton extends StatelessWidget {
       height: 88.h,
       decoration: BoxDecoration(
         color: const Color(0xFF530202),
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(6.h),
-          right: Radius.circular(30.h),
-        ),
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(6.h), right: Radius.circular(30.h)),
       ),
       child: Center(
         child: SvgPicture.asset(AppAssets.question, height: 30.h, width: 30.h),

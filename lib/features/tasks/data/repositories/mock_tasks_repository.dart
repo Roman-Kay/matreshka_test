@@ -8,15 +8,7 @@ final class MockTasksRepository implements TasksRepository {
   @override
   Future<List<Task>> loadBattlePassTasks() async {
     return [
-      Task(
-        id: 1,
-        title: 'Пробегите 100 метров по городу в классическом режиме.',
-        rewardTitle: 'Опыт БП',
-        rewardAmount: 25,
-        currentProgress: 40,
-        requiredProgress: 100,
-        rewardAssetPath: AppAssets.xp,
-      ),
+      Task(id: 1, title: 'Пробегите 100 метров по городу в классическом режиме.', rewardTitle: 'Опыт БП', rewardAmount: 25, currentProgress: 40, requiredProgress: 100, rewardAssetPath: AppAssets.xp),
       Task(
         id: 2,
         title: 'Проедьте 200 метров на любом транспорте.',
@@ -37,24 +29,8 @@ final class MockTasksRepository implements TasksRepository {
         rewardAssetPath: AppAssets.xp,
         status: TaskStatus.readyToClaim,
       ),
-      Task(
-        id: 4,
-        title: 'Заработайте 500 рублей на любой легальной работе.',
-        rewardTitle: 'Опыт БП',
-        rewardAmount: 25,
-        currentProgress: 120,
-        requiredProgress: 500,
-        rewardAssetPath: AppAssets.xp,
-      ),
-      Task(
-        id: 5,
-        title: 'Используйте энергетик 3 раза во время RP-сессии.',
-        rewardTitle: 'Опыт БП',
-        rewardAmount: 25,
-        currentProgress: 1,
-        requiredProgress: 3,
-        rewardAssetPath: AppAssets.xp,
-      ),
+      Task(id: 4, title: 'Заработайте 500 рублей на любой легальной работе.', rewardTitle: 'Опыт БП', rewardAmount: 25, currentProgress: 120, requiredProgress: 500, rewardAssetPath: AppAssets.xp),
+      Task(id: 5, title: 'Используйте энергетик 3 раза во время RP-сессии.', rewardTitle: 'Опыт БП', rewardAmount: 25, currentProgress: 1, requiredProgress: 3, rewardAssetPath: AppAssets.xp),
     ];
   }
 }

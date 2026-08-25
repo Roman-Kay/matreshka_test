@@ -6,12 +6,7 @@ import 'package:romankaygo_test_rp/core/theme/app_colors.dart';
 import '../../../domain/models/battle_pass_models.dart';
 
 class RewardTitle extends StatelessWidget {
-  const RewardTitle({
-    super.key,
-    required this.reward,
-    required this.choiceRewards,
-    required this.premiumLocked,
-  });
+  const RewardTitle({super.key, required this.reward, required this.choiceRewards, required this.premiumLocked});
 
   final BattlePassReward? reward;
   final List<BattlePassReward> choiceRewards;
@@ -19,15 +14,8 @@ class RewardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = TextStyle(
-      color: AppColors.white100,
-      fontSize: 36.h,
-      fontWeight: FontWeight.w600,
-      height: 1.30,
-      letterSpacing: -0.36.h,
-    );
-    final showPremiumBadge =
-        premiumLocked && reward?.track == BattlePassTrack.premium;
+    final titleStyle = TextStyle(color: AppColors.white100, fontSize: 36.h, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36.h);
+    final showPremiumBadge = premiumLocked && reward?.track == BattlePassTrack.premium;
 
     return Column(
       children: [
@@ -35,11 +23,7 @@ class RewardTitle extends StatelessWidget {
           Container(
             height: 39.h,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment(0.50, -0.00),
-                end: Alignment(0.50, 1.00),
-                colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)],
-              ),
+              gradient: const LinearGradient(begin: Alignment(0.50, -0.00), end: Alignment(0.50, 1.00), colors: [Color(0xFFEFCB4B), Color(0xFFF6733B)]),
               borderRadius: BorderRadius.circular(30.h),
             ),
             child: Row(
@@ -50,13 +34,7 @@ class RewardTitle extends StatelessWidget {
                 SizedBox(width: 12.h),
                 Text(
                   'Доступно с прокачкой!',
-                  style: TextStyle(
-                    color: const Color(0xFF3C0B0B),
-                    fontSize: 22.h,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.22.h,
-                  ),
+                  style: TextStyle(color: const Color(0xFF3C0B0B), fontSize: 22.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.22.h),
                 ),
                 SizedBox(width: 19.h),
               ],
@@ -69,17 +47,8 @@ class RewardTitle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             choiceRewards.length > 1
-                ? _ChoiceRewardTitle(
-                    rewards: choiceRewards,
-                    titleStyle: titleStyle,
-                  )
-                : Text(
-                    reward?.title ?? 'Мега пак',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: titleStyle,
-                  ),
+                ? _ChoiceRewardTitle(rewards: choiceRewards, titleStyle: titleStyle)
+                : Text(reward?.title ?? 'Мега пак', maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: titleStyle),
             SizedBox(width: 16.h),
             SvgPicture.asset(AppAssets.info, width: 36.h, height: 36.h),
           ],
@@ -102,18 +71,10 @@ class _ChoiceRewardTitle extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8.h,
       children: [
-        Text(
-          rewards.first.title,
-          textAlign: TextAlign.center,
-          style: titleStyle,
-        ),
+        Text(rewards.first.title, textAlign: TextAlign.center, style: titleStyle),
         ShaderMask(
           shaderCallback: (bounds) {
-            return const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFEFCB4C), Color(0xFFDE8029)],
-            ).createShader(bounds);
+            return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFEFCB4C), Color(0xFFDE8029)]).createShader(bounds);
           },
           blendMode: BlendMode.srcIn,
           child: Text(

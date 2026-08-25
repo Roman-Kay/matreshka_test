@@ -1,10 +1,5 @@
 final class TasksProgressSummary {
-  const TasksProgressSummary({
-    required this.currentLevel,
-    required this.currentXp,
-    required this.nextLevelXp,
-    required this.tasksRefreshAt,
-  });
+  const TasksProgressSummary({required this.currentLevel, required this.currentXp, required this.nextLevelXp, required this.tasksRefreshAt});
 
   final int currentLevel;
   final int currentXp;

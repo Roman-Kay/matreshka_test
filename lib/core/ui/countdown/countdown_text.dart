@@ -1,12 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class CountdownText extends StatelessWidget {
-  const CountdownText({
-    super.key,
-    required this.endsAt,
-    required this.style,
-    this.textAlign,
-  });
+  const CountdownText({super.key, required this.endsAt, required this.style, this.textAlign});
 
   final DateTime endsAt;
   final TextStyle style;
@@ -15,17 +10,10 @@ class CountdownText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DateTime>(
-      stream: Stream<DateTime>.periodic(
-        const Duration(minutes: 1),
-        (_) => DateTime.now(),
-      ),
+      stream: Stream<DateTime>.periodic(const Duration(minutes: 1), (_) => DateTime.now()),
       initialData: DateTime.now(),
       builder: (context, snapshot) {
-        return Text(
-          _formatRemaining(snapshot.data ?? DateTime.now()),
-          textAlign: textAlign,
-          style: style,
-        );
+        return Text(_formatRemaining(snapshot.data ?? DateTime.now()), textAlign: textAlign, style: style);
       },
     );
   }

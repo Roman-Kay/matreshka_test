@@ -10,36 +10,26 @@ import 'tasks_header.dart';
 import 'upgrade_hint_text.dart';
 
 class TasksContent extends StatefulWidget {
-  const TasksContent({
-    super.key,
-    this.progress,
-    required this.tasks,
-    this.onBack,
-    this.onExit,
-    this.onPurchasePremium,
-  });
+  const TasksContent({super.key, this.progress, required this.tasks, this.onBack, this.onExit, this.onPurchasePremium, this.onClaimTask});
 
   final TasksProgressSummary? progress;
   final List<Task> tasks;
   final VoidCallback? onBack;
   final VoidCallback? onExit;
   final VoidCallback? onPurchasePremium;
+  final ValueChanged<int>? onClaimTask;
 
   @override
   State<TasksContent> createState() => _TasksContentState();
 }
 
-class _TasksContentState extends State<TasksContent>
-    with SingleTickerProviderStateMixin {
+class _TasksContentState extends State<TasksContent> with SingleTickerProviderStateMixin {
   late final AnimationController _entranceController;
 
   @override
   void initState() {
     super.initState();
-    _entranceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 680),
-    )..forward();
+    _entranceController = AnimationController(vsync: this, duration: const Duration(milliseconds: 680))..forward();
   }
 
   @override
@@ -60,11 +50,7 @@ class _TasksContentState extends State<TasksContent>
               animation: _entranceController,
               interval: const Interval(0.00, 0.62, curve: Curves.easeOutCubic),
               beginOffset: Offset(0, -96.h),
-              child: TasksHeader(
-                progress: widget.progress,
-                onBack: widget.onBack,
-                onExit: widget.onExit,
-              ),
+              child: TasksHeader(progress: widget.progress, onBack: widget.onBack, onExit: widget.onExit),
             ),
             SizedBox(height: 125.h),
             _TasksEntranceTransition(
@@ -76,10 +62,8 @@ class _TasksContentState extends State<TasksContent>
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 51.w),
                   scrollDirection: Axis.horizontal,
-                  itemBuilder: (_, index) =>
-                      TaskCard(task: widget.tasks[index]),
-                  separatorBuilder: (context, index) =>
-                      SizedBox(width: 26.25.w),
+                  itemBuilder: (_, index) => TaskCard(task: widget.tasks[index], onClaim: widget.onClaimTask == null ? null : () => widget.onClaimTask!(widget.tasks[index].id)),
+                  separatorBuilder: (context, index) => SizedBox(width: 26.25.w),
                   itemCount: widget.tasks.length,
                 ),
               ),
@@ -93,11 +77,7 @@ class _TasksContentState extends State<TasksContent>
                 padding: EdgeInsetsGeometry.only(left: 51.w, bottom: 49.h),
                 child: Row(
                   children: [
-                    PremiumActionButton(
-                      iconAsset: AppAssets.premium,
-                      text: 'Прокачать',
-                      onPressed: widget.onPurchasePremium,
-                    ),
+                    PremiumActionButton(iconAsset: AppAssets.premium, text: 'Прокачать', onPressed: widget.onPurchasePremium),
                     SizedBox(width: 50.w),
                     const UpgradeHintText(),
                   ],
@@ -112,12 +92,7 @@ class _TasksContentState extends State<TasksContent>
 }
 
 class _TasksEntranceTransition extends StatelessWidget {
-  const _TasksEntranceTransition({
-    required this.animation,
-    required this.interval,
-    required this.beginOffset,
-    required this.child,
-  });
+  const _TasksEntranceTransition({required this.animation, required this.interval, required this.beginOffset, required this.child});
 
   final Animation<double> animation;
   final Interval interval;

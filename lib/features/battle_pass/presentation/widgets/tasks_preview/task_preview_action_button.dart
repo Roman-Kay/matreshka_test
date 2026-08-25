@@ -8,12 +8,7 @@ import '../../../../../core/ui/pressable_scale.dart';
 import '../../../../tasks/domain/models/task.dart';
 
 class TaskPreviewActionButton extends StatelessWidget {
-  const TaskPreviewActionButton({
-    super.key,
-    required this.task,
-    required this.onOpenTasks,
-    required this.onClaim,
-  });
+  const TaskPreviewActionButton({super.key, required this.task, required this.onOpenTasks, required this.onClaim});
 
   final Task task;
   final VoidCallback onOpenTasks;
@@ -32,20 +27,11 @@ class TaskPreviewActionButton extends StatelessWidget {
           Container(
             width: 320.r,
             height: isClaim ? null : 74.r,
-            padding: isClaim
-                ? EdgeInsets.fromLTRB(36.r, 20.r, 36.r, 23.r)
-                : null,
+            padding: isClaim ? EdgeInsets.fromLTRB(36.r, 20.r, 36.r, 23.r) : null,
             decoration: BoxDecoration(
               color: isClaim ? null : AppColors.white10,
               gradient: isClaim
-                  ? LinearGradient(
-                      begin: Alignment(0.50, 0.00),
-                      end: Alignment(0.50, 1.00),
-                      colors: [
-                        Color(0xFF55B675).withValues(alpha: 0.4),
-                        Color(0xFF449761).withValues(alpha: 0.4),
-                      ],
-                    )
+                  ? LinearGradient(begin: Alignment(0.50, 0.00), end: Alignment(0.50, 1.00), colors: [Color(0xFF55B675).withValues(alpha: 0.4), Color(0xFF449761).withValues(alpha: 0.4)])
                   : null,
               borderRadius: BorderRadius.circular(30.r),
             ),
@@ -54,19 +40,10 @@ class TaskPreviewActionButton extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               spacing: 16.r,
               children: [
-                if (!isClaim)
-                  SvgPicture.asset(AppAssets.tasks, width: 30.r, height: 30.r),
+                if (!isClaim) SvgPicture.asset(AppAssets.tasks, width: 30.r, height: 30.r),
                 Text(
                   isClaim ? 'Забрать опыт' : 'Задания',
-                  style: TextStyle(
-                    color: isClaim
-                        ? AppColors.secondary100
-                        : AppColors.white100,
-                    fontSize: 26.r,
-                    fontWeight: FontWeight.w500,
-                    height: 1.20,
-                    letterSpacing: -0.26.r,
-                  ),
+                  style: TextStyle(color: isClaim ? AppColors.secondary100 : AppColors.white100, fontSize: 26.r, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.r),
                 ),
               ],
             ),

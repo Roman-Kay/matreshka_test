@@ -8,12 +8,6 @@ final class PurchasePremiumUseCase {
 
   BattlePass call(BattlePass pass) {
     if (pass.premiumStatus == PremiumStatus.purchased) return pass;
-    return _computeRewardStatuses(
-      pass.copyWith(
-        playerState: pass.playerState.copyWith(
-          premiumStatus: PremiumStatus.purchased,
-        ),
-      ),
-    );
+    return _computeRewardStatuses(pass.copyWith(playerState: pass.playerState.copyWith(premiumStatus: PremiumStatus.purchased)));
   }
 }

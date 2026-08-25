@@ -26,11 +26,7 @@ class PauseNavigationPanel extends StatelessWidget {
           Text(
             section.label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.white100,
-              fontSize: 54.sp,
-              fontWeight: FontWeight.w700,
-            ),
+            style: TextStyle(color: AppColors.white100, fontSize: 54.sp, fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 18.h),
           Text(

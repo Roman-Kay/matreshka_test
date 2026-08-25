@@ -27,20 +27,9 @@ final class Task {
   bool get canClaim => status == TaskStatus.readyToClaim;
   bool get claimed => status == TaskStatus.claimed;
   bool get hasXpBonus => xpBonusPercent > 0;
-  int get totalRewardAmount =>
-      rewardAmount + (rewardAmount * xpBonusPercent / 100).round();
+  int get totalRewardAmount => rewardAmount + (rewardAmount * xpBonusPercent / 100).round();
 
-  Task copyWith({
-    int? id,
-    String? title,
-    String? rewardTitle,
-    int? rewardAmount,
-    int? currentProgress,
-    int? requiredProgress,
-    String? rewardAssetPath,
-    int? xpBonusPercent,
-    TaskStatus? status,
-  }) {
+  Task copyWith({int? id, String? title, String? rewardTitle, int? rewardAmount, int? currentProgress, int? requiredProgress, String? rewardAssetPath, int? xpBonusPercent, TaskStatus? status}) {
     return Task(
       id: id ?? this.id,
       title: title ?? this.title,

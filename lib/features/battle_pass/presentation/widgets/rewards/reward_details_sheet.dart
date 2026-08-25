@@ -10,15 +10,7 @@ import 'reward_amount_badge.dart';
 import 'reward_rarity_style.dart';
 
 class RewardDetailsSheet extends StatelessWidget {
-  const RewardDetailsSheet({
-    super.key,
-    required this.reward,
-    required this.rewardStatus,
-    required this.choiceRewards,
-    required this.level,
-    required this.premiumStatus,
-    required this.onClaim,
-  });
+  const RewardDetailsSheet({super.key, required this.reward, required this.rewardStatus, required this.choiceRewards, required this.level, required this.premiumStatus, required this.onClaim});
 
   final BattlePassReward reward;
   final RewardStatus rewardStatus;
@@ -29,9 +21,7 @@ class RewardDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final premiumLocked =
-        reward.track == BattlePassTrack.premium &&
-        premiumStatus == PremiumStatus.locked;
+    final premiumLocked = reward.track == BattlePassTrack.premium && premiumStatus == PremiumStatus.locked;
     final canClaim = rewardStatus == RewardStatus.available && !premiumLocked;
     final actionText = premiumLocked
         ? 'Прокачать'
@@ -50,22 +40,13 @@ class RewardDetailsSheet extends StatelessWidget {
             width: 240.h,
             height: 190.h,
             child: CustomPaint(
-              painter: ParallelogramPainter(
-                fillColors: reward.rarity.gradientColors,
-                borderColor: reward.rarity.accentColor,
-                borderWidth: 2.h,
-                skew: 24.h,
-                radius: 24.h,
-              ),
+              painter: ParallelogramPainter(fillColors: reward.rarity.gradientColors, borderColor: reward.rarity.accentColor, borderWidth: 2.h, skew: 24.h, radius: 24.h),
               child: Stack(
                 children: [
                   Center(
                     child: Padding(
                       padding: EdgeInsets.all(24.h),
-                      child: Image.asset(
-                        reward.assetPath ?? AppAssets.railBirthdayMask,
-                        fit: BoxFit.contain,
-                      ),
+                      child: Image.asset(reward.assetPath ?? AppAssets.railBirthdayMask, fit: BoxFit.contain),
                     ),
                   ),
                   if (reward.amount > 1)
@@ -88,21 +69,8 @@ class RewardDetailsSheet extends StatelessWidget {
                   children: [
                     _SheetPill(text: 'Уровень $level'),
                     SizedBox(width: 10.h),
-                    _SheetPill(
-                      text: reward.track.label,
-                      color: reward.track == BattlePassTrack.premium
-                          ? AppColors.gold
-                          : AppColors.green,
-                      textColor: AppColors.ink,
-                    ),
-                    if (level % 10 == 0) ...[
-                      SizedBox(width: 10.h),
-                      const _SheetPill(
-                        text: 'Большой приз',
-                        color: AppColors.orange,
-                        textColor: AppColors.ink,
-                      ),
-                    ],
+                    _SheetPill(text: reward.track.label, color: reward.track == BattlePassTrack.premium ? AppColors.gold : AppColors.green, textColor: AppColors.ink),
+                    if (level % 10 == 0) ...[SizedBox(width: 10.h), const _SheetPill(text: 'Большой приз', color: AppColors.orange, textColor: AppColors.ink)],
                   ],
                 ),
                 SizedBox(height: 14.h),
@@ -113,33 +81,20 @@ class RewardDetailsSheet extends StatelessWidget {
                     reward.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppColors.white100,
-                      fontSize: 30.h,
-                      fontWeight: FontWeight.w700,
-                      height: 1.1,
-                    ),
+                    style: TextStyle(color: AppColors.white100, fontSize: 30.h, fontWeight: FontWeight.w700, height: 1.1),
                   ),
                 if (choiceRewards.length > 1) ...[
                   SizedBox(height: 18.h),
                   Wrap(
                     spacing: 14.h,
                     runSpacing: 14.h,
-                    children: [
-                      for (final choiceReward in choiceRewards)
-                        _ChoiceRewardCard(reward: choiceReward),
-                    ],
+                    children: [for (final choiceReward in choiceRewards) _ChoiceRewardCard(reward: choiceReward)],
                   ),
                 ],
                 SizedBox(height: 12.h),
                 Text(
                   _statusText(premiumLocked),
-                  style: TextStyle(
-                    color: premiumLocked ? AppColors.gold : AppColors.white70,
-                    fontSize: 20.h,
-                    fontWeight: FontWeight.w500,
-                    height: 1.25,
-                  ),
+                  style: TextStyle(color: premiumLocked ? AppColors.gold : AppColors.white70, fontSize: 20.h, fontWeight: FontWeight.w500, height: 1.25),
                 ),
                 SizedBox(height: 22.h),
                 SizedBox(
@@ -165,11 +120,7 @@ class RewardDetailsSheet extends StatelessWidget {
                       child: Center(
                         child: Text(
                           actionText,
-                          style: TextStyle(
-                            color: canClaim ? AppColors.ink : AppColors.white40,
-                            fontSize: 22.h,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: TextStyle(color: canClaim ? AppColors.ink : AppColors.white40, fontSize: 22.h, fontWeight: FontWeight.w700),
                         ),
                       ),
                     ),
@@ -202,13 +153,7 @@ class _ChoiceRewardTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final firstTitle = rewards.first.title;
     final secondTitle = rewards.length > 1 ? rewards[1].title : '';
-    final titleStyle = TextStyle(
-      color: AppColors.white100,
-      fontSize: 36.h,
-      fontWeight: FontWeight.w600,
-      height: 1.30,
-      letterSpacing: -0.36.h,
-    );
+    final titleStyle = TextStyle(color: AppColors.white100, fontSize: 36.h, fontWeight: FontWeight.w600, height: 1.30, letterSpacing: -0.36.h);
 
     return Center(
       child: Wrap(
@@ -219,11 +164,7 @@ class _ChoiceRewardTitle extends StatelessWidget {
           Text(firstTitle, textAlign: TextAlign.center, style: titleStyle),
           ShaderMask(
             shaderCallback: (bounds) {
-              return const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFEFCB4C), Color(0xFFDE8029)],
-              ).createShader(bounds);
+              return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFEFCB4C), Color(0xFFDE8029)]).createShader(bounds);
             },
             blendMode: BlendMode.srcIn,
             child: Text(
@@ -250,19 +191,10 @@ class _ChoiceRewardCard extends StatelessWidget {
       width: 132.h,
       height: 108.h,
       child: CustomPaint(
-        painter: ParallelogramPainter(
-          fillColors: reward.rarity.gradientColors,
-          borderColor: reward.rarity.accentColor,
-          borderWidth: 2.h,
-          skew: 16.h,
-          radius: 18.h,
-        ),
+        painter: ParallelogramPainter(fillColors: reward.rarity.gradientColors, borderColor: reward.rarity.accentColor, borderWidth: 2.h, skew: 16.h, radius: 18.h),
         child: Padding(
           padding: EdgeInsets.all(14.h),
-          child: Image.asset(
-            reward.assetPath ?? AppAssets.railBirthdayMask,
-            fit: BoxFit.contain,
-          ),
+          child: Image.asset(reward.assetPath ?? AppAssets.railBirthdayMask, fit: BoxFit.contain),
         ),
       ),
     );
@@ -270,11 +202,7 @@ class _ChoiceRewardCard extends StatelessWidget {
 }
 
 class _SheetPill extends StatelessWidget {
-  const _SheetPill({
-    required this.text,
-    this.color = AppColors.white10,
-    this.textColor = AppColors.white100,
-  });
+  const _SheetPill({required this.text, this.color = AppColors.white10, this.textColor = AppColors.white100});
 
   final String text;
   final Color color;
@@ -284,17 +212,10 @@ class _SheetPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10.h),
-      ),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10.h)),
       child: Text(
         text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 14.h,
-          fontWeight: FontWeight.w700,
-        ),
+        style: TextStyle(color: textColor, fontSize: 14.h, fontWeight: FontWeight.w700),
       ),
     );
   }

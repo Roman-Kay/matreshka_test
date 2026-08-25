@@ -46,6 +46,7 @@ class TasksPage extends StatelessWidget {
           onBack: () => context.router.maybePop(),
           onExit: () => context.router.replaceAll([const GameRoute()]),
           onPurchasePremium: () => context.read<BattlePassCubit>().purchasePremium(),
+          onClaimTask: (taskId) => context.read<BattlePassCubit>().claimTask(taskId),
         );
       },
     );

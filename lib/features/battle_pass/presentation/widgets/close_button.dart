@@ -8,11 +8,6 @@ class BattlePassCloseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton.filledTonal(
-      onPressed: onTap,
-      iconSize: 42.r,
-      tooltip: 'Обновить',
-      icon: const Icon(Icons.close),
-    );
+    return IconButton.filledTonal(onPressed: onTap, iconSize: 42.r, tooltip: 'Обновить', icon: const Icon(Icons.close));
   }
 }

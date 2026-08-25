@@ -4,11 +4,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import '../../../../../core/theme/app_colors.dart';
 
 class TaskPreviewProgressSegments extends StatelessWidget {
-  const TaskPreviewProgressSegments({
-    super.key,
-    required this.count,
-    required this.activeIndex,
-  });
+  const TaskPreviewProgressSegments({super.key, required this.count, required this.activeIndex});
 
   final int count;
   final int activeIndex;
@@ -32,10 +28,7 @@ class TaskPreviewProgressSegments extends StatelessWidget {
           Container(
             width: segmentWidth,
             height: 8.r,
-            decoration: BoxDecoration(
-              color: index == activeIndex ? _activeColor : _inactiveColor,
-              borderRadius: BorderRadius.circular(4.r),
-            ),
+            decoration: BoxDecoration(color: index == activeIndex ? _activeColor : _inactiveColor, borderRadius: BorderRadius.circular(4.r)),
           ),
           if (index != count - 1) SizedBox(width: divWidth),
         ],

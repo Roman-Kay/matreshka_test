@@ -30,8 +30,7 @@ final class ClaimRewardUseCase {
       message = 'Награда уже получена';
       return ClaimRewardResult(pass: pass, message: message);
     }
-    if (reward.track == BattlePassTrack.premium &&
-        pass.premiumStatus == PremiumStatus.locked) {
+    if (reward.track == BattlePassTrack.premium && pass.premiumStatus == PremiumStatus.locked) {
       message = 'Нужна прокачка';
       return ClaimRewardResult(pass: pass, message: message);
     }
@@ -40,9 +39,6 @@ final class ClaimRewardUseCase {
       return ClaimRewardResult(pass: pass, message: message);
     }
 
-    return ClaimRewardResult(
-      pass: pass.withRewardStatus(rewardId, RewardStatus.received),
-      message: message,
-    );
+    return ClaimRewardResult(pass: pass.withRewardStatus(rewardId, RewardStatus.received), message: message);
   }
 }

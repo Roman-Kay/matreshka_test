@@ -15,23 +15,11 @@ class RewardAmountBadge extends StatelessWidget {
       width: 69.h,
       height: 36.h,
       child: CustomPaint(
-        painter: ParallelogramPainter(
-          fillColors: const [AppColors.dark, AppColors.dark, AppColors.dark],
-          borderColor: AppColors.transparent,
-          borderWidth: 0,
-          skew: 8.h,
-          radius: 10.h,
-        ),
+        painter: ParallelogramPainter(fillColors: const [AppColors.dark, AppColors.dark, AppColors.dark], borderColor: AppColors.transparent, borderWidth: 0, skew: 8.h, radius: 10.h),
         child: Center(
           child: Text(
             'x$amount',
-            style: TextStyle(
-              color: AppColors.white100,
-              fontSize: 26.h,
-              fontWeight: FontWeight.w500,
-              height: 1.20,
-              letterSpacing: -0.26.h,
-            ),
+            style: TextStyle(color: AppColors.white100, fontSize: 26.h, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26.h),
           ),
         ),
       ),

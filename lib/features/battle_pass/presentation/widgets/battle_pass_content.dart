@@ -36,7 +36,7 @@ class BattlePassContent extends StatefulWidget {
   final ValueChanged<int> onClaimReward;
   final ValueChanged<BattlePassDemoMode> onDemoModeSelected;
   static const Size _backgroundDesignSize = Size(703, 678);
-  static const Offset _rewardFrameCenter = Offset(385, 280);
+  static const Offset _rewardFrameCenter = Offset(385, 260);
   static const double _rewardFrameSize = 512;
 
   @override
