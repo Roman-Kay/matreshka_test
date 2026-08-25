@@ -24,14 +24,24 @@ class BattlePassTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pass = context.select((BattlePassCubit cubit) => cubit.state.battlePass);
+    final pass = context.select(
+      (BattlePassCubit cubit) => cubit.state.battlePass,
+    );
 
     return TasksContent(
-      progress: pass == null ? null : TasksProgressSummary(currentLevel: pass.progress.currentLevel, currentXp: pass.progress.currentXp, nextLevelXp: pass.progress.nextLevelXp),
+      progress: pass == null
+          ? null
+          : TasksProgressSummary(
+              currentLevel: pass.progress.currentLevel,
+              currentXp: pass.progress.currentXp,
+              nextLevelXp: pass.progress.nextLevelXp,
+              tasksRefreshAt: pass.season.endsAt,
+            ),
       tasks: pass?.tasks ?? const [],
       onBack: () => context.router.maybePop(),
       onExit: () => context.router.replaceAll([const GameRoute()]),
-      onPurchasePremium: () => context.read<BattlePassCubit>().purchasePremium(),
+      onPurchasePremium: () =>
+          context.read<BattlePassCubit>().purchasePremium(),
     );
   }
 }

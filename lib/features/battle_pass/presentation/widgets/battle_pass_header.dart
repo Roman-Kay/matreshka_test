@@ -5,6 +5,7 @@ import 'package:romankaygo_test_rp/core/constants/app_assets.dart';
 import 'package:romankaygo_test_rp/core/ui/buttons/header_icon_button.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/ui/countdown/countdown_text.dart';
 import '../../domain/models/battle_pass_models.dart';
 import 'level_badge.dart';
 
@@ -41,8 +42,8 @@ class BattlePassHeader extends StatelessWidget {
                       height: 32.h,
                     ),
                     SizedBox(width: 14.w),
-                    Text(
-                      '15д 12ч 42м',
+                    CountdownText(
+                      endsAt: pass.season.endsAt,
                       style: TextStyle(
                         color: AppColors.white40,
                         fontSize: 26.sp,

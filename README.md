@@ -155,6 +155,7 @@ rpc BattlePass {
   message TasksScreen {
     Progress progress "Прогресс Battle Pass для шапки экрана заданий";
     PremiumStatus premiumStatus "Состояние премиума для CTA прокачки";
+    timestamp tasksRefreshAt "Время следующего обновления заданий";
     repeated Task tasks max 12 "Список заданий на отдельном экране";
   }
 

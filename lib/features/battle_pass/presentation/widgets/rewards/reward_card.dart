@@ -59,23 +59,11 @@ class RewardCard extends StatelessWidget {
               height: 220.h,
               width: 242.w,
               child: Center(
-                child: RewardCardVisual(
-                  reward: reward,
-                  selected: selected,
-                  available: available,
-                  received: received,
-                  largeSize: largeSize,
-                  onClaim: onClaim,
-                ),
+                child: RewardCardVisual(reward: reward, selected: selected, available: available, received: received, largeSize: largeSize, onClaim: onClaim),
               ),
             ),
             SizedBox(height: 6.h),
-            RewardProgressMarker(
-              level: level,
-              unlocked: unlocked,
-              drawLeftLine: showRoadLines && !isFirstLevel,
-              drawRightLine: showRoadLines && !isLastLevel,
-            ),
+            RewardProgressMarker(level: level, unlocked: unlocked, drawLeftLine: showRoadLines && !isFirstLevel, drawRightLine: showRoadLines && !isLastLevel),
           ],
         ),
       ),
@@ -84,15 +72,7 @@ class RewardCard extends StatelessWidget {
 }
 
 class RewardCardVisual extends StatelessWidget {
-  const RewardCardVisual({
-    super.key,
-    required this.reward,
-    required this.selected,
-    required this.available,
-    required this.received,
-    required this.largeSize,
-    this.onClaim,
-  });
+  const RewardCardVisual({super.key, required this.reward, required this.selected, required this.available, required this.received, required this.largeSize, this.onClaim});
 
   final BattlePassReward reward;
   final bool selected;
@@ -141,14 +121,8 @@ class RewardCardVisual extends StatelessWidget {
                           children: [
                             Center(
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: 18.h,
-                                  bottom: 10.h,
-                                ),
-                                child: Image.asset(
-                                  reward.assetPath ?? AppAssets.rewardTwo,
-                                  fit: BoxFit.contain,
-                                ),
+                                padding: EdgeInsets.only(top: 18.h, bottom: 10.h),
+                                child: Image.asset(reward.assetPath ?? AppAssets.rewardTwo, fit: BoxFit.contain),
                               ),
                             ),
                             if (!available)
@@ -181,11 +155,7 @@ class RewardCardVisual extends StatelessWidget {
               Positioned(
                 right: 26.w,
                 top: 24.h,
-                child: SvgPicture.asset(
-                  AppAssets.done,
-                  width: 62.w,
-                  height: 42.h,
-                ),
+                child: SvgPicture.asset(AppAssets.done, width: 62.w, height: 42.h),
               ),
           ],
         ),
@@ -208,27 +178,11 @@ class _ClaimRewardButton extends StatelessWidget {
         width: 198.w,
         height: 60.h,
         child: CustomPaint(
-          painter: ParallelogramPainter(
-            fillColors: const [
-              Color(0xFF56B877),
-              Color(0xFF56B877),
-              Color(0xFF449660),
-            ],
-            borderColor: AppColors.transparent,
-            borderWidth: 0,
-            skew: 9.w,
-            radius: 20.r,
-          ),
+          painter: ParallelogramPainter(fillColors: const [Color(0xFF56B877), Color(0xFF56B877), Color(0xFF449660)], borderColor: AppColors.transparent, borderWidth: 0, skew: 9.w, radius: 20.r),
           child: Center(
             child: Text(
               'Забрать',
-              style: TextStyle(
-                color: AppColors.white100,
-                fontSize: 26.sp,
-                fontWeight: FontWeight.w500,
-                height: 1.20,
-                letterSpacing: -0.26,
-              ),
+              style: TextStyle(color: AppColors.white100, fontSize: 26.sp, fontWeight: FontWeight.w500, height: 1.20, letterSpacing: -0.26),
             ),
           ),
         ),
