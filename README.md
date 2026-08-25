@@ -1,59 +1,98 @@
-# Matreshka RP TEST Flutter
+# Matreshka RP Test Flutter
 
-Экран боевого пропуска по Figma-макету «БП / Главная» с демонстрационными состояниями: премиум не куплен, премиум куплен с доступными наградами, премиум с бонусом опыта, максимальный уровень и завершенный сезон.
-## Требования и запуск
+Тестовый Flutter-проект с пустым жкраном игры, pause menu и разделом Battle Pass с заданиями.
+Приложения сделано адаптивным для android/ios больших и маленьких смартфонов и также прекрасно отоброжается на планшетах благодря правльному использованию пакета flutter_screenutil_plus
 
-- Flutter stable, Dart `^3.11.5`.
-- Установить зависимости: `flutter pub get`.
-- Запустить: `flutter run`.
+## ТЗ
+
+- Flutter stable.
+- Управление состоянием: `flutter_bloc` / `Cubit`.
+- Без сторонних UI-китов.
+- Данные моковые, без сети.
+- Основной flow: экран игры -> кнопка паузы -> pause menu -> вкладки меню, где Battle Pass является отдельным разделом.
+
+## Запуск
+
+flutter pub get
+dart run build_runner build
+flutter run
 
 ## Что реализовано
 
-- Feature-first структура `lib/app`, `lib/core`, `lib/features/battle_pass`, `lib/features/tasks`.
-- `flutter_bloc` + `BattlePassCubit` для загрузки, смены demo-сценария, покупки премиума, выбора и получения наград.
-- Mock repositories с искусственной задержкой, динамическими датами сезона и данными без сети.
-- Горизонтальная шкала наград, статусы `locked / available / received`, premium/free дорожки, max-level состояние.
-- Экран «Задания» с отдельной страницей, кнопкой назад и стилем основного экрана.
-
-## Переключение состояний
-
-На главном экране сделайте долгое нажатие на заголовок сезона «Дай пять!». Откроется bottom sheet с режимами:
-
-- `premiumLocked` - премиум не приобретен;
-- `premiumUnlocked` - премиум приобретен;
-- `premiumWithXpBonus` - премиум приобретен, у заданий включен бонус `+100%` к опыту;
-- `maxLevel` - максимальный уровень;
-- `completed` - Battle Pass завершен.
+- `GameRoute` - стартовый пустой экран игры с кнопкой паузы.
+- `PauseShellRoute` - общий shell меню паузы с боковой навигацией.
+- Полноценные route-экраны для вкладок pause menu: Event, Battle Pass, Newcomer Calendar, After Lessons, Invite Friend, Promo.
+- `TasksRoute` - отдельный экран заданий внутри Battle Pass flow.
+- Battle Pass: free/premium дорожки, статусы наград, выбор и получение награды, получение всех доступных наград, покупка premium, max-level/completed состояния.
 
 ## Архитектура
 
-Доменные модели лежат в `features/battle_pass/domain/models` и `features/tasks/domain/models`, доступ к данным идет через `BattlePassRepository` и `TasksRepository`, mock-реализации находятся в `data/repositories`. Бизнес-логика получения наград и заданий вынесена в use cases, а presentation-виджеты получают callbacks сверху.
+Проект разложен feature-first:
 
-Повторяющиеся цвета и ассеты вынесены в `core/theme` и `core/constants`.
-
-
-## Proto‑подобная схема данных (кратко)
-Ниже — упрощённый proto‑набросок, показывающий ключевые структуры: сезоны, уровни, награды, состояние игрока и задания.
-
-```proto
-rpc BattlePass {
-  message Reward { int32 id; string title; int32 amount; string assetPath; }
-  message Level { int32 number; int32 requiredXp; repeated Reward freeRewards; repeated Reward premiumRewards; }
-  message Season { string id; string title; timestamp startsAt; timestamp endsAt; int32 maxLevel; repeated Level levels; }
-  message Progress { int32 currentLevel; int32 currentXp; int32 nextLevelXp; }
-  message Task { int32 id; string title; int32 rewardAmount; int32 currentProgress; int32 requiredProgress; int32 xpBonusPercent; enum TaskStatus { inProgress, readyToClaim, claimed } }
-  message PlayerBattlePassState { string userId; Progress progress; enum PremiumStatus { locked, purchased } premiumStatus; repeated int32 claimedRewardIds; }
-  outgoing Show { Season season; PlayerBattlePassState playerState; repeated Task tasks; }
-}
+```text
+lib/
+  app/              # bootstrap, MaterialApp.router, AutoRoute config
+  core/             # theme, constants, shared assets
+  features/
+    game/           # стартовый экран игры
+    pause/          # shell меню паузы и navigation bar
+    battle_pass/    # Battle Pass domain/data/presentation
+    tasks/          # задания Battle Pass
+    event/          # будущий полноценный экран вкладки
+    newcomer_calendar/
+    after_lessons/
+    invite_friend/
+    promo/
 ```
 
+`pause` владеет общим shell и navigation bar. `battle_pass` не знает о других вкладках и отвечает только за свою бизнес-логику и UI. `tasks` вынесены отдельно, потому что это самостоятельный экран внутри Battle Pass flow.
 
-##  Как использовался ИИ
-ИИ применялся: 
-- для генерации наброска UI из фигмы после проходился по всем файлам и делал ровно так как фигме вручную.
-- для создание папок, дал описание архитектуры название были сгенерированы
-- для вынесения assets в AppAssets
-- для генериции заданий и наград в моках
-- для анимаций
+В `battle_pass/domain` лежат модели, repository contract и use cases:
+
+- `LoadBattlePassUseCase`
+- `ComputeRewardStatusesUseCase`
+- `PurchasePremiumUseCase`
+- `ClaimRewardUseCase`
+- `ClaimAllRewardsUseCase`
+
+`BattlePassCubit` остается тонким presentation-координатором: загружает данные, вызывает use cases и эмитит состояние.
+
+## Навигация
+
+Навигация построена на AutoRoute:
+
+```text
+GameRoute /
+PauseShellRoute /pause
+  EventRoute event
+  BattlePassRoute battle-pass
+  TasksRoute battle-pass/tasks
+  NewcomerCalendarRoute calendar
+  AfterLessonsRoute after-lessons
+  InviteFriendRoute invite-friend
+  PromoRoute promo
+```
+
+Кнопка паузы на экране игры открывает `PauseShellRoute`. Крестик в Battle Pass и на экране заданий возвращает пользователя обратно на `GameRoute`.
 
 
+## Данные
+
+Данные моковые и находятся в data-слое:
+
+- `MockBattlePassRepository`
+- `MockTasksRepository`
+- mock pause/profile repositories
+
+Presentation-слой не зависит от mock-реализаций напрямую.
+
+## Использование ИИ
+
+ИИ использовался:
+ - для первичной базы  UI которую я забрал из фигиы и после вручную правил под нее
+ - генерации моковых данных
+ - создание быстро папок после того как я расписал и утвердил нужную архитектуру
+ - вынос асетов фото в appassets
+ - анимаций
+ - для простых тестов
+ - для формаирования readme))
