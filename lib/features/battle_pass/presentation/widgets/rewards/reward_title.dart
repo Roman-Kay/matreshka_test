@@ -26,10 +26,12 @@ class RewardTitle extends StatelessWidget {
       height: 1.30,
       letterSpacing: -0.36.h,
     );
+    final showPremiumBadge =
+        premiumLocked && reward?.track == BattlePassTrack.premium;
 
     return Column(
       children: [
-        if (premiumLocked)
+        if (showPremiumBadge)
           Container(
             height: 39.h,
             decoration: BoxDecoration(
@@ -59,7 +61,9 @@ class RewardTitle extends StatelessWidget {
                 SizedBox(width: 19.h),
               ],
             ),
-          ),
+          )
+        else
+          SizedBox(height: 39.h),
         SizedBox(height: 10.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

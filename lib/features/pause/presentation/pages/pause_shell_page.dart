@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_router.dart';
+import '../../data/repositories/mock_pause_notifications_repository.dart';
 import '../models/pause_menu_section.dart';
 import '../widgets/pause_frame.dart';
 import '../widgets/pause_navigation_bar.dart';
@@ -10,8 +11,13 @@ import '../widgets/pause_navigation_bar.dart';
 class PauseShellPage extends StatelessWidget {
   const PauseShellPage({super.key});
 
+  static const _notificationsRepository = MockPauseNotificationsRepository();
+
   @override
   Widget build(BuildContext context) {
+    final notificationSections = _notificationsRepository
+        .loadNotificationSections();
+
     return Scaffold(
       body: PauseFrame(
         child: AutoTabsRouter(
@@ -30,6 +36,7 @@ class PauseShellPage extends StatelessWidget {
               children: [
                 PauseNavigationBar(
                   selectedSection: _sectionForIndex(tabsRouter.activeIndex),
+                  notificationSections: notificationSections,
                   onSelected: (section) {
                     tabsRouter.setActiveIndex(_indexForSection(section));
                   },

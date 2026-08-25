@@ -11,6 +11,7 @@ import '../../../domain/models/battle_pass_models.dart';
 import '../../cubit/battle_pass_state.dart';
 import 'reward_card.dart';
 import 'reward_details_sheet.dart';
+import 'reward_rarity_style.dart';
 
 class RewardRail extends StatefulWidget {
   const RewardRail({
@@ -35,7 +36,9 @@ class _RewardRailState extends State<RewardRail>
   static const double _railListPadding = 100;
   static const double _rewardItemExtent = 242;
   static const double _premiumPreviewExtent = 596;
-  static const double _premiumPanelReservedWidth = 375;
+  static const double _premiumPanelReservedWidth = 335;
+  static const double _trailingReleaseLookaheadItems = 1;
+  static const double _pinnedPrizeDockingOffset = 24;
   static const double _pinnedPrizeRightInset = 56;
   static const double _heldScrollSpeed = 1450;
 
@@ -140,14 +143,16 @@ class _RewardRailState extends State<RewardRail>
               rewardItemExtent: _rewardItemExtent.h,
               premiumPanelReservedWidth: _premiumPanelReservedWidth.h,
             );
-            final isAtScrollEnd =
-                _isAtScrollEnd() ||
+            final shouldReleaseTrailingSpace =
+                _shouldReleaseTrailingSpace() ||
                 _isAtFinalRewardEnd(
                   premiumLocked,
                   visibleEndLevel,
                   pass.season.maxLevel,
                   constraints.maxWidth,
                 );
+            final isAtScrollEnd =
+                _isAtScrollEnd() || shouldReleaseTrailingSpace;
             final isAtLeadingEdge = _scrollOffset <= 0.5;
 
             // Каждый 10-й уровень показывает большую награду у премиум-панели.
@@ -172,13 +177,17 @@ class _RewardRailState extends State<RewardRail>
                   );
             final scrollButtonTop = 68.h;
             final leftScrollButtonLeft = 51.h;
+            final effectiveRailRightInset = shouldReleaseTrailingSpace
+                ? 0.0
+                : _premiumPanelReservedWidth.h;
+            final effectiveListTrailingPadding = shouldReleaseTrailingSpace
+                ? 0.0
+                : _railTrailingInset.h;
 
             return Stack(
               children: [
                 Positioned.fill(
-                  right: isAtScrollEnd
-                      ? _railTrailingInset.h
-                      : _premiumPanelReservedWidth.h,
+                  right: effectiveRailRightInset,
                   left: _railSideInset.h,
                   child: ShaderMask(
                     blendMode: BlendMode.dstIn,
@@ -192,7 +201,7 @@ class _RewardRailState extends State<RewardRail>
                           Color(0xFF000000),
                           Color(0x00000000),
                         ],
-                        stops: [0.03, 0.12, 0.88, 0.97],
+                        stops: [0.00, 0.12, 0.88, 0.97],
                         tileMode: TileMode.clamp,
                       ).createShader(bounds);
                     },
@@ -208,7 +217,7 @@ class _RewardRailState extends State<RewardRail>
                         padding: EdgeInsets.fromLTRB(
                           _railListPadding.h,
                           0,
-                          _railTrailingInset.h,
+                          effectiveListTrailingPadding,
                           0,
                         ),
                         scrollDirection: Axis.horizontal,
@@ -451,6 +460,14 @@ class _RewardRailState extends State<RewardRail>
     return _scrollController.position.extentAfter <= 0.5;
   }
 
+  bool _shouldReleaseTrailingSpace() {
+    if (!_scrollController.hasClients) return false;
+    return _scrollController.position.extentAfter <=
+        _premiumPanelReservedWidth.h +
+            _railTrailingInset.h +
+            _rewardItemExtent.h * _trailingReleaseLookaheadItems;
+  }
+
   /// Последняя настоящая награда может закончиться раньше maxScrollExtent,
   /// потому что справа зарезервировано место под премиум-панель.
   bool _isAtFinalRewardEnd(
@@ -474,7 +491,9 @@ class _RewardRailState extends State<RewardRail>
     double dockingProgress,
   ) {
     if (dockingProgress <= 0) return pinLeft;
-    final targetLeft = _bigPrizeLeftInViewport(premiumLocked, level);
+    final targetLeft =
+        _bigPrizeLeftInViewport(premiumLocked, level) +
+        _pinnedPrizeDockingOffset.h;
     final easedProgress = Curves.easeOutCubic.transform(dockingProgress);
     return pinLeft + (targetLeft - pinLeft) * easedProgress;
   }
@@ -486,7 +505,7 @@ class _RewardRailState extends State<RewardRail>
     double listViewportRight,
     bool premiumLocked,
   ) {
-    final cardWidth = 242.h;
+    final cardWidth = _rewardItemExtent.h;
     final dockingStartLeft = listViewportRight + cardWidth * 0.5;
     final dockingEndLeft = listViewportRight - cardWidth;
     final dockingDistance = dockingStartLeft - dockingEndLeft;
@@ -687,7 +706,7 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
         children: [
           Positioned(
             left: 28.h,
-            top: 26.h,
+            top: 18.h,
             child: SizedBox(
               width: 520.h,
               height: 184.h,
@@ -739,19 +758,9 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Награды откроются после прохождения',
+                                  text: 'Награды откроются после прохождения ',
                                   style: TextStyle(
                                     color: AppColors.white60,
-                                    fontSize: 26.h,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.20,
-                                    letterSpacing: -0.26.h,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' ',
-                                  style: TextStyle(
-                                    color: const Color(0xE5E9E9F3),
                                     fontSize: 26.h,
                                     fontWeight: FontWeight.w500,
                                     height: 1.20,
@@ -780,7 +789,7 @@ class _LockedFutureLevelsPreview extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 14.h,
+            bottom: 34.h,
             child: _FutureLevelsRoad(
               fromLevel: roadFromLevel,
               toLevel: roadToLevel,
@@ -816,10 +825,10 @@ class _FutureLevelsRoad extends StatelessWidget {
             child: _FutureLevelMarker(level: fromLevel),
           ),
           Positioned(
-            left: 162.h,
+            left: 144.h,
             child: Image.asset(
               AppAssets.dotedLine,
-              width: 160.h,
+              width: 196.h,
               fit: BoxFit.fill,
             ),
           ),
@@ -1046,33 +1055,31 @@ class _PinnedBigPrizeCard extends StatelessWidget {
 
     return Opacity(
       opacity: dockingOpacity,
-      child: Transform.scale(
-        scale: dockingScale,
-        alignment: Alignment.center,
-        child: RewardCard(
-          level: level,
-          reward: reward,
-          selected: selected,
-          progress: progress,
-          isFirstLevel: false,
-          isLastLevel: false,
-          onSelected: () => onSelectReward(reward.id),
-          onClaim: () => onClaimReward(reward.id),
-          onShowDetails: () => showModalBottomSheet<void>(
-            context: context,
-            backgroundColor: AppColors.ink,
-            builder: (_) => RewardDetailsSheet(
-              reward: reward,
-              choiceRewards: const [],
-              level: level,
-              premiumStatus: premiumStatus,
-              onClaim: () => onClaimReward(reward.id),
-            ),
+      child: RewardCard(
+        level: level,
+        reward: reward,
+        selected: selected,
+        progress: progress,
+        isFirstLevel: false,
+        isLastLevel: false,
+        onSelected: () => onSelectReward(reward.id),
+        onClaim: () => onClaimReward(reward.id),
+        onShowDetails: () => showModalBottomSheet<void>(
+          context: context,
+          backgroundColor: AppColors.ink,
+          builder: (_) => RewardDetailsSheet(
+            reward: reward,
+            choiceRewards: const [],
+            level: level,
+            premiumStatus: premiumStatus,
+            onClaim: () => onClaimReward(reward.id),
           ),
-          showRoadLines: false,
-          forceLargeSize: true,
-          availableGlowAnimation: availableGlowAnimation,
         ),
+        showRoadLines: false,
+        forceLargeSize: true,
+        visualScale: dockingScale,
+        availableGlowAnimation: availableGlowAnimation,
+        staticGlowColor: reward.rarity.gradientColors.last,
       ),
     );
   }

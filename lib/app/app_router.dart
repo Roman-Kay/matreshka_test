@@ -25,11 +25,7 @@ class AppRouter extends RootStackRouter {
       reverseDuration: const Duration(milliseconds: 140),
       children: [
         AutoRoute(page: EventRoute.page, path: 'event'),
-        AutoRoute(
-          page: BattlePassRoute.page,
-          path: 'battle-pass',
-          initial: true,
-        ),
+        AutoRoute(page: BattlePassRoute.page, path: 'battle-pass', initial: true),
         CustomRoute(
           page: BattlePassTasksRoute.page,
           path: 'battle-pass/tasks',

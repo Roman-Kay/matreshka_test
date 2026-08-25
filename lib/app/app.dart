@@ -11,9 +11,7 @@ import '../features/tasks/domain/repositories/tasks_repository.dart';
 import 'app_router.dart';
 
 class BattlePassApp extends StatelessWidget {
-  BattlePassApp({super.key, BattlePassRepository? repository})
-    : _repository = repository,
-      _appRouter = AppRouter();
+  BattlePassApp({super.key, BattlePassRepository? repository}) : _repository = repository, _appRouter = AppRouter();
 
   final BattlePassRepository? _repository;
   final AppRouter _appRouter;
@@ -22,30 +20,16 @@ class BattlePassApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<TasksRepository>(
-          create: (_) => const MockTasksRepository(),
-        ),
-        RepositoryProvider<BattlePassRepository>(
-          create: (context) =>
-              _repository ??
-              MockBattlePassRepository(
-                tasksRepository: context.read<TasksRepository>(),
-              ),
-        ),
+        RepositoryProvider<TasksRepository>(create: (_) => const MockTasksRepository()),
+        RepositoryProvider<BattlePassRepository>(create: (context) => _repository ?? MockBattlePassRepository(tasksRepository: context.read<TasksRepository>())),
       ],
       child: BlocProvider(
-        create: (context) =>
-            BattlePassCubit(context.read<BattlePassRepository>())..load(),
+        create: (context) => BattlePassCubit(context.read<BattlePassRepository>())..load(),
         child: ScreenUtilPlusInit(
           designSize: const Size(2320, 1080),
           minTextAdapt: true,
           builder: (context, child) {
-            return MaterialApp.router(
-              title: 'Battle Pass',
-              theme: AppTheme.dark,
-              debugShowCheckedModeBanner: false,
-              routerConfig: _appRouter.config(),
-            );
+            return MaterialApp.router(title: 'Battle Pass', theme: AppTheme.dark, debugShowCheckedModeBanner: false, routerConfig: _appRouter.config());
           },
         ),
       ),

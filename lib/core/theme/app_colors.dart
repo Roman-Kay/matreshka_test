@@ -30,6 +30,7 @@ abstract final class AppColors {
   static const secondary10 = Color(0xFF398652);
   static const secondary50 = Color(0xFF56B876);
   static const secondary100 = Color(0xFF68C286);
+  static const primary10 = Color(0xFFD72700);
 
   static const orange = Color(0xFFFF6435);
   static const gold = Color(0xFFFFD149);

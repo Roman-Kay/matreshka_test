@@ -25,7 +25,9 @@ class RewardCard extends StatelessWidget {
     required this.onShowDetails,
     this.showRoadLines = true,
     this.forceLargeSize = false,
+    this.visualScale = 1,
     this.availableGlowAnimation,
+    this.staticGlowColor,
   });
 
   final int level;
@@ -39,7 +41,9 @@ class RewardCard extends StatelessWidget {
   final VoidCallback onShowDetails;
   final bool showRoadLines;
   final bool forceLargeSize;
+  final double visualScale;
   final Animation<double>? availableGlowAnimation;
+  final Color? staticGlowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -61,14 +65,19 @@ class RewardCard extends StatelessWidget {
               height: 220.h,
               width: 242.h,
               child: Center(
-                child: RewardCardVisual(
-                  reward: reward,
-                  selected: selected,
-                  available: available,
-                  received: received,
-                  largeSize: largeSize,
-                  onClaim: onClaim,
-                  availableGlowAnimation: availableGlowAnimation,
+                child: Transform.scale(
+                  scale: visualScale,
+                  alignment: Alignment.center,
+                  child: RewardCardVisual(
+                    reward: reward,
+                    selected: selected,
+                    available: available,
+                    received: received,
+                    largeSize: largeSize,
+                    onClaim: onClaim,
+                    availableGlowAnimation: availableGlowAnimation,
+                    staticGlowColor: staticGlowColor,
+                  ),
                 ),
               ),
             ),
@@ -96,6 +105,7 @@ class RewardCardVisual extends StatelessWidget {
     required this.largeSize,
     this.onClaim,
     this.availableGlowAnimation,
+    this.staticGlowColor,
   });
 
   final BattlePassReward reward;
@@ -105,6 +115,7 @@ class RewardCardVisual extends StatelessWidget {
   final bool largeSize;
   final VoidCallback? onClaim;
   final Animation<double>? availableGlowAnimation;
+  final Color? staticGlowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +152,9 @@ class RewardCardVisual extends StatelessWidget {
                           borderWidth: animatedBorderWidth,
                           skew: 26.h,
                           radius: 24.h,
-                          glowColor: available ? AppColors.green : null,
+                          glowColor:
+                              staticGlowColor ??
+                              (available ? AppColors.green : null),
                         ),
                         child: Stack(
                           clipBehavior: Clip.none,
